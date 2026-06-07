@@ -1,24 +1,25 @@
-{ config, pkgs, ... }:
+{ config, pkgs, agenixModule, ... }:
 
 {
   home.username = "user";
   home.homeDirectory = "/home/user";
   programs.git.enable = true;
   home.stateVersion = "26.05";
-  imports = [
-    ../../home-manager/i3.nix
-    ../../home-manager/vscode.nix
-    ../../home-manager/theme.nix
-    ../../home-manager/bash.nix
-    ../../home-manager/alacritty.nix
-    ../../home-manager/redshift.nix
-    ../../home-manager/tmux.nix
-    ../../home-manager/neovim.nix
-    ../../home-manager/yazi.nix
-    ../../home-manager/rofi.nix
-    ../../home-manager/picom.nix
-    ../../home-manager/rclone.nix
-    ../../home-manager/zathura.nix
-    ../../home-manager/git.nix
+
+  imports = map (file: ../../home-manager + "/${file}") [
+    "i3.nix"
+    "vscode.nix"
+    "theme.nix"
+    "bash.nix"
+    "alacritty.nix"
+    "redshift.nix"
+    "tmux.nix"
+    "neovim.nix"
+    "yazi.nix"
+    "rofi.nix"
+    "picom.nix"
+    "rclone.nix"
+    "zathura.nix"
+    "git.nix"
   ];
 }

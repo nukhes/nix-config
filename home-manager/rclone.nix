@@ -50,4 +50,10 @@ in
       WantedBy = [ "timers.target" ];
     };
   };
+
+  age.secrets.rclone = {
+    file = ../secrets/rclone.age;
+    path = "${config.home.homeDirectory}/.config/rclone/rclone.conf";
+    mode = "0600";
+  };
 }

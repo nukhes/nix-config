@@ -3,24 +3,21 @@
 {
   programs.tmux = {
     enable = true;
-    shortcut = "space"; # Define 'Space' como a tecla do atalho
+    shortcut = "space";
     keyMode = "vi";
     mouse = true;
     historyLimit = 10000;
     terminal = "tmux-256color";
 
     extraConfig = ''
-      # Altera o modificador do prefixo para Alt (Meta) + Space
       unbind C-b
       set -g prefix M-space
       bind M-space send-prefix
 
-      # Começa a numeração de janelas e painéis em 1 (fácil alcance no teclado)
       set -g base-index 1
       setw -g pane-base-index 1
       set -g renumber-windows on
 
-      # Divisão de painéis mais intuitiva usando caminhos atuais
       bind v split-window -h -c "#{pane_current_path}"
       bind h split-window -v -c "#{pane_current_path}"
       unbind '"'
@@ -44,7 +41,6 @@
       # Evita atraso no botão Esc (essencial para usuários de Vim/Neovim)
       set -s escape-time 0
 
-      # Cores da barra de status discretas e elegantes (Estilo minimalista)
       set -g status-style bg=default,fg="#cdd6f4"
       set -g status-left ""
       set -g status-right "#[fg=#b4befe,bold]#S "

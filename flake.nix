@@ -9,25 +9,30 @@
 		};
 	};
 
-	outputs = { self, nixpkgs, home-manager, agenix, ... }: {
+	outputs = { self, nixpkgs, home-manager, agenix, ... }@inputs: {
+
 		nixosConfigurations.hackbook = nixpkgs.lib.nixosSystem {
 			system = "x86_64-linux";
-            specialArgs = {
-              agenixModule = agenix.nixosModules.default;
-            };
+
+			specialArgs = { inherit inputs; };
+
 			modules = [
-				./configuration.nix
+				agenix.nixosModules.default
 				./hosts/hackbook/configuration.nix
 				home-manager.nixosModules.home-manager
 				{
 					home-manager = {
 						useGlobalPkgs = true;
 						useUserPackages = true;
-						users.user = import ./hosts/hackbook/home.nix;
+						users.user.imports = [
+							agenix.homeManagerModules.default
+							./hosts/hackbook/home.nix
+						];
 						backupFileExtension = "backup";
 					};
 				}
 			];
 		};
 	};
+
 }

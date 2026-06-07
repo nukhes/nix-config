@@ -3,10 +3,17 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ../common/base.nix
+    ../common/desktop.nix
+    ../common/cli-tools.nix
     ../common/pipewire.nix
+    ../common/eduroam.nix
     ../common/tlp.nix
   ];
+
+  networking.hostName = "hackbook";
   
+  # System Tweaks
   boot.kernelParams = [
     "i915.enable_fbc=1"
     "i915.enable_guc=3"
@@ -14,15 +21,13 @@
     "acpi_mask_gpe=0x17"
     "pcie_aspm=force"
   ];
-
-  networking.hostName = "hackbook";
-
   zramSwap = {
     enable = true;
     priority = 100;
     algorithm = "zstd";
     memoryPercent = 100;
   };
+  # End System Tweaks
 
   # Broadcom Wifi Chip
   networking.wireless.enable = true;
