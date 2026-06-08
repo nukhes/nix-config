@@ -21,7 +21,11 @@
     rcsync "${config.home.homeDirectory}/geo/" p322814: && rcsync "${config.home.homeDirectory}/usr/" p052:
   '';
 in {
-  home.packages = [rclone-sync-script];
+  home.packages = [
+    pkgs.rclone
+    pkgs.rsync
+    rclone-sync-script
+  ];
 
   systemd.user.services.rclone-automation = {
     Unit = {
