@@ -31,5 +31,12 @@
       database = "sqlite";
       history-autosave = true;
     };
+    mappings = {
+      # Marcadores
+      # uma alternativa nao persistente seria usar m+letra e para pular '+letra
+      "<C-l>" = "feedkeys \":blist \""; # Ctrl+l: lista os marcadores
+      "<C-j>" = "feedkeys \":bjump \""; # Ctrl+j: pular para um marcador
+      "<C-m>" = "feedkeys \":bmark \""; # Ctrl+m: criar um marcador
+    };
   };
 }
