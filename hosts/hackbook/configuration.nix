@@ -3,7 +3,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../common/base.nix
     ../common/desktop.nix
     ../common/cli-tools.nix
     ../common/pipewire.nix
@@ -32,7 +31,7 @@
   # Broadcom Wifi Chip
   networking.wireless.enable = true;
   nixpkgs.config.permittedInsecurePackages = [
-    "broadcom-sta-6.30.223.271-59-6.6.142"
+    "broadcom-sta-6.30.223.271-59-6.18.34"
   ];
   boot.kernelModules = [ "wl" ];
   boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];

@@ -275,16 +275,13 @@
 
     extensions = with pkgs.vscode-extensions; [
       #jnoortheen.nix-ide
-      bradlc.vscode-tailwindcss
-      eamodio.gitlens
-      prisma.prisma
       dbaeumer.vscode-eslint
       ritwickdey.liveserver
       mikestead.dotenv
       yzhang.markdown-all-in-one
       mechatroner.rainbow-csv
-      timonwong.shellcheck
       usernamehw.errorlens
+      continue.continue
     ];
   };
 }

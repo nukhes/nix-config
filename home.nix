@@ -3,10 +3,9 @@
 {
   home.username = "user";
   home.homeDirectory = "/home/user";
-  programs.git.enable = true;
   home.stateVersion = "26.05";
 
-  imports = map (file: ../../home-manager + "/${file}") [
+  imports = map (file: ./home-manager/${file}) [
     "i3.nix"
     "vscode.nix"
     "theme.nix"
@@ -21,5 +20,7 @@
     "rclone.nix"
     "zathura.nix"
     "git.nix"
+    "firefox.nix" 
+    "continue-vscode.nix"
   ];
 }

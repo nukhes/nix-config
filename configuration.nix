@@ -18,7 +18,7 @@
   networking.networkmanager.enable = true;
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernelPackages = pkgs.linuxPackages_6_6;
+  boot.kernelPackages = pkgs.linuxPackages;
 
   users.users."user" = {
     isNormalUser = true;

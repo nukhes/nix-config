@@ -21,6 +21,9 @@
     luarocks
     nil
     nixfmt
+    fastfetch
+    mpv
+    ani-cli
   ];
 }
 
