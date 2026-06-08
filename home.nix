@@ -24,6 +24,7 @@
     "zathura.nix"
     "git.nix"
     "firefox.nix"
+    "xournalpp.nix"
     "continue-vscode.nix"
   ];
 }
