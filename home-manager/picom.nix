@@ -1,9 +1,11 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   services.picom = {
     enable = true;
-    
+
     # Aceleração por Hardware e V-Sync (Essencial para fluidez matemática sem screen tearing)
     backend = "glx";
     vSync = true;
@@ -13,8 +15,8 @@
     # ==========================================
     shadow = true;
     shadowOpacity = 0.4;
-    shadowOffsets = [ (-15) (-15) ]; # Deslocamento calculado para parecer iluminação superior
-    
+    shadowOffsets = [(-15) (-15)]; # Deslocamento calculado para parecer iluminação superior
+
     # Previne conflitos bloqueando sombras em janelas utilitárias e pop-ups
     shadowExclude = [
       "window_type = 'menu'"
@@ -22,33 +24,33 @@
       "window_type = 'popup_menu'"
       "window_type = 'tooltip'"
       "window_type = 'dnd'"
-      "class_g = 'i3-frame'"       # Remove sombras dos contêineres vazios do i3
-      "_GTK_FRAME_EXTENTS@:c"      # Previne conflitos de sombra dupla em apps GTK3/4
+      "class_g = 'i3-frame'" # Remove sombras dos contêineres vazios do i3
+      "_GTK_FRAME_EXTENTS@:c" # Previne conflitos de sombra dupla em apps GTK3/4
     ];
 
     fade = true;
-    fadeDelta = 5;             # Tempo (ms) entre cada frame do fade
-    fadeSteps = [ 0.03 0.03 ]; # Velocidade de entrada e saída (Fade-in / Fade-out)
-    fadeExclude = [ ];
+    fadeDelta = 5; # Tempo (ms) entre cada frame do fade
+    fadeSteps = [0.03 0.03]; # Velocidade de entrada e saída (Fade-in / Fade-out)
+    fadeExclude = [];
 
     settings = {
       corner-radius = 12;
       rounded-corners-exclude = [
         "window_type = 'dock'"
         "window_type = 'desktop'"
-        "class_g = 'i3bar'"    # Não arredonda a barra de status do topo
+        "class_g = 'i3bar'" # Não arredonda a barra de status do topo
         "class_g = 'dmenu'"
       ];
 
       # Configuração do Blur (Desfoque dual_kawase para efeito de vidro fosco perfeito)
       blur = {
         method = "dual_kawase";
-        strength = 4;          # Intensidade do desfoque (cuidado com consumo de GPU)
+        strength = 4; # Intensidade do desfoque (cuidado com consumo de GPU)
         background = true;
         background-frame = false;
         background-fixed = false;
       };
-      
+
       blur-background-exclude = [
         "window_type = 'dock'"
         "window_type = 'desktop'"

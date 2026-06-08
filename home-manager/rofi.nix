@@ -1,10 +1,12 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   programs.rofi = {
     enable = true;
     font = "Iosevka Nerd Font 11";
-    
+
     extraConfig = {
       modi = "drun,run,window";
       show-icons = true;
@@ -37,11 +39,11 @@
 
       "mainbox" = {
         background-color = mkLiteral "@bg-col";
-        children = map mkLiteral [ "inputbar" "listview" ];
+        children = map mkLiteral ["inputbar" "listview"];
       };
 
       "inputbar" = {
-        children = map mkLiteral [ "prompt" "entry" ];
+        children = map mkLiteral ["prompt" "entry"];
         background-color = mkLiteral "@bg-col";
         padding = 2;
       };

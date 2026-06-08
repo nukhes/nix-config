@@ -1,6 +1,9 @@
-{ config, pkgs, agenixModule, ... }:
-
 {
+  config,
+  pkgs,
+  agenixModule,
+  ...
+}: {
   home.username = "user";
   home.homeDirectory = "/home/user";
   home.stateVersion = "26.05";
@@ -20,7 +23,7 @@
     "rclone.nix"
     "zathura.nix"
     "git.nix"
-    "firefox.nix" 
+    "firefox.nix"
     "continue-vscode.nix"
   ];
 }

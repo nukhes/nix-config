@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
     ./hardware-configuration.nix
     ../common/desktop.nix
@@ -11,12 +13,12 @@
   ];
 
   networking.hostName = "hackbook";
-  
+
   # System Tweaks
   boot.kernelParams = [
     "i915.enable_fbc=1"
     "i915.enable_guc=3"
-    "acpi_osi=Darwin" 
+    "acpi_osi=Darwin"
     "acpi_mask_gpe=0x17"
     "pcie_aspm=force"
   ];
@@ -33,9 +35,9 @@
   nixpkgs.config.permittedInsecurePackages = [
     "broadcom-sta-6.30.223.271-59-6.18.34"
   ];
-  boot.kernelModules = [ "wl" ];
-  boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
-  boot.blacklistedKernelModules = [ "b43" "bcma" "ssb" "brcmsmac" ];
+  boot.kernelModules = ["wl"];
+  boot.extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
+  boot.blacklistedKernelModules = ["b43" "bcma" "ssb" "brcmsmac"];
   # End Broadcom Wifi Chip
 
   system.stateVersion = "26.05";

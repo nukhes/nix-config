@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   programs.vscode.enable = true;
   programs.vscode.profiles.default = {
     userSettings = {
@@ -20,13 +22,13 @@
       "breadcrumbs.enabled" = false;
       "editor.stickyScroll.enabled" = false;
       "git.enableSmartCommit" = true;
-      "workbench.activityBar.location" = "hidden";
+      "workbench.activityBar.location" = "default";
       "window.commandCenter" = false;
       "workbench.layoutControl.enabled" = false;
       "workbench.startupEditor" = "newUntitledFile";
       "javascript.suggest.autoImports" = true;
       "javascript.updateImportsOnFileMove.enabled" = "always";
-      "editor.rulers" = [ 80 120 ];
+      "editor.rulers" = [80 120];
       "extensions.ignoreRecommendations" = true;
       "typescript.tsserver.log" = "off";
       "workbench.tree.enableStickyScroll" = false;
@@ -258,7 +260,7 @@
       ];
       "workbench.statusBar.visible" = false;
       "editor.tokenColorCustomizations" = {
-        "textMateRules" = [ ];
+        "textMateRules" = [];
       };
       "window.autoDetectColorScheme" = true;
       "workbench.preferredDarkColorTheme" = "Oscura Dusk";

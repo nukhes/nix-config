@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   environment.systemPackages = with pkgs; [
     xarchiver
     papirus-icon-theme
@@ -32,7 +34,7 @@
     autoRepeatInterval = 35;
     windowManager.i3.enable = true;
   };
-  
+
   services.displayManager.ly.enable = true;
   services.udisks2.enable = true;
 
@@ -57,9 +59,9 @@
     ];
     fontconfig = {
       defaultFonts = {
-        serif = [ "Iosevka Nerd Font" ];
-        sansSerif = [ "Iosevka Nerd Font" ];
-        monospace = [ "Iosevka Nerd Font" ];
+        serif = ["Iosevka Nerd Font"];
+        sansSerif = ["Iosevka Nerd Font"];
+        monospace = ["Iosevka Nerd Font"];
       };
     };
   };

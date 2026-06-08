@@ -1,6 +1,8 @@
-{ config, pkgs, ... }:
-
-let
+{
+  config,
+  pkgs,
+  ...
+}: let
   rclone-sync-script = pkgs.writeShellScriptBin "rclone-sync-engine" ''
     rcsync() {
       local dir="$1"
@@ -18,15 +20,14 @@ let
 
     rcsync "${config.home.homeDirectory}/geo/" p322814: && rcsync "${config.home.homeDirectory}/usr/" p052:
   '';
-in
-{
-  home.packages = [ rclone-sync-script ];
+in {
+  home.packages = [rclone-sync-script];
 
   systemd.user.services.rclone-automation = {
     Unit = {
       Description = "Sync my files in Google Drive";
-      After = [ "network-online.target" ];
-      Wants = [ "network-online.target" ];
+      After = ["network-online.target"];
+      Wants = ["network-online.target"];
     };
 
     Service = {
@@ -47,7 +48,7 @@ in
     };
 
     Install = {
-      WantedBy = [ "timers.target" ];
+      WantedBy = ["timers.target"];
     };
   };
 

@@ -1,10 +1,12 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   programs.yazi = {
     enable = true;
     enableBashIntegration = true; # Integração fina com o Shell
-    enableZshIntegration = true;  # Caso mude de shell no futuro
+    enableZshIntegration = true; # Caso mude de shell no futuro
 
     settings = {
       manager = {
@@ -49,18 +51,45 @@
 
       open = {
         rules = [
-          { mime = "image/*"; use = "image"; }
-          
-          { mime = "application/pdf"; use = "pdf"; }
-          
-          { mime = "application/zip"; use = "extract"; }
-          { mime = "application/x-tar"; use = "extract"; }
-          { mime = "application/x-bzip2"; use = "extract"; }
-          { mime = "application/x-gzip"; use = "extract"; }
-          { mime = "application/x-rar"; use = "extract"; }
-          { mime = "application/x-7z-compressed"; use = "extract"; }
-          
-          { mime = "text/*"; use = "editor"; }
+          {
+            mime = "image/*";
+            use = "image";
+          }
+
+          {
+            mime = "application/pdf";
+            use = "pdf";
+          }
+
+          {
+            mime = "application/zip";
+            use = "extract";
+          }
+          {
+            mime = "application/x-tar";
+            use = "extract";
+          }
+          {
+            mime = "application/x-bzip2";
+            use = "extract";
+          }
+          {
+            mime = "application/x-gzip";
+            use = "extract";
+          }
+          {
+            mime = "application/x-rar";
+            use = "extract";
+          }
+          {
+            mime = "application/x-7z-compressed";
+            use = "extract";
+          }
+
+          {
+            mime = "text/*";
+            use = "editor";
+          }
         ];
       };
     };
@@ -69,7 +98,7 @@
       manager = {
         prepend_keymap = [
           {
-            on = [ "E" ];
+            on = ["E"];
             run = "open --use=extract";
             desc = "Extrair arquivo compactado";
           }
