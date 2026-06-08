@@ -6,7 +6,6 @@
   environment.systemPackages = with pkgs; [
     xarchiver
     papirus-icon-theme
-    calibre
     gparted
     anki-bin
     brightnessctl
