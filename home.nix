@@ -26,5 +26,6 @@
     "firefox.nix"
     "xournalpp.nix"
     "continue-vscode.nix"
+    "calibre/calibre.nix"
   ];
 }
