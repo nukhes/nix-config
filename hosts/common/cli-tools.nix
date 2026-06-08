@@ -9,8 +9,6 @@
     dust
     eza
     zoxide
-    rclone
-    rsync
     lazygit
     gh
     tectonic
