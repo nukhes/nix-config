@@ -7,7 +7,6 @@
     xarchiver
     papirus-icon-theme
     calibre
-    xournalpp
     gparted
     anki-bin
     brightnessctl
