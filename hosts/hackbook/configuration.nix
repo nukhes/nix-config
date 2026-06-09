@@ -9,6 +9,7 @@
     ../common/cli-tools.nix
     ../common/pipewire.nix
     ../common/eduroam.nix
+    ../common/wacom.nix
     ../common/tlp.nix
   ];
 
