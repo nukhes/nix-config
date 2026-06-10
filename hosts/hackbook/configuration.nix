@@ -15,6 +15,8 @@
 
   networking.hostName = "hackbook";
 
+  services.mbpfan.enable = true;
+
   # System Tweaks
   boot.kernelParams = [
     "i915.enable_fbc=1"
