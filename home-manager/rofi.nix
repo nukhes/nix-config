@@ -33,8 +33,9 @@
       "window" = {
         background-color = mkLiteral "@bg-col";
         border = 1;
+        border-radius = 10px
         border-color = mkLiteral "@border-col";
-        padding = 10;
+        padding = mkLiteral "10px";
       };
 
       "mainbox" = {

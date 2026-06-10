@@ -23,6 +23,7 @@
     nixfmt
     fastfetch
     mpv
+    rg
     ani-cli
   ];
 }
