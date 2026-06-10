@@ -110,6 +110,7 @@ in {
         "${mod}+Shift+f" = "exec alacritty -e yazi";
         "${mod}+Shift+s" = "exec --no-startup-id maim -s | xclip -selection clipboard -t image/png";
         "${mod}+space" = "exec rofi -show drun";
+        "${mod}+Shift+space" = "exec --no-startup-id xdg-open \"\$(rg --files --hidden --glob '!.*' ~ | rofi -dmenu -i -p 'files:')\"";
         "${mod}+p" = "exec ${xrandr-update}";
         "${mod}+Shift+q" = "exec systemctl suspend";
 
