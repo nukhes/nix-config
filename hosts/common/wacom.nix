@@ -1,8 +1,6 @@
 { config, pkgs, ... }:
 
 {
-  hardware.wacom.enable = true;
-
   # ensure my wacom tablet is associated with the internal laptop display
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="Wacom One by Wacom S Pen Pen (0)", RUN+="${pkgs.writeShellScript "mapear_wacom" ''
@@ -17,7 +15,7 @@
       export DISPLAY=:0
       export XAUTHORITY=/home/$USER/.Xauthority
       
-      ${pkgs.xorg.xinput}/bin/xinput map-to-output "Wacom One by Wacom S Pen Pen (0)" eDP-1
+      /run/current-system/sw/bin/xinput map-to-output "Wacom One by Wacom S Pen Pen (0)" eDP-1
     ''}"
   '';
 }
