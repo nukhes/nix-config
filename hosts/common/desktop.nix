@@ -8,6 +8,7 @@
     papirus-icon-theme
     gparted
     anki-bin
+    obsidian
     brightnessctl
     maim
     xclip
