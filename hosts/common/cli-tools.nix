@@ -16,6 +16,7 @@
     asdf-vm
     cargo
     gcc
+    btop
     rustc
     lua
     luarocks
@@ -23,7 +24,8 @@
     nixfmt
     fastfetch
     mpv
-    rg
+    ripgrep
     ani-cli
+    sox
   ];
 }

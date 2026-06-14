@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  # ensure my wacom tablet is associated with the internal laptop display
+  services.xserver.wacom.enable = true;
   services.udev.extraRules = ''
     ACTION=="add", SUBSYSTEM=="input", ATTRS{name}=="Wacom One by Wacom S Pen Pen (0)", RUN+="${pkgs.writeShellScript "mapear_wacom" ''
       sleep 1

@@ -33,7 +33,7 @@
       "window" = {
         background-color = mkLiteral "@bg-col";
         border = 1;
-        border-radius = 10px
+        border-radius = mkLiteral "10px";
         border-color = mkLiteral "@border-col";
         padding = mkLiteral "10px";
       };

@@ -2,6 +2,10 @@
 
 {
   programs.calibre.enable = true;
+  
+  xdg.configFile."calibre/gui.json".force = true;
+  xdg.configFile."calibre/gui.py.json".force = true;
+  xdg.configFile."calibre/global.py.json".force = true;
 
   xdg.configFile."calibre/gui.json".text = builtins.readFile ./gui.json;
   xdg.configFile."calibre/gui.py.json".text = builtins.readFile ./gui.py.json;

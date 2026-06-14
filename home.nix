@@ -24,8 +24,10 @@
     "zathura.nix"
     "git.nix"
     "firefox.nix"
+    "qgis.nix"
     "xournalpp.nix"
     "continue-vscode.nix"
     "calibre/calibre.nix"
+    "xdg.nix"
   ];
 }

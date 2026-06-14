@@ -42,6 +42,10 @@
       gcp = "git cherry-pick";
       gr = "git restore";
       # End Git
+
+      # Misc
+      noise = "play -n synth brownnoise mix synth sine amod 0.1";
+      # End Misc
     };
   };
 }

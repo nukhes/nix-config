@@ -46,7 +46,7 @@
       blur = {
         method = "dual_kawase";
         strength = 4; # Intensidade do desfoque (cuidado com consumo de GPU)
-        background = true;
+        background = false;
         background-frame = false;
         background-fixed = false;
       };
@@ -55,6 +55,8 @@
         "window_type = 'dock'"
         "window_type = 'desktop'"
         "window_type = 'tooltip'"
+        "class_g = 'slop'"
+        "class_g = 'maim'"
         "_GTK_FRAME_EXTENTS@:c"
       ];
 

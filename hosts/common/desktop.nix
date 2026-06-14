@@ -54,6 +54,8 @@
     enableDefaultPackages = true;
     packages = with pkgs; [
       nerd-fonts.iosevka
+      corefonts
+      vista-fonts
     ];
     fontconfig = {
       defaultFonts = {
