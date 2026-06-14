@@ -24,7 +24,7 @@
     defaultApplications = {
       "application/pdf" = [ "zathura.desktop" ];
       "application/epub+zip" = [ "zathura.desktop" ];
-      "application/x-cbz" = [ "zathura.desktop" ]; # Quadrinhos / Mangás
+      "application/x-cbz" = [ "zathura.desktop" ];
       "application/postscript" = [ "zathura.desktop" ];
 
       "text/plain" = [ "nvim.desktop" ];
