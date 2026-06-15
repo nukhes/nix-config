@@ -22,10 +22,10 @@
     enable = true;
 
     defaultApplications = {
-      "application/pdf" = [ "zathura.desktop" ];
-      "application/epub+zip" = [ "zathura.desktop" ];
-      "application/x-cbz" = [ "zathura.desktop" ];
-      "application/postscript" = [ "zathura.desktop" ];
+      "application/pdf" = [ "org.pwmt.zathura.desktop" ];
+      "application/epub+zip" = [ "org.pwmt.zathura.desktop" ];
+      "application/x-cbz" = [ "org.pwmt.zathura.desktop" ];
+      "application/postscript" = [ "org.pwmt.zathura.desktop" ];
 
       "text/plain" = [ "nvim.desktop" ];
       "text/markdown" = [ "nvim.desktop" ];
