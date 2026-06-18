@@ -9,6 +9,11 @@
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -17,6 +22,7 @@
     nur,
     home-manager,
     agenix,
+    nixos-hardware,
     ...
   } @ inputs: {
     # Hackbook Host stands for my Macbook Air 7,2
@@ -30,6 +36,8 @@
         ./hosts/hackbook/configuration.nix
 
         agenix.nixosModules.default
+
+        nixos-hardware.nixosModules.apple-macbook-air-7
 
         # Home-Manager
         home-manager.nixosModules.home-manager

@@ -3,57 +3,60 @@
   pkgs,
   ...
 }: let
-  rclone-sync-script = pkgs.writeShellScriptBin "rclone-sync-engine" ''
-    rcsync() {
-      local dir="$1"
-      local remote="$2"
-      mkdir -p "$dir"
-      if [ -z "$(ls -A "$dir")" ]; then
-        echo "[!] pulling data from remote..."
-        ${pkgs.rclone}/bin/rclone copy "$remote" "$dir" --progress --create-empty-src-dirs
-        ${pkgs.rclone}/bin/rclone bisync "$dir" "$remote" --progress --resync --create-empty-src-dirs
-      else
-        echo "[*] starting bidirectional sync..."
-        ${pkgs.rclone}/bin/rclone bisync "$dir" "$remote" --progress --create-empty-src-dirs
-      fi
-    }
-
-    rcsync "${config.home.homeDirectory}/geo/" p322814: && rcsync "${config.home.homeDirectory}/usr/" p052:
-  '';
-in {
-  home.packages = [
-    pkgs.rclone
-    pkgs.rsync
-    rclone-sync-script
-  ];
-
-  systemd.user.services.rclone-automation = {
+  # Reusable function to generate systemd mount services
+  createRcloneMount = { name, remote, mountPoint, cacheSize }: {
     Unit = {
-      Description = "Sync my files in Google Drive";
+      Description = "Rclone VFS Mount for ${name}";
       After = ["network-online.target"];
       Wants = ["network-online.target"];
     };
 
     Service = {
-      Type = "oneshot";
-      ExecStart = "${rclone-sync-script}/bin/rclone-sync-engine";
-    };
-  };
+      # "notify" tells systemd to wait until rclone signals it has successfully mounted
+      Type = "notify";
+      
+      # Ensure the mount point exists before starting
+      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${mountPoint}";
+      
+      # The core mount command
+      ExecStart = ''
+        ${pkgs.rclone}/bin/rclone mount ${remote} ${mountPoint} \
+          --vfs-cache-mode full \
+          --vfs-cache-max-size ${cacheSize} \
+          --vfs-cache-max-age 48h \
+          --dir-cache-time 1h \
+          --log-level INFO
+      '';
 
-  systemd.user.timers.rclone-automation = {
-    Unit = {
-      Description = "Timer for auto run service";
-    };
-
-    Timer = {
-      OnBootSec = "5m";
-      OnUnitActiveSec = "30m";
-      Persistent = true;
+      # Let systemd automatically restart the mount if the network drops and it crashes
+      Restart = "on-failure";
+      RestartSec = "10s";
     };
 
     Install = {
-      WantedBy = ["timers.target"];
+      WantedBy = ["default.target"];
     };
+  };
+
+in {
+  home.packages = [
+    pkgs.rclone
+    pkgs.rsync
+    pkgs.fuse 
+  ];
+
+  systemd.user.services.rclone-mount-geo = createRcloneMount {
+    name = "geo";
+    remote = "p322814:home/geo";
+    mountPoint = "${config.home.homeDirectory}/geo";
+    cacheSize = "30G";
+  };
+
+  systemd.user.services.rclone-mount-usr = createRcloneMount {
+    name = "usr";
+    remote = "p052:home/usr";
+    mountPoint = "${config.home.homeDirectory}/usr";
+    cacheSize = "30G";
   };
 
   age.secrets.rclone = {

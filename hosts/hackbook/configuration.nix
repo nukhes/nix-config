@@ -17,21 +17,25 @@
 
   services.mbpfan.enable = true;
 
-  # System Tweaks
   boot.kernelParams = [
     "i915.enable_fbc=1"
     "i915.enable_guc=3"
     "acpi_osi=Darwin"
     "acpi_mask_gpe=0x17"
     "pcie_aspm=force"
+    "mem_sleep_default=deep"
   ];
+
   zramSwap = {
     enable = true;
     priority = 100;
     algorithm = "zstd";
     memoryPercent = 100;
   };
-  # End System Tweaks
+
+  networking.networkmanager.wifi.powersave = false;
+  systemd.targets.hibernate.enable = false;
+  systemd.targets.hybrid-sleep.enable = false;
 
   # Broadcom Wifi Chip
   networking.wireless.enable = true;
