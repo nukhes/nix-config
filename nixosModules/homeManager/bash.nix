@@ -12,7 +12,7 @@
       upgrade = "cd ${config.home.homeDirectory}/.nix-config && nix flake update && sudo nixos-rebuild switch --flake .#$(hostname) && sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations +2 && sudo nix-store --gc";
       agenix-add = "nix run github:ryantm/agenix -- --edit";
       agenix-rekey = "nix run github:ryantm/agenix -- --rekey";
-      nixfmt = "cd ~/.nix-config && nix run nixpkgs#statix -- fix . && nix run nixpkgs#nixfmt-tree -- .";
+      nixfmt-run = "cd ~/.nix-config && nix run nixpkgs#statix -- fix . && nix run nixpkgs#nixfmt-tree -- .";
       # End System Maintenance
 
       # Rust modern replaces

@@ -1,10 +1,10 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }:
 let
-  inherit (pkgs) lib;
   findNixFiles =
     dir:
     let
