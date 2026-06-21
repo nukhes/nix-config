@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   services.picom = {
     enable = true;
 
@@ -15,7 +16,10 @@
     # ==========================================
     shadow = true;
     shadowOpacity = 0.4;
-    shadowOffsets = [(-15) (-15)]; # Deslocamento calculado para parecer iluminação superior
+    shadowOffsets = [
+      (-15)
+      (-15)
+    ]; # Deslocamento calculado para parecer iluminação superior
 
     # Previne conflitos bloqueando sombras em janelas utilitárias e pop-ups
     shadowExclude = [
@@ -30,8 +34,11 @@
 
     fade = true;
     fadeDelta = 5; # Tempo (ms) entre cada frame do fade
-    fadeSteps = [0.03 0.03]; # Velocidade de entrada e saída (Fade-in / Fade-out)
-    fadeExclude = [];
+    fadeSteps = [
+      0.03
+      0.03
+    ]; # Velocidade de entrada e saída (Fade-in / Fade-out)
+    fadeExclude = [ ];
 
     settings = {
       corner-radius = 12;

@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   programs.bash = {
     enable = true;
     shellAliases = {
@@ -11,7 +12,7 @@
       upgrade = "cd ${config.home.homeDirectory}/.nix-config && nix flake update && sudo nixos-rebuild switch --flake .#$(hostname) && sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations +2 && sudo nix-store --gc";
       agenix-add = "nix run github:ryantm/agenix -- --edit";
       agenix-rekey = "nix run github:ryantm/agenix -- --rekey";
-      nix-config-lint = "nix run nixpkgs#alejandra -- ~/.nix-config";
+      nixfmt = "nix run nixpkgs#statix -- fix ~/.nix-config && nix run nixpkgs#nixfmt-tree -- ~/.nix-config";
       # End System Maintenance
 
       # Rust modern replaces

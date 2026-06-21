@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   fonts = {
     enableDefaultPackages = true;
     packages = with pkgs; [
@@ -12,9 +13,9 @@
     ];
     fontconfig = {
       defaultFonts = {
-        serif = ["Iosevka Nerd Font"];
-        sansSerif = ["Iosevka Nerd Font"];
-        monospace = ["Iosevka Nerd Font"];
+        serif = [ "Iosevka Nerd Font" ];
+        sansSerif = [ "Iosevka Nerd Font" ];
+        monospace = [ "Iosevka Nerd Font" ];
       };
     };
   };

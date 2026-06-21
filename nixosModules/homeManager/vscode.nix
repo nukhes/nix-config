@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   programs.vscode.enable = true;
   programs.vscode.profiles.default = {
     userSettings = {
@@ -28,7 +29,10 @@
       "workbench.startupEditor" = "newUntitledFile";
       "javascript.suggest.autoImports" = true;
       "javascript.updateImportsOnFileMove.enabled" = "always";
-      "editor.rulers" = [80 120];
+      "editor.rulers" = [
+        80
+        120
+      ];
       "extensions.ignoreRecommendations" = true;
       "typescript.tsserver.log" = "off";
       "workbench.tree.enableStickyScroll" = false;
@@ -178,7 +182,8 @@
       "editor.scrollbar.vertical" = "hidden";
       "explorer.sortOrder" = "foldersNestsFiles";
       "explorer.fileNesting.patterns" = {
-        "package.json" = ".eslint*, eslint.config.*, prettier*, tsconfig*, vite*, pnpm-*, bun.lockb, nest*, package-lock*";
+        "package.json" =
+          ".eslint*, eslint.config.*, prettier*, tsconfig*, vite*, pnpm-*, bun.lockb, nest*, package-lock*";
         "tailwind.config.*" = "tailwind.config*, postcss.config*";
         ".env.local" = ".env*";
         ".env" = ".env*";
@@ -260,7 +265,7 @@
       ];
       "workbench.statusBar.visible" = false;
       "editor.tokenColorCustomizations" = {
-        "textMateRules" = [];
+        "textMateRules" = [ ];
       };
       "window.autoDetectColorScheme" = true;
       "workbench.preferredDarkColorTheme" = "Oscura Dusk";

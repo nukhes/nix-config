@@ -16,55 +16,57 @@
     };
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    nur,
-    home-manager,
-    agenix,
-    nixos-hardware,
-    ...
-  } @ inputs: {
-    # Hackbook Host stands for my Macbook Air 7,2
-    nixosConfigurations.hackbook = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
+  outputs =
+    {
+      self,
+      nixpkgs,
+      nur,
+      home-manager,
+      agenix,
+      nixos-hardware,
+      ...
+    }@inputs:
+    {
+      # Hackbook Host stands for my Macbook Air 7,2
+      nixosConfigurations.hackbook = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
 
-      specialArgs = {inherit inputs;};
+        specialArgs = { inherit inputs; };
 
-      modules = [
-        ./hosts/hackbook/configuration.nix
-        agenix.nixosModules.default
+        modules = [
+          ./hosts/hackbook/configuration.nix
+          agenix.nixosModules.default
 
-        nixos-hardware.nixosModules.apple-macbook-air-7
+          nixos-hardware.nixosModules.apple-macbook-air-7
 
-        # Home-Manager
-        home-manager.nixosModules.home-manager
-        {
-          home-manager = {
-            useGlobalPkgs = true;
-            useUserPackages = true;
-            users.user.imports = [
-              agenix.homeManagerModules.default
-              ./home.nix
+          # Home-Manager
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.user.imports = [
+                agenix.homeManagerModules.default
+                ./home.nix
+              ];
+              backupFileExtension = "backup";
+            };
+          }
+          # End Home-Manager
+
+          # Nix User Repositories
+          {
+            nixpkgs.overlays = [
+              (final: prev: {
+                nur = import nur {
+                  nurpkgs = prev;
+                  pkgs = prev;
+                };
+              })
             ];
-            backupFileExtension = "backup";
-          };
-        }
-        # End Home-Manager
-
-        # Nix User Repositories
-        {
-          nixpkgs.overlays = [
-            (final: prev: {
-              nur = import nur {
-                nurpkgs = prev;
-                pkgs = prev;
-              };
-            })
-          ];
-        }
-        # End Nix User Repositories
-      ];
+          }
+          # End Nix User Repositories
+        ];
+      };
     };
-  };
 }

@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{ pkgs, ... }: {
   programs.calibre.enable = true;
 
   xdg.configFile."calibre/gui.json".force = true;

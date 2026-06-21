@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   imports = [
     ./hardware-configuration.nix
     ./../../nixosModules/services
@@ -30,11 +31,19 @@
   users.users."user" = {
     isNormalUser = true;
     description = "user";
-    extraGroups = ["networkmanager" "wheel" "video" "audio"];
-    packages = with pkgs; [];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+      "video"
+      "audio"
+    ];
+    packages = with pkgs; [ ];
   };
 
-  nix.settings.experimental-features = ["nix-command" "flakes"];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
   nixpkgs.config.allowUnfree = true;
 
   networking.hostName = "hackbook";
@@ -64,9 +73,14 @@
   nixpkgs.config.permittedInsecurePackages = [
     "broadcom-sta-6.30.223.271-59-6.18.34"
   ];
-  boot.kernelModules = ["wl"];
-  boot.extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
-  boot.blacklistedKernelModules = ["b43" "bcma" "ssb" "brcmsmac"];
+  boot.kernelModules = [ "wl" ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
+  boot.blacklistedKernelModules = [
+    "b43"
+    "bcma"
+    "ssb"
+    "brcmsmac"
+  ];
   # End Broadcom Wifi Chip
 
   system.stateVersion = "26.05";

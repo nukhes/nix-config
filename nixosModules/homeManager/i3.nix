@@ -3,7 +3,8 @@
   pkgs,
   lib,
   ...
-}: let
+}:
+let
   colors = {
     rosewater = "#f5e0dc";
     flamingo = "#f2cdcd";
@@ -43,7 +44,8 @@
 
   mod = "Mod4";
   refresh_i3status = "killall -SIGUSR1 i3status";
-in {
+in
+{
   home.packages = with pkgs; [
     brightnessctl
     maim
@@ -57,7 +59,7 @@ in {
       modifier = mod;
 
       fonts = {
-        names = ["Iosevka Nerd Font"];
+        names = [ "Iosevka Nerd Font" ];
         size = 11.0;
       };
 
@@ -74,21 +76,21 @@ in {
         focused = {
           border = colors.lavender;
           background = colors.base;
-          text = colors.text;
+          inherit (colors) text;
           indicator = colors.rosewater;
           childBorder = colors.lavender;
         };
         focusedInactive = {
           border = colors.overlay0;
           background = colors.base;
-          text = colors.text;
+          inherit (colors) text;
           indicator = colors.rosewater;
           childBorder = colors.overlay0;
         };
         unfocused = {
           border = colors.overlay0;
           background = colors.base;
-          text = colors.text;
+          inherit (colors) text;
           indicator = colors.rosewater;
           childBorder = colors.overlay0;
         };
@@ -102,7 +104,7 @@ in {
         placeholder = {
           border = colors.overlay0;
           background = colors.base;
-          text = colors.text;
+          inherit (colors) text;
           indicator = colors.overlay0;
           childBorder = colors.overlay0;
         };
@@ -117,17 +119,22 @@ in {
         "${mod}+Shift+f" = "exec alacritty -e yazi";
         "${mod}+Shift+s" = "exec --no-startup-id maim -s | xclip -selection clipboard -t image/png";
         "${mod}+space" = "exec rofi -show drun";
-        "${mod}+Shift+space" = "exec --no-startup-id xdg-open \"\$(rg --files --hidden --glob '!.*' ~ | rofi -dmenu -i -p 'files:')\"";
+        "${mod}+Shift+space" =
+          "exec --no-startup-id xdg-open \"\$(rg --files --hidden --glob '!.*' ~ | rofi -dmenu -i -p 'files:')\"";
         "${mod}+p" = "exec ${xrandr-update}";
         "${mod}+Shift+q" = "exec systemctl suspend";
 
         "XF86MonBrightnessUp" = "exec --no-startup-id brightnessctl set +5%";
         "XF86MonBrightnessDown" = "exec --no-startup-id brightnessctl set 5%-";
 
-        "XF86AudioRaiseVolume" = "exec --no-startup-id wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%+ && ${refresh_i3status}";
-        "XF86AudioLowerVolume" = "exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%- && ${refresh_i3status}";
-        "XF86AudioMute" = "exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && ${refresh_i3status}";
-        "XF86AudioMicMute" = "exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle && ${refresh_i3status}";
+        "XF86AudioRaiseVolume" =
+          "exec --no-startup-id wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%+ && ${refresh_i3status}";
+        "XF86AudioLowerVolume" =
+          "exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%- && ${refresh_i3status}";
+        "XF86AudioMute" =
+          "exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && ${refresh_i3status}";
+        "XF86AudioMicMute" =
+          "exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle && ${refresh_i3status}";
         "${mod}+j" = "focus left";
         "${mod}+k" = "focus down";
         "${mod}+l" = "focus up";
@@ -179,7 +186,8 @@ in {
         "${mod}+Shift+0" = "move container to workspace number 10";
 
         "${mod}+Shift+r" = "restart";
-        "${mod}+Shift+e" = "exec \"i3-nagbar -t warning -m 'do you really want to exit i3?' -B 'yes, exit i3' 'i3-msg exit'\"";
+        "${mod}+Shift+e" =
+          "exec \"i3-nagbar -t warning -m 'do you really want to exit i3?' -B 'yes, exit i3' 'i3-msg exit'\"";
 
         "${mod}+r" = "mode \"resize\"";
       };
@@ -205,7 +213,7 @@ in {
           position = "top";
           statusCommand = "i3status";
           fonts = {
-            names = ["Iosevka Nerd Font"];
+            names = [ "Iosevka Nerd Font" ];
             size = 11.0;
           };
           colors = {
@@ -222,12 +230,12 @@ in {
             activeWorkspace = {
               border = colors.base;
               background = colors.surface2;
-              text = colors.text;
+              inherit (colors) text;
             };
             inactiveWorkspace = {
               border = colors.base;
               background = colors.base;
-              text = colors.text;
+              inherit (colors) text;
             };
             urgentWorkspace = {
               border = colors.base;
@@ -241,7 +249,9 @@ in {
       window.commands = [
         {
           command = "border pixel 0";
-          criteria = {class = "^.*";};
+          criteria = {
+            class = "^.*";
+          };
         }
       ];
     };

@@ -2,42 +2,46 @@
   config,
   pkgs,
   ...
-}: let
-  createRcloneMount = {
-    name,
-    remote,
-    mountPoint,
-    cacheSize,
-  }: {
-    Unit = {
-      Description = "Rclone VFS Mount for ${name}";
-      After = ["network-online.target"];
-      Wants = ["network-online.target"];
+}:
+let
+  createRcloneMount =
+    {
+      name,
+      remote,
+      mountPoint,
+      cacheSize,
+    }:
+    {
+      Unit = {
+        Description = "Rclone VFS Mount for ${name}";
+        After = [ "network-online.target" ];
+        Wants = [ "network-online.target" ];
+      };
+
+      Service = {
+        Type = "notify";
+
+        ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${mountPoint}";
+
+        ExecStart = ''
+          ${pkgs.rclone}/bin/rclone mount ${remote} ${mountPoint} \
+            --vfs-cache-mode full \
+            --vfs-cache-max-size ${cacheSize} \
+            --vfs-cache-max-age 999h \
+            --dir-cache-time 1h \
+            --log-level INFO
+        '';
+
+        Restart = "on-failure";
+        RestartSec = "10s";
+      };
+
+      Install = {
+        WantedBy = [ "default.target" ];
+      };
     };
-
-    Service = {
-      Type = "notify";
-
-      ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${mountPoint}";
-
-      ExecStart = ''
-        ${pkgs.rclone}/bin/rclone mount ${remote} ${mountPoint} \
-          --vfs-cache-mode full \
-          --vfs-cache-max-size ${cacheSize} \
-          --vfs-cache-max-age 999h \
-          --dir-cache-time 1h \
-          --log-level INFO
-      '';
-
-      Restart = "on-failure";
-      RestartSec = "10s";
-    };
-
-    Install = {
-      WantedBy = ["default.target"];
-    };
-  };
-in {
+in
+{
   home.packages = [
     pkgs.rclone
     pkgs.rsync

@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   xdg.userDirs = {
     enable = true;
     createDirectories = false;
@@ -24,33 +25,33 @@
     enable = true;
 
     defaultApplications = {
-      "application/pdf" = ["org.pwmt.zathura.desktop"];
-      "application/epub+zip" = ["org.pwmt.zathura.desktop"];
-      "application/x-cbz" = ["org.pwmt.zathura.desktop"];
-      "application/postscript" = ["org.pwmt.zathura.desktop"];
+      "application/pdf" = [ "org.pwmt.zathura.desktop" ];
+      "application/epub+zip" = [ "org.pwmt.zathura.desktop" ];
+      "application/x-cbz" = [ "org.pwmt.zathura.desktop" ];
+      "application/postscript" = [ "org.pwmt.zathura.desktop" ];
 
-      "text/plain" = ["nvim.desktop"];
-      "text/markdown" = ["nvim.desktop"];
-      "text/x-cmake" = ["nvim.desktop"];
-      "application/json" = ["nvim.desktop"];
-      "application/javascript" = ["nvim.desktop"];
-      "application/xml" = ["nvim.desktop"];
+      "text/plain" = [ "nvim.desktop" ];
+      "text/markdown" = [ "nvim.desktop" ];
+      "text/x-cmake" = [ "nvim.desktop" ];
+      "application/json" = [ "nvim.desktop" ];
+      "application/javascript" = [ "nvim.desktop" ];
+      "application/xml" = [ "nvim.desktop" ];
 
-      "image/png" = ["sxiv.desktop"];
-      "image/jpeg" = ["sxiv.desktop"];
-      "image/gif" = ["sxiv.desktop"];
-      "image/webp" = ["sxiv.desktop"];
-      "image/bmp" = ["sxiv.desktop"];
+      "image/png" = [ "sxiv.desktop" ];
+      "image/jpeg" = [ "sxiv.desktop" ];
+      "image/gif" = [ "sxiv.desktop" ];
+      "image/webp" = [ "sxiv.desktop" ];
+      "image/bmp" = [ "sxiv.desktop" ];
 
-      "text/html" = ["firefox.desktop"];
-      "x-scheme-handler/http" = ["firefox.desktop"];
-      "x-scheme-handler/https" = ["firefox.desktop"];
-      "x-scheme-handler/about" = ["firefox.desktop"];
-      "x-scheme-handler/unknown" = ["firefox.desktop"];
+      "text/html" = [ "firefox.desktop" ];
+      "x-scheme-handler/http" = [ "firefox.desktop" ];
+      "x-scheme-handler/https" = [ "firefox.desktop" ];
+      "x-scheme-handler/about" = [ "firefox.desktop" ];
+      "x-scheme-handler/unknown" = [ "firefox.desktop" ];
     };
 
     associations.added = {
-      "text/html" = ["nvim.desktop"];
+      "text/html" = [ "nvim.desktop" ];
     };
   };
 }

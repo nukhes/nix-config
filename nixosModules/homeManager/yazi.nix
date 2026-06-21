@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   programs.yazi = {
     enable = true;
     enableBashIntegration = true; # Integração fina com o Shell
@@ -98,7 +99,7 @@
       manager = {
         prepend_keymap = [
           {
-            on = ["E"];
+            on = [ "E" ];
             run = "open --use=extract";
             desc = "Extrair arquivo compactado";
           }

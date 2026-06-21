@@ -2,7 +2,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   programs.firefox = {
     enable = true;
 
@@ -50,7 +51,8 @@
         "browser.newtabpage.enabled" = false;
         "browser.places.speculativeConnect.enabled" = false;
         "browser.policies.applied" = true;
-        "browser.policies.runOncePerModification.removeSearchEngines" = "[\"Bing\",\"Amazon.com\",\"eBay\",\"Twitter\",\"Perplexity\"]";
+        "browser.policies.runOncePerModification.removeSearchEngines" =
+          "[\"Bing\",\"Amazon.com\",\"eBay\",\"Twitter\",\"Perplexity\"]";
         "browser.policies.runOncePerModification.setDefaultSearchEngine" = "Google";
         "browser.preferences.moreFromMozilla" = false;
         "browser.privateWindowSeparation.enabled" = false;
