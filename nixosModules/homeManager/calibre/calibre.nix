@@ -1,8 +1,6 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   programs.calibre.enable = true;
-  
+
   xdg.configFile."calibre/gui.json".force = true;
   xdg.configFile."calibre/gui.py.json".force = true;
   xdg.configFile."calibre/global.py.json".force = true;

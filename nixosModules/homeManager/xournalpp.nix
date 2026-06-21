@@ -1,7 +1,5 @@
-{ pkgs, ... }:
-
-{
-  home.packages = [ pkgs.xournalpp ];
+{pkgs, ...}: {
+  home.packages = [pkgs.xournalpp];
 
   xdg.configFile."xournalpp/toolbar.ini".text = ''
     [Default]

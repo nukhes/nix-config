@@ -32,9 +32,7 @@
       specialArgs = {inherit inputs;};
 
       modules = [
-        ./configuration.nix
         ./hosts/hackbook/configuration.nix
-
         agenix.nixosModules.default
 
         nixos-hardware.nixosModules.apple-macbook-air-7

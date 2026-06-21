@@ -44,6 +44,13 @@
   mod = "Mod4";
   refresh_i3status = "killall -SIGUSR1 i3status";
 in {
+  home.packages = with pkgs; [
+    brightnessctl
+    maim
+    xclip
+    picom
+  ];
+
   xsession.windowManager.i3 = {
     enable = true;
     config = {

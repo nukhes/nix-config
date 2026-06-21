@@ -3,8 +3,12 @@
   pkgs,
   ...
 }: let
-  # Reusable function to generate systemd mount services
-  createRcloneMount = { name, remote, mountPoint, cacheSize }: {
+  createRcloneMount = {
+    name,
+    remote,
+    mountPoint,
+    cacheSize,
+  }: {
     Unit = {
       Description = "Rclone VFS Mount for ${name}";
       After = ["network-online.target"];
@@ -12,23 +16,19 @@
     };
 
     Service = {
-      # "notify" tells systemd to wait until rclone signals it has successfully mounted
       Type = "notify";
-      
-      # Ensure the mount point exists before starting
+
       ExecStartPre = "${pkgs.coreutils}/bin/mkdir -p ${mountPoint}";
-      
-      # The core mount command
+
       ExecStart = ''
         ${pkgs.rclone}/bin/rclone mount ${remote} ${mountPoint} \
           --vfs-cache-mode full \
           --vfs-cache-max-size ${cacheSize} \
-          --vfs-cache-max-age 48h \
+          --vfs-cache-max-age 999h \
           --dir-cache-time 1h \
           --log-level INFO
       '';
 
-      # Let systemd automatically restart the mount if the network drops and it crashes
       Restart = "on-failure";
       RestartSec = "10s";
     };
@@ -37,12 +37,11 @@
       WantedBy = ["default.target"];
     };
   };
-
 in {
   home.packages = [
     pkgs.rclone
     pkgs.rsync
-    pkgs.fuse 
+    pkgs.fuse
   ];
 
   systemd.user.services.rclone-mount-geo = createRcloneMount {
@@ -60,7 +59,7 @@ in {
   };
 
   age.secrets.rclone = {
-    file = ../secrets/rclone.age;
+    file = ../../secrets/rclone.age;
     path = "${config.home.homeDirectory}/.config/rclone/rclone.conf";
     mode = "0600";
   };

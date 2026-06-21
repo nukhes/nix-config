@@ -8,26 +8,7 @@
   home.homeDirectory = "/home/user";
   home.stateVersion = "26.05";
 
-  imports = map (file: ./home-manager/${file}) [
-    "i3.nix"
-    "vscode.nix"
-    "theme.nix"
-    "bash.nix"
-    "alacritty.nix"
-    "redshift.nix"
-    "tmux.nix"
-    "neovim.nix"
-    "yazi.nix"
-    "rofi.nix"
-    "picom.nix"
-    "rclone.nix"
-    "zathura.nix"
-    "git.nix"
-    "firefox.nix"
-    "qgis.nix"
-    "xournalpp.nix"
-    "continue-vscode.nix"
-    "calibre/calibre.nix"
-    "xdg.nix"
+  imports = [
+    ./nixosModules/homeManager
   ];
 }

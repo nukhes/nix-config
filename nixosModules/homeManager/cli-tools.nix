@@ -27,5 +27,7 @@
     ripgrep
     ani-cli
     sox
+    xarchiver
+    ouch
   ];
 }
