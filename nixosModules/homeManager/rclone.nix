@@ -26,11 +26,17 @@ let
         ExecStart = ''
           ${pkgs.rclone}/bin/rclone mount ${remote} ${mountPoint} \
             --vfs-cache-mode full \
+            --vfs-read-chunk-size 16M \
+            --vfs-read-chunk-size-limit 1G \
+            --vfs-read-wait 20ms \
+            --no-check-certificate \
+            --dir-cache-time 72h \
+            --attr-timeout 72h \
             --vfs-cache-max-size ${cacheSize} \
             --vfs-cache-max-age 999h \
-            --dir-cache-time 1h \
             --log-level INFO
         '';
+        ExecStop = "${pkgs.fuse}/bin/fusermount -uz ${mountPoint}";
 
         Restart = "on-failure";
         RestartSec = "10s";
