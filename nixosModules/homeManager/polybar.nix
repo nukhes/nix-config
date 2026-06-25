@@ -3,11 +3,11 @@
 {
   services.polybar = {
     enable = true;
-    
+
     package = pkgs.polybar.override {
       i3Support = true;
     };
-    
+
     script = ''
       export POLYBAR_BATTERY=$(ls -1 /sys/class/power_supply | grep -E '^BAT' | head -n 1)
       export POLYBAR_ADAPTER=$(ls -1 /sys/class/power_supply | grep -E '^(AC|AD|ADP)' | head -n 1)
