@@ -209,43 +209,7 @@ in
         };
       };
 
-      bars = [
-        {
-          position = "top";
-          statusCommand = "i3status";
-          fonts = {
-            names = [ "Iosevka Nerd Font" ];
-            size = 11.0;
-          };
-          colors = {
-            background = colors.base;
-            statusline = colors.text;
-            focusedStatusline = colors.text;
-            separator = colors.base;
-
-            focusedWorkspace = {
-              border = colors.base;
-              background = colors.mauve;
-              text = colors.crust;
-            };
-            activeWorkspace = {
-              border = colors.base;
-              background = colors.surface2;
-              inherit (colors) text;
-            };
-            inactiveWorkspace = {
-              border = colors.base;
-              background = colors.base;
-              inherit (colors) text;
-            };
-            urgentWorkspace = {
-              border = colors.base;
-              background = colors.red;
-              text = colors.crust;
-            };
-          };
-        }
-      ];
+      bars = [ ];
 
       window.commands = [
         {
