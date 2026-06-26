@@ -11,11 +11,11 @@
     script = ''
       export POLYBAR_BATTERY=$(ls -1 /sys/class/power_supply | grep -E '^BAT' | head -n 1)
       export POLYBAR_ADAPTER=$(ls -1 /sys/class/power_supply | grep -E '^(AC|AD|ADP)' | head -n 1)
-      polybar principal &
+      polybar main &
     '';
 
     config = {
-      "bar/principal" = {
+      "bar/main" = {
         width = "100%";
         height = "20pt";
         radius = 0;
