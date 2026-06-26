@@ -6,8 +6,8 @@
 {
   programs.yazi = {
     enable = true;
-    enableBashIntegration = true; # Integração fina com o Shell
-    enableZshIntegration = true; # Caso mude de shell no futuro
+    enableBashIntegration = true;
+    enableZshIntegration = true;
 
     settings = {
       manager = {
@@ -22,30 +22,30 @@
         image = [
           {
             run = "sxiv -a \"$@\"";
-            desc = "Visualizar imagem com sxiv";
-            orphan = true; # Permite fechar o Yazi sem fechar o sxiv
+            desc = "view image with sxiv";
+            orphan = true;
           }
         ];
 
         pdf = [
           {
             run = "zathura \"$1\"";
-            desc = "Abrir PDF com Zathura";
-            orphan = true;
+            desc = "read pdf with zathura";
+            orphan = true
           }
         ];
 
         extract = [
           {
-            run = "ouch decompress \"$@\"";
-            desc = "Extrair arquivo aqui";
+            run = "ouch decompress --yes \"$@\"";
+            desc = "extract file here";
           }
         ];
 
         editor = [
           {
             run = "\${EDITOR:-nvim} \"$@\"";
-            block = true; # Trava o Yazi enquanto edita
+            block = true;
           }
         ];
       };
@@ -101,7 +101,7 @@
           {
             on = [ "E" ];
             run = "open --use=extract";
-            desc = "Extrair arquivo compactado";
+            desc = "extract a file";
           }
         ];
       };
