@@ -25,6 +25,7 @@
     enable = true;
 
     defaultApplications = {
+      "inode/directory" = [ "yazi.desktop" ];
       "application/pdf" = [ "org.pwmt.zathura.desktop" ];
       "application/epub+zip" = [ "org.pwmt.zathura.desktop" ];
       "application/x-cbz" = [ "org.pwmt.zathura.desktop" ];
