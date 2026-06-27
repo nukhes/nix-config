@@ -4,6 +4,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
     nur.url = "github:nix-community/NUR";
     agenix.url = "github:ryantm/agenix";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
@@ -24,6 +25,7 @@
       home-manager,
       agenix,
       nixos-hardware,
+      nix-flatpak,
       ...
     }@inputs:
     {
@@ -36,7 +38,7 @@
         modules = [
           ./hosts/hackbook/configuration.nix
           agenix.nixosModules.default
-
+          nix-flatpak.nixosModules.nix-flatpak
           nixos-hardware.nixosModules.apple-macbook-air-7
 
           # Home-Manager

@@ -31,7 +31,7 @@
           {
             run = "zathura \"$1\"";
             desc = "read pdf with zathura";
-            orphan = true
+            orphan = true;
           }
         ];
 
