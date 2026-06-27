@@ -1,12 +1,17 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
-    home.packages = with pkgs; [
-        umu-launcher
-        protonup-qt
-        winetricks
-    ];
-      programs.bash = {
+  home.packages = with pkgs; [
+    umu-launcher
+    protonup-qt
+    winetricks
+  ];
+  programs.bash = {
     enable = true; # Garante que o Home Manager gerencie seu shell para carregar a função
 
     initExtra = ''
@@ -32,8 +37,8 @@
         export GAMEID="''${2:-0}"
 
         # The Proton Version installed should be at the Steam compatibilitytools.d folder
-        if [ -n "$3"]; then
-            export PROTONPATH="~/.local/share/Steam/compatibilitytools.d/$3"
+        if [ -n "$3" ]; then
+            export PROTONPATH="$HOME/.local/share/Steam/compatibilitytools.d/$3"
         fi
 
         mkdir -p "$WINEPREFIX"
@@ -43,30 +48,29 @@
         echo "  executable: $EXE_PATH"
         echo "  prefix: $WINEPREFIX"
         echo "  gameid: $GAMEID"
+        echo "  proton: $PROTONPATH"
         echo "--------------------------------------------------------"
         
-        # Cleanup GStreamer system variables, ensure the game use the proper Proton GST or other apropriate decoding method
-        export GST_PLUGIN_SYSTEM_PATH_1_0=""
-        export GST_PLUGIN_PATH=""
-
         cd "$EXE_DIR" || return 1
         umu-run "$EXE_PATH"
       }
-    '';};
-    home.sessionVariables = { GST_PLUGIN_SYSTEM_PATH_1_0 = lib.makeSearchPathOutput "lib" "lib/gstreamer-1.0" [
-				pkgs.gst_all_1.gst-plugins-base
-				pkgs.pkgsi686Linux.gst_all_1.gst-plugins-base
-				pkgs.gst_all_1.gst-plugins-good
-				pkgs.pkgsi686Linux.gst_all_1.gst-plugins-good
-				pkgs.gst_all_1.gst-plugins-bad
-				pkgs.pkgsi686Linux.gst_all_1.gst-plugins-bad
-				pkgs.gst_all_1.gst-plugins-ugly
-				pkgs.pkgsi686Linux.gst_all_1.gst-plugins-ugly
-				pkgs.gst_all_1.gst-libav
-				pkgs.pkgsi686Linux.gst_all_1.gst-libav
-				pkgs.gst_all_1.gst-vaapi
-				pkgs.pkgsi686Linux.gst_all_1.gst-vaapi
-			];
-};
+    '';
+  };
+  home.sessionVariables = {
+    GST_PLUGIN_SYSTEM_PATH_1_0 = lib.makeSearchPathOutput "lib" "lib/gstreamer-1.0" [
+      pkgs.gst_all_1.gst-plugins-base
+      pkgs.pkgsi686Linux.gst_all_1.gst-plugins-base
+      pkgs.gst_all_1.gst-plugins-good
+      pkgs.pkgsi686Linux.gst_all_1.gst-plugins-good
+      pkgs.gst_all_1.gst-plugins-bad
+      pkgs.pkgsi686Linux.gst_all_1.gst-plugins-bad
+      pkgs.gst_all_1.gst-plugins-ugly
+      pkgs.pkgsi686Linux.gst_all_1.gst-plugins-ugly
+      pkgs.gst_all_1.gst-libav
+      pkgs.pkgsi686Linux.gst_all_1.gst-libav
+      pkgs.gst_all_1.gst-vaapi
+      pkgs.pkgsi686Linux.gst_all_1.gst-vaapi
+    ];
+  };
 
 }
