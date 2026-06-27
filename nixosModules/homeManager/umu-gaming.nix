@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
     home.packages = with pkgs; [
@@ -36,13 +36,31 @@
         echo "--------------------------------------------------------"
         echo " Running game with UMU-Launcher"
         echo "📂 Binary: $EXE_PATH"
-        echo "📦 Prefix:    $WINEPREFIX"
-        echo "🆔 GAMEID:     $GAMEID"
+        echo "📦 Prefix: $WINEPREFIX"
+        echo "🆔 GAMEID: $GAMEID"
         echo "--------------------------------------------------------"
+        #export GST_PLUGIN_SYSTEM_PATH_1_0=""
+        #export GST_PLUGIN_PATH=""
 
         cd "$EXE_DIR" || return 1
+        PROTONPATH=~/.local/share/Steam/compatibilitytools.d/GE-Proton9-10
         umu-run "$EXE_PATH"
       }
-    '';
-  };
+    '';};
+    home.sessionVariables = { GST_PLUGIN_SYSTEM_PATH_1_0 = lib.makeSearchPathOutput "lib" "lib/gstreamer-1.0" [
+				pkgs.gst_all_1.gst-plugins-base
+				pkgs.pkgsi686Linux.gst_all_1.gst-plugins-base
+				pkgs.gst_all_1.gst-plugins-good
+				pkgs.pkgsi686Linux.gst_all_1.gst-plugins-good
+				pkgs.gst_all_1.gst-plugins-bad
+				pkgs.pkgsi686Linux.gst_all_1.gst-plugins-bad
+				pkgs.gst_all_1.gst-plugins-ugly
+				pkgs.pkgsi686Linux.gst_all_1.gst-plugins-ugly
+				pkgs.gst_all_1.gst-libav
+				pkgs.pkgsi686Linux.gst_all_1.gst-libav
+				pkgs.gst_all_1.gst-vaapi
+				pkgs.pkgsi686Linux.gst_all_1.gst-vaapi
+			];
+};
+
 }
