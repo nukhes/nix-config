@@ -13,7 +13,7 @@
       play() {
         if [ -z "$1" ]; then
           echo "Error: Invalid game path."
-          echo "Usage: play /path/game.exe [GAMEID]"
+          echo "Usage: play /path/game.exe [GAMEID] [PROTON_VERSION]"
           return 1
         fi
 
@@ -31,19 +31,25 @@
         
         export GAMEID="''${2:-0}"
 
+        # The Proton Version installed should be at the Steam compatibilitytools.d folder
+        if [ -n "$3"]; then
+            export PROTONPATH="~/.local/share/Steam/compatibilitytools.d/$3"
+        fi
+
         mkdir -p "$WINEPREFIX"
 
         echo "--------------------------------------------------------"
-        echo " Running game with UMU-Launcher"
-        echo "📂 Binary: $EXE_PATH"
-        echo "📦 Prefix: $WINEPREFIX"
-        echo "🆔 GAMEID: $GAMEID"
+        echo " Running game with UMU-Launcher..."
+        echo "  executable: $EXE_PATH"
+        echo "  prefix: $WINEPREFIX"
+        echo "  gameid: $GAMEID"
         echo "--------------------------------------------------------"
-        #export GST_PLUGIN_SYSTEM_PATH_1_0=""
-        #export GST_PLUGIN_PATH=""
+        
+        # Cleanup GStreamer system variables, ensure the game use the proper Proton GST or other apropriate decoding method
+        export GST_PLUGIN_SYSTEM_PATH_1_0=""
+        export GST_PLUGIN_PATH=""
 
         cd "$EXE_DIR" || return 1
-        PROTONPATH=~/.local/share/Steam/compatibilitytools.d/GE-Proton9-10
         umu-run "$EXE_PATH"
       }
     '';};
