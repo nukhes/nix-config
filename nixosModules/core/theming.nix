@@ -9,7 +9,8 @@
   environment.systemPackages = with pkgs; [
     papirus-icon-theme
     hicolor-icon-theme
-    lxappearance
+    libappindicator
+    gnome-themes-extra
   ];
 
   environment.variables = {
