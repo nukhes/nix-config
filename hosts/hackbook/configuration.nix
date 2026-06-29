@@ -9,6 +9,7 @@
     ./hardware-configuration.nix
     ./../../nixosModules/services
     ./../../nixosModules/programs
+    
     ./../../nixosModules/core
   ];
 
