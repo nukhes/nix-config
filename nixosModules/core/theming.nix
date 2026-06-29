@@ -4,7 +4,13 @@
   ...
 }:
 {
-  environment.systemPackages = with pkgs; [ papirus-icon-theme ];
+  environment.pathsToLink = [ "/share/icons" ];
+
+  environment.systemPackages = with pkgs; [
+    papirus-icon-theme
+    hicolor-icon-theme
+    lxappearance
+  ];
 
   environment.variables = {
     GTK_THEME = "Adwaita:dark";
