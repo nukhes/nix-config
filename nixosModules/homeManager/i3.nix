@@ -35,7 +35,10 @@ let
   };
 
   xrandr-update = pkgs.writeShellScript "xrandr-update" ''
+    # Fix Wacom Pen
     xinput map-to-output "Wacom One by Wacom S Pen stylus" eDP-1
+    xinput map-to-output "Wacom One by Wacom S Pen Pen (0)" eDP-1
+
     if xrandr | grep -q "HDMI-1 connected"; then
       xrandr --output eDP-1 --auto --output HDMI-1 --auto --rate 60 --above eDP-1
     else

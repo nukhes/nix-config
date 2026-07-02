@@ -3,10 +3,21 @@
   pkgs,
   ...
 }:
+let
+  marp-academic-theme = pkgs.fetchurl {
+    url = "https://raw.githubusercontent.com/kaisugi/marp-theme-academic/ff135bc225324155f74a256a0ea9df679c00694f/themes/academic.css";
+    sha256 = "0dfzw769mrlni81ww9v5paszrygnpjk0ck00c700nxlz0p5vcpl7";
+  };
+in
 {
   programs.vscode.enable = true;
   programs.vscode.profiles.default = {
     userSettings = {
+      "markdown.marp.enableRemoteUrl" = true;
+      "markdown.marp.enableHTML" = true;
+      "markdown.marp.themes" = [
+        "${marp-academic-theme}"
+      ];
       "telemetry.telemetryLevel" = "off";
       "editor.tabSize" = 2;
       "editor.fontFamily" = "Iosevka";
@@ -289,6 +300,7 @@
       mechatroner.rainbow-csv
       usernamehw.errorlens
       continue.continue
+      marp-team.marp-vscode
     ];
   };
 }

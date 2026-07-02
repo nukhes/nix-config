@@ -6,6 +6,7 @@
   home.packages = with pkgs; [
     wget
     fzf
+    marp-cli
     dust
     eza
     zoxide

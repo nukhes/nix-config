@@ -9,5 +9,6 @@ in
 {
   "secrets/eduroam.age".publicKeys = allKeys;
   "secrets/rclone.age".publicKeys = allKeys;
+  "secrets/vdirsyncer.age".publicKeys = allKeys;
   "secrets/gemini-p052.age".publicKeys = allKeys;
 }
