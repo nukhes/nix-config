@@ -27,7 +27,7 @@
     "acpi_osi=Darwin"
     "acpi_mask_gpe=0x17"
     "pcie_aspm=force"
-    "mem_sleep_default=deep"
+    "mem_sleep_default=s2idle"
   ];
 
   zramSwap = {

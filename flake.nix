@@ -36,10 +36,10 @@
         specialArgs = { inherit inputs; };
 
         modules = [
+          nixos-hardware.nixosModules.apple-macbook-air-7
           ./hosts/hackbook/configuration.nix
           agenix.nixosModules.default
           nix-flatpak.nixosModules.nix-flatpak
-          nixos-hardware.nixosModules.apple-macbook-air-7
 
           # Home-Manager
           home-manager.nixosModules.home-manager

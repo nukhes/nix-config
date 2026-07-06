@@ -10,8 +10,6 @@
     dust
     eza
     zoxide
-    lazygit
-    gh
     tectonic
     bat
     asdf-vm

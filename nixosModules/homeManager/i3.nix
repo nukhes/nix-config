@@ -35,15 +35,15 @@ let
   };
 
   xrandr-update = pkgs.writeShellScript "xrandr-update" ''
-    # Fix Wacom Pen
-    xinput map-to-output "Wacom One by Wacom S Pen stylus" eDP-1
-    xinput map-to-output "Wacom One by Wacom S Pen Pen (0)" eDP-1
-
+    # This script control two xrandr states, single and dual-monitor
     if xrandr | grep -q "HDMI-1 connected"; then
       xrandr --output eDP-1 --auto --output HDMI-1 --auto --rate 60 --above eDP-1
     else
-      xrandr --auto
-    fi
+      xrandr --auto --rate 60
+   fi
+   sleep 1
+   xinput map-to-output "Wacom One by Wacom S Pen stylus" eDP-1
+   xinput map-to-output "Wacom One by Wacom S Pen Pen (0)" eDP-1 
   '';
 
   mod = "Mod4";
@@ -60,6 +60,13 @@ in
   xsession.windowManager.i3 = {
     enable = true;
     config = {
+      startup = [
+        {
+          command = "systemctl --user restart polybar";
+          always = true;
+          notification = false;
+        }
+      ];
       modifier = mod;
 
       fonts = {
