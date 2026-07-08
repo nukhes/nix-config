@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, config, lib, ... }: {
   
   options = {
     chrome.enable = lib.mkEnableOption "enables chrome";
