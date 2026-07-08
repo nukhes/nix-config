@@ -26,4 +26,7 @@ let
 in
 {
   imports = findNixFiles ./.;
+
+  brave.enable = lib.mkDefault false;
+  chrome.enable = lib.mkDefault true;
 }
