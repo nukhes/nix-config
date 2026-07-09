@@ -4,8 +4,11 @@
   ...
 }:
 {
-  xdg.portal.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  xdg.portal = {
+    enable = true;
+    config.common.default = "gtk";
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+  };
 
   services.flatpak = {
     enable = true;
