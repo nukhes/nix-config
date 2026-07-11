@@ -29,5 +29,6 @@ in
 
   brave.enable = lib.mkDefault false;
   chrome.enable = lib.mkDefault true;
+  spotifyPlayer.enable = lib.mkDefault true;
   programs.fileNormalizer.enable = true;
 }
