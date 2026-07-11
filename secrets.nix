@@ -11,4 +11,5 @@ in
   "secrets/rclone.age".publicKeys = allKeys;
   "secrets/vdirsyncer.age".publicKeys = allKeys;
   "secrets/gemini-p052.age".publicKeys = allKeys;
+  "secrets/spotify-player.age".publicKeys = allKeys;
 }
