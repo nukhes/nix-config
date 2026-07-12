@@ -13,6 +13,7 @@
       isDefault = true;
 
       settings = {
+        "fission.autostart" = false;
         "accessibility.typeaheadfind.flashBar" = 0;
         "app.normandy.api_url" = "";
         "app.normandy.enabled" = false;
