@@ -25,18 +25,13 @@
     "i915.enable_fbc=1"
     "i915.enable_guc=3"
     "acpi_osi=Darwin"
-    "intel_pstate=disable"
+    "intel_pstate=passive"
     "pcie_aspm=force"
     "lsm=capability,yama"
     "mem_sleep_default=s2idle"
+    "thermal.nocrt=1"
+    "msr.allow_writes=on" 
   ];
-
-  zramSwap = {
-    enable = true;
-    priority = 100;
-    algorithm = "zstd";
-    memoryPercent = 60;
-  };
 
   networking.networkmanager.wifi.powersave = false;
   systemd.targets.hibernate.enable = false;
@@ -51,6 +46,10 @@
     "bcma"
     "ssb"
     "brcmsmac"
+    "intel_pch_thermal"
+    "intel_rapl_msr"
+    "intel_rapl_common"
+    "intel_powerclamp"
   ];
 
   system.stateVersion = "26.05";
