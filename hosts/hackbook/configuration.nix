@@ -9,7 +9,6 @@
   imports = [
     ./hardware-configuration.nix
     ./../../nixosModules/core
-    ./../../nixosModules/homeManager
     ./../../nixosModules/services
   ];
 
@@ -72,6 +71,7 @@
     users.user = {
       imports = [
         inputs.agenix.homeManagerModules.default
+        ./../../home.nix
       ];
     };
     backupFileExtension = "backup";
