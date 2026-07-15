@@ -28,5 +28,6 @@
     sox
     xarchiver
     ouch
+    unrar
   ];
 }

@@ -2,14 +2,15 @@
   config,
   pkgs,
   lib,
+  inputs,
   ...
 }:
 {
   imports = [
     ./hardware-configuration.nix
-    ./../../nixosModules/services
-    ./../../nixosModules/programs
     ./../../nixosModules/core
+    ./../../nixosModules/homeManager
+    ./../../nixosModules/services
   ];
 
   nix.settings.experimental-features = [
@@ -30,6 +31,7 @@
     "lsm=capability,yama"
     "mem_sleep_default=s2idle"
     "thermal.nocrt=1"
+    "processor.ignore_ppc=1"
     "msr.allow_writes=on" 
   ];
 
@@ -51,6 +53,28 @@
     "intel_rapl_common"
     "intel_powerclamp"
   ];
+
+  nixpkgs.overlays = [
+    (final: prev: {
+      nur = import inputs.nur {
+        nurpkgs = prev;
+        pkgs = prev;
+      };
+    })
+  ];
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    extraSpecialArgs = { inherit inputs; };
+    users.user = {
+      imports = [
+        inputs.agenix.homeManagerModules.default
+        ./../../home.nix
+      ];
+    };
+    backupFileExtension = "backup";
+  };
 
   system.stateVersion = "26.05";
 }
