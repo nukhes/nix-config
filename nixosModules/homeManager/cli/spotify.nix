@@ -21,7 +21,7 @@
   };
 
   age.secrets.spotify-player = {
-    file = ../../secrets/spotify-player.age;
+    file = ../../../secrets/spotify-player.age;
     path = "${config.home.homeDirectory}/.config/spotify-player/app.toml";
     mode = "0600";
   };
