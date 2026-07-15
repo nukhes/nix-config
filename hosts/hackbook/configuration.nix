@@ -32,7 +32,9 @@
     "mem_sleep_default=s2idle"
     "thermal.nocrt=1"
     "processor.ignore_ppc=1"
-    "msr.allow_writes=on" 
+    # Habilitar escrita em MSR permite acesso a registradores model-specific —
+    # é um risco de segurança; deixe apenas se for necessário para hardware.
+    "msr.allow_writes=on"
   ];
 
   networking.networkmanager.wifi.powersave = false;
@@ -70,7 +72,6 @@
     users.user = {
       imports = [
         inputs.agenix.homeManagerModules.default
-        ./../../home.nix
       ];
     };
     backupFileExtension = "backup";
