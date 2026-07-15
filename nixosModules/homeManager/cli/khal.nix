@@ -9,7 +9,7 @@
     vdirsyncer
   ];
 
-  home.activation.setupVdirsyncerDir = config.lib.dag.entryBefore ["checkLinkTargets"] ''
+  home.activation.setupVdirsyncerDir = config.lib.dag.entryBefore [ "checkLinkTargets" ] ''
     mkdir -p "${config.home.homeDirectory}/.config/vdirsyncer"
   '';
 

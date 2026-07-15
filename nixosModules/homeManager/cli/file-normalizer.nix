@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 
@@ -7,7 +12,10 @@ let
 
   fileNormalizerScript = pkgs.writeShellApplication {
     name = "file-normalizer";
-    runtimeInputs = [ pkgs.coreutils pkgs.gnused ];
+    runtimeInputs = [
+      pkgs.coreutils
+      pkgs.gnused
+    ];
     text = ''
       for f in *; do
         [ -f "$f" ] || continue
@@ -22,7 +30,8 @@ let
       done
     '';
   };
-in {
+in
+{
   options.programs.fileNormalizer = {
     enable = mkEnableOption "fileNormalizer utility";
   };

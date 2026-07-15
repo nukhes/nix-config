@@ -18,21 +18,23 @@
     };
   };
 
-  outputs = { self, nixpkgs, ... } @ inputs: {
-    # Hackbook Host stands for my Macbook Air 7,2
-    nixosConfigurations.hackbook = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      
-      specialArgs = { inherit inputs; };
+  outputs =
+    { self, nixpkgs, ... }@inputs:
+    {
+      # Hackbook Host stands for my Macbook Air 7,2
+      nixosConfigurations.hackbook = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
 
-      modules = [
-        inputs.nixos-hardware.nixosModules.apple-macbook-air-7
-        inputs.agenix.nixosModules.default
-        inputs.nix-flatpak.nixosModules.nix-flatpak
-        inputs.home-manager.nixosModules.home-manager
+        specialArgs = { inherit inputs; };
 
-        ./hosts/hackbook/configuration.nix
-      ];
+        modules = [
+          inputs.nixos-hardware.nixosModules.apple-macbook-air-7
+          inputs.agenix.nixosModules.default
+          inputs.nix-flatpak.nixosModules.nix-flatpak
+          inputs.home-manager.nixosModules.home-manager
+
+          ./hosts/hackbook/configuration.nix
+        ];
+      };
     };
-  };
 }

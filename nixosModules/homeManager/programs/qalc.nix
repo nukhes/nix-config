@@ -16,7 +16,6 @@
       auto_completion=1
       save_history=1
     '';
-    force = true; 
+    force = true;
   };
 }
-

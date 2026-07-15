@@ -4,7 +4,10 @@
   ...
 }:
 {
-  home.packages = with pkgs; [ lazygit gh ];
+  home.packages = with pkgs; [
+    lazygit
+    gh
+  ];
   programs.git = {
     enable = true;
     lfs.enable = true;

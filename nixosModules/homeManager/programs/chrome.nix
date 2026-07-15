@@ -1,11 +1,17 @@
-{ pkgs, config, lib, ... }: {
-  
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
+{
+
   options = {
     chrome.enable = lib.mkEnableOption "enables chrome";
   };
 
   config = lib.mkIf config.chrome.enable {
-    programs.chromium= {
+    programs.chromium = {
       enable = true;
       package = pkgs.google-chrome;
     };
