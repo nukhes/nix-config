@@ -4,11 +4,6 @@
   ...
 }:
 {
-  imports = [
-    ./system-maintenance
-    ./claude
-  ];
-
   programs.bash = {
     enable = true;
     shellAliases = {
