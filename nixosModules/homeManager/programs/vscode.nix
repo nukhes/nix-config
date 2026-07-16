@@ -7,20 +7,12 @@
   programs.vscode.enable = true;
   programs.vscode.profiles.default = {
     userSettings = {
-      "markdown.marp.enableRemoteUrl" = true;
-      "markdown.marp.enableHTML" = true;
-      "markdown.marp.themes" = [
-        "${marp-academic-theme}"
-      ];
       "telemetry.telemetryLevel" = "off";
       "editor.tabSize" = 2;
       "editor.fontFamily" = "Iosevka";
       "editor.fontSize" = 16;
-      #"editor.lineHeight" = 1.8;
+      "editor.lineHeight" = 1.8;
       "editor.formatOnSave" = true;
-      #"nix.enableLanguageServer" = true;
-      #"nix.serverPath" = "nixd";
-      #"nix.formatterPath" = "nixpkgs-fmt";
       "explorer.confirmDragAndDrop" = false;
       "git.confirmSync" = false;
       "git.autofetch" = true;
@@ -32,14 +24,11 @@
       "window.commandCenter" = false;
       "workbench.layoutControl.enabled" = false;
       "workbench.startupEditor" = "newUntitledFile";
-      "javascript.suggest.autoImports" = true;
-      "javascript.updateImportsOnFileMove.enabled" = "always";
       "editor.rulers" = [
         80
         120
       ];
       "extensions.ignoreRecommendations" = true;
-      "typescript.tsserver.log" = "off";
       "workbench.tree.enableStickyScroll" = false;
       "files.associations" = {
         ".env.*" = "dotenv";
@@ -48,90 +37,14 @@
         ".dev.vars" = "dotenv";
         "*.ndjson" = "jsonl";
       };
-      "symbols.files.associations" = {
-        "*.module.ts" = "nest";
-        "*.guard.ts" = "typescript";
-        "*.spec.ts" = "ts-test";
-        "*.e2e-spec.ts" = "ts-test";
-        "*.mock.ts" = "ts-test";
-        "vitest.config.e2e.ts" = "vite";
-        ".env.development.local" = "gear";
-        ".env.test.local" = "gear";
-        ".env.local" = "gear";
-        ".env.sst" = "gear";
-        ".env.example" = "gear";
-        "*.ndjson" = "brackets-orange";
-      };
-      "tailwindCSS.experimental.classRegex" = [
-        [
-          "tv\\(([^)]*)\\)"
-          "cva\\(([^)]*)\\)"
-          "[\"'`]([^\"'`]*).*?[\"'`]"
-        ]
-        "class:\\s*?[\"'`]([^\"'`]*).*?,"
-        "tw\\('([^']*)'\\)"
-      ];
       "editor.parameterHints.enabled" = false;
       "editor.renderLineHighlight" = "gutter";
-      "cSpell.language" = "en,pt";
-      "typescript.updateImportsOnFileMove.enabled" = "always";
       "editor.suggestSelection" = "first";
       "explorer.confirmDelete" = false;
-      "gitlens.codeLens.recentChange.enabled" = false;
       "terminal.integrated.showExitAlert" = false;
-      "[prisma]" = {
-        "editor.formatOnSave" = true;
-      };
-      "typescript.suggest.autoImports" = true;
-      "typescript.preferences.preferTypeOnlyAutoImports" = true;
-      "terminal.integrated.env.osx" = {
-        "FIG_NEW_SESSION" = "1";
-      };
       "workbench.editor.labelFormat" = "short";
       "editor.fontLigatures" = true;
-      "emmet.includeLanguages" = {
-        "javascript" = "javascriptreact";
-        "mdx" = "javascriptreact";
-      };
-      "emmet.syntaxProfiles" = {
-        "javascript" = "jsx";
-        "mdx" = "jsx";
-      };
-      "cSpell.enableFiletypes" = [
-        "!asciidoc"
-        "!c"
-        "!cpp"
-        "!csharp"
-        "!go"
-        "!handlebars"
-        "!haskell"
-        "!jade"
-        "!java"
-        "!latex"
-        "!php"
-        "!pug"
-        "!python"
-        "!restructuredtext"
-        "!rust"
-        "!scala"
-        "!scss"
-      ];
-      "editor.acceptSuggestionOnCommitCharacter" = false;
-      "explorer.compactFolders" = false;
-      "editor.accessibilitySupport" = "off";
-      "terminal.integrated.fontSize" = 14;
-      "terminal.integrated.fontFamily" = "JetBrainsMono Nerd Font";
-      "editor.codeActionsOnSave" = {
-        "source.fixAll.eslint" = "explicit";
-      };
-      "eslint.validate" = [
-        "javascript"
-        "javascriptreact"
-        "graphql"
-      ];
       "editor.semanticHighlighting.enabled" = false;
-      "workbench.productIconTheme" = "fluent-icons";
-      "gitlens.codeLens.authors.enabled" = false;
       "security.workspace.trust.untrustedFiles" = "newWindow";
       "files.exclude" = {
         "**/CVS" = true;
@@ -141,10 +54,6 @@
         "**/.git" = true;
         ".vscode" = true;
       };
-      "workbench.iconTheme" = "symbols";
-      "update.mode" = "start";
-      "terminal.integrated.gpuAcceleration" = "on";
-      "terminal.integrated.defaultProfile.osx" = "fish";
       "[jsonc]" = {
         "editor.defaultFormatter" = "vscode.json-language-features";
       };
@@ -152,35 +61,9 @@
         "editor.defaultFormatter" = "vscode.json-language-features";
       };
       "git.openRepositoryInParentFolders" = "always";
-      "symbols.hidesExplorerArrows" = false;
-      "[javascript]" = {
-        "editor.defaultFormatter" = "vscode.typescript-language-features";
-      };
       "workbench.editor.empty.hint" = "hidden";
       "update.showReleaseNotes" = false;
       "security.promptForLocalFileProtocolHandling" = false;
-      "custom-ui-style.electron" = {
-        "frame" = false;
-        "titleBarStyle" = "hiddenInset";
-        "trafficLightPosition" = {
-          "x" = 11;
-          "y" = 10;
-        };
-        "opacity" = 0.96;
-        "visualEffectState" = "active";
-        "vibrancy" = "ultra-dark";
-      };
-      "custom-ui-style.stylesheet" = {
-        ".title-label > h2" = "display: none";
-        ".editor-actions" = "display: none";
-        ".nosidebar .inline-tabs-placeholder" = "width: 75px";
-        ".pane-header" = "padding: 0 8px";
-        ".pane-body" = "padding: 8px";
-        ".split-view-view:first-child .pane-header" = "display: none !important;";
-        ".monaco-list-row" = "border-radius: 4px;";
-        ".monaco-workbench .monaco-list:not(.element-focused):focus:before" = "display: none;";
-      };
-      "custom-ui-style.font.sansSerif" = "Iosevka, -apple-system";
       "editor.hideCursorInOverviewRuler" = true;
       "editor.minimap.enabled" = false;
       "window.titleBarStyle" = "native";
@@ -194,91 +77,11 @@
         ".env" = ".env*";
       };
       "explorer.fileNesting.enabled" = true;
-      "cSpell.userWords" = [
-        "automations"
-        "bootcamp"
-        "chakra"
-        "checkin"
-        "checkins"
-        "cloudflare"
-        "clsx"
-        "Codegen"
-        "datadog"
-        "Datetime"
-        "dayjs"
-        "Dotenv"
-        "Elysia"
-        "esbuild"
-        "fastify"
-        "Fastify"
-        "feedbackwidget"
-        "ffprobe"
-        "gamificada"
-        "Hasher"
-        "hono"
-        "Hono"
-        "ilike"
-        "IUGU"
-        "jamjuree"
-        "jupiter"
-        "ksuid"
-        "liveblocks"
-        "LIVEBLOCKS"
-        "Marguerita"
-        "middlewares"
-        "mixpanel"
-        "monaco"
-        "nestjs"
-        "nivo"
-        "omni"
-        "Omni"
-        "Onboarded"
-        "pallas"
-        "postgres"
-        "postgresql"
-        "prefetch"
-        "reactflow"
-        "retriable"
-        "roboto"
-        "rocketseat"
-        "rotion"
-        "rsxp"
-        "Sandpack"
-        "shiki"
-        "skylab"
-        "sqlite"
-        "supergraph"
-        "svgr"
-        "sympla"
-        "tailwindcss"
-        "textblock"
-        "tiptap"
-        "trpc"
-        "TRPC"
-        "tsup"
-        "unfollow"
-        "Unfollow"
-        "unform"
-        "Unform"
-        "unmark"
-        "upsert"
-        "Usuario"
-        "webm"
-        "WEBPUSH"
-        "zrevrank"
-        "zscore"
-      ];
       "workbench.statusBar.visible" = false;
       "editor.tokenColorCustomizations" = {
         "textMateRules" = [ ];
       };
       "window.autoDetectColorScheme" = true;
-      "workbench.preferredDarkColorTheme" = "Oscura Dusk";
-      "workbench.preferredLightColorTheme" = "Oscura Dusk";
-      "gitlens.advanced.messages" = {
-        "suppressIntegrationDisconnectedTooManyFailedRequestsWarning" = true;
-        "suppressIntegrationRequestTimedOutWarning" = true;
-      };
       "liveServer.settings.donotShowInfoMsg" = true;
       "editor.multiCursorLimit" = 50000;
       "window.menuBarVisibility" = "toggle";
@@ -286,7 +89,6 @@
     };
 
     extensions = with pkgs.vscode-extensions; [
-      #jnoortheen.nix-ide
       dbaeumer.vscode-eslint
       ritwickdey.liveserver
       mikestead.dotenv
@@ -294,7 +96,6 @@
       mechatroner.rainbow-csv
       usernamehw.errorlens
       continue.continue
-      marp-team.marp-vscode
     ];
   };
 }
