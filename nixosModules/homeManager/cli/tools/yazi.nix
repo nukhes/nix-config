@@ -4,6 +4,12 @@
   ...
 }:
 {
+  home.packages = with pkgs; [
+    xarchiver
+    ouch
+    unrar
+  ];
+
   programs.yazi = {
     enable = true;
     enableBashIntegration = true;

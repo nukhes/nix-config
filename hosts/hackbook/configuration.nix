@@ -9,7 +9,6 @@
   imports = [
     ./hardware-configuration.nix
     ./../../nixosModules/core
-    ./../../nixosModules/services
   ];
 
   nix.settings.experimental-features = [

@@ -17,8 +17,8 @@
     fi
   '';
 
-  age.secrets.p052-openrouter = {
-    file = ../../../secrets/openrouter-p052.age;
+  age.secrets.openrouter-p052 = {
+    file = "${config.home.homeDirectory}/.nix-config/secrets/openrouter-p052.age";
     path = "${config.home.homeDirectory}/.config/api-keys/openrouter-p052";
     mode = "0600";
   };

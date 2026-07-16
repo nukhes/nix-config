@@ -4,26 +4,23 @@
   pkgs,
   ...
 }:
-let
-  findNixFiles =
-    dir:
-    let
-      contents = builtins.readDir dir;
-      filesAndDirs = lib.mapAttrsToList (
-        name: type:
-        let
-          path = dir + "/${name}";
-        in
-        if type == "directory" then
-          findNixFiles path
-        else if type == "regular" && lib.hasSuffix ".nix" name && name != "default.nix" then
-          [ path ]
-        else
-          [ ]
-      ) contents;
-    in
-    lib.flatten filesAndDirs;
-in
 {
-  imports = findNixFiles ./.;
+  imports = [
+    ./tools/bash.nix
+    ./tools/claude.nix
+    ./tools/git.nix
+    ./tools/khal.nix
+    ./tools/marp.nix
+    ./tools/media.nix
+    ./tools/neovim.nix
+    ./tools/rclone.nix
+    ./tools/tmux.nix
+    ./tools/toolchain.nix
+    ./tools/utils.nix
+    ./tools/yazi.nix
+
+    ./environment/file-normalizer.nix
+    ./environment/gemini-api-key.nix
+    ./environment/system-maintenance.nix
+  ];
 }

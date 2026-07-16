@@ -3,12 +3,6 @@
   pkgs,
   ...
 }:
-let
-  marp-academic-theme = pkgs.fetchurl {
-    url = "https://raw.githubusercontent.com/kaisugi/marp-theme-academic/ff135bc225324155f74a256a0ea9df679c00694f/themes/academic.css";
-    sha256 = "0dfzw769mrlni81ww9v5paszrygnpjk0ck00c700nxlz0p5vcpl7";
-  };
-in
 {
   programs.vscode.enable = true;
   programs.vscode.profiles.default = {

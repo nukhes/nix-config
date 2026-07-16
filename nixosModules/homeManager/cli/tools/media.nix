@@ -1,14 +1,15 @@
 {
-  config,
-  lib,
   pkgs,
   ...
 }:
-
 {
   home.packages = with pkgs; [
-    spotify-player
+    sox
+    mpv
+    ani-cli
+
     playerctl
+    spotify-player
   ];
 
   services.playerctld.enable = true;
@@ -21,7 +22,7 @@
   };
 
   age.secrets.spotify-player = {
-    file = ../../../secrets/spotify-player.age;
+    file = "${config.home.homeDirectory}/.nix-config/secrets/spotify-player.age";
     path = "${config.home.homeDirectory}/.config/spotify-player/app.toml";
     mode = "0600";
   };
