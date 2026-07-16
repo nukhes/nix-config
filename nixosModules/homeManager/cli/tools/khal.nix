@@ -58,7 +58,7 @@
   };
 
   age.secrets.vdirsyncer = {
-    file = ../../../secrets/vdirsyncer.age;
+    file = "${config.home.homeDirectory}/.nix-config/secrets/vdirsyncer.age";
     path = "${config.home.homeDirectory}/.config/vdirsyncer/config";
     mode = "0600";
   };

@@ -9,7 +9,7 @@
   ];
 
   age.secrets.eduroam = {
-    file = ../../secrets/eduroam.age;
+    file = ../../../eduroam.age;
     path = "/etc/NetworkManager/system-connections/eduroam.nmconnection";
     mode = "0600";
     owner = "root";
