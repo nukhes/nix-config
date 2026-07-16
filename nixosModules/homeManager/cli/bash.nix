@@ -7,9 +7,10 @@
   programs.bash = {
     enable = true;
     shellAliases = {
+
       # System Maintenance
       rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/.nix-config#$(hostname)";
-      cleanup = "sudo nix-collect-garbage -d && nix-store --optimise";
+      cleanup = "sudo nix-collect-garbage -d && sudo nix-store --optimise -v";
       upgrade = "cd ${config.home.homeDirectory}/.nix-config && nix flake update && sudo nixos-rebuild switch --flake .#$(hostname) && sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations +2 && sudo nix-store --gc";
       agenix-add = "nix run github:ryantm/agenix -- --edit";
       agenix-rekey = "nix run github:ryantm/agenix -- --rekey";

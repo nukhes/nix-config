@@ -2,7 +2,7 @@
 
 {
   home.packages = [
-    claude-code
+    pkgs.claude-code
   ];
 
   home.sessionVariables = {

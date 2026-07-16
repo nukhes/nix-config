@@ -8,6 +8,7 @@
     lazygit
     gh
   ];
+
   programs.git = {
     enable = true;
     lfs.enable = true;
@@ -19,5 +20,28 @@
     init.defaultBranch = "main";
     pull.rebase = false;
     rebase.autoStash = true;
+  };
+
+  programs.bash.shellAliases = {
+    git = "git";
+    gs = "git status";
+    gss = "git status -s";
+    ga = "git add";
+    gaa = "git add --all";
+    gc = "git commit";
+    gcm = "git commit -m";
+    gca = "git commit --amend";
+    gp = "git push";
+    gpl = "git pull";
+    gpo = "git push origin HEAD";
+    gl = "git log --oneline --graph --decorate --all";
+    gd = "git diff";
+    gds = "git diff --staged";
+    gb = "git branch";
+    gba = "git branch -a";
+    gco = "git checkout";
+    gcb = "git checkout -b";
+    gcp = "git cherry-pick";
+    gr = "git restore";
   };
 }
