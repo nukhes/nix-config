@@ -72,6 +72,7 @@ in
           notification = false;
         }
       ];
+
       modifier = mod;
 
       fonts = {
@@ -138,7 +139,7 @@ in
         "${mod}+Shift+space" =
           "exec --no-startup-id xdg-open \"\$(rg --files --hidden --glob '!.*' ~ | rofi -dmenu -i -p 'files:')\"";
         "${mod}+p" = "exec ${xrandr-update}";
-        "${mod}+Shift+q" = "exec systemctl suspend";
+        "${mod}+Shift+q" = "exec i3-lock && systemctl suspend";
 
         "XF86MonBrightnessUp" = "exec --no-startup-id brightnessctl set +5%";
         "XF86MonBrightnessDown" = "exec --no-startup-id brightnessctl set 5%-";
