@@ -30,13 +30,14 @@ let
     Service = {
       Type = "oneshot";
 
-      ExecStartPre = ''
-        ${pkgs.bash}/bin/bash -c \
-        'if [ ! -d "${local}" ] || [ -z "$(ls -A "${local}" 2>/dev/null)" ]; then \
-          echo "pulling from ${remote}..."; \
-          ${rclone} copy "${remote}" "${local}" ${rcloneFlags}; \
-        fi'
-      '';
+      ExecStartPre = let
+        preStartScript = pkgs.writeShellScript "rclone-pre-start" ''
+          if [ ! -d "${local}" ] || [ -z "$(${pkgs.coreutils}/bin/ls -A "${local}" 2>/dev/null)" ]; then
+            echo "pulling from ${remote}..."
+            ${rclone} copy "${remote}" "${local}" ${rcloneFlags}
+          fi
+        '';
+      in "${preStartScript}";
 
       ExecStart = ''
         ${rclone} copy "${local}" "${remote}" ${rcloneFlags}

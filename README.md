@@ -1,6 +1,6 @@
-# nix-config
+# Nix
 
-NixOS Configuration for Pedro Henrique hosts
+NixOS Configuration for Pedro Henrique.
 
 ```bash
 git clone git@github.com:nukhes/nix.git ~/.nix-config
@@ -11,4 +11,12 @@ git clone git@github.com:nukhes/nix.git ~/.nix-config
 
 # Build the proper host (ATM just 'hackbook' works as hostname)
 sudo nixos-rebuild switch --flake ~/.nix-config#$(hostname)
+```
+
+## Home Folder Structure
+
+These folders contains user important data.
+```bash
+~/{src, uni, usr}
+~/.local/share/{calibre-library, obsidian-vault}
 ```
