@@ -7,7 +7,6 @@
     "Remove Books",
     "Choose Library",
     "Save To Disk",
-    "Connect Share",
     "Tweak ePub"
   ],
   "action-layout-toolbar-device": [
@@ -16,9 +15,7 @@
     "Convert Books",
     "View",
     "Send To Device",
-    "Location Manager",
     "Save To Disk",
-    "Connect Share",
     "Remove Books",
     "Preferences"
   ],
@@ -186,163 +183,7 @@
       "WindowText-disabled": "#dddddd"
     }
   },
-  "geometry-of-calibre_main_window_geometry": {
-    "frame_geometry": {
-      "height": 874,
-      "width": 1440,
-      "x": 0,
-      "y": 926
-    },
-    "full_screened": false,
-    "geometry": {
-      "height": 874,
-      "width": 1440,
-      "x": 0,
-      "y": 926
-    },
-    "maximized": true,
-    "normal_geometry": {
-      "height": 742,
-      "width": 1384,
-      "x": 0,
-      "y": 0
-    },
-    "qt": {
-      "__class__": "bytearray",
-      "__value__": "AdnQywADAAAAAAAAAAADngAABZ8AAAcHAAAAAAAAAAAAAAVnAAAC5QAAAAACAAAABaAAAAAAAAADngAABZ8AAAcH"
-    },
-    "screen": {
-      "depth": 24,
-      "device_pixel_ratio": 1.0,
-      "geometry_in_logical_pixels": {
-        "height": 900,
-        "width": 1440,
-        "x": 0,
-        "y": 900
-      },
-      "index_in_screens_list": 0,
-      "manufacturer": "Apple Computer Inc",
-      "model": "Color LCD",
-      "name": "eDP-1",
-      "serial": "",
-      "size_in_logical_pixels": {
-        "height": 900,
-        "width": 1440
-      },
-      "virtual_geometry": {
-        "height": 1800,
-        "width": 1600,
-        "x": 0,
-        "y": 0
-      }
-    }
-  },
-  "geometry-of-customize-palette-geometry": {
-    "frame_geometry": {
-      "height": 610,
-      "width": 826,
-      "x": 291,
-      "y": 1026
-    },
-    "full_screened": false,
-    "geometry": {
-      "height": 610,
-      "width": 826,
-      "x": 291,
-      "y": 1026
-    },
-    "maximized": false,
-    "normal_geometry": {
-      "height": 610,
-      "width": 826,
-      "x": 291,
-      "y": 1026
-    },
-    "qt": {
-      "__class__": "bytearray",
-      "__value__": "AdnQywADAAAAAAEjAAAEAgAABFwAAAZjAAABIwAABAIAAARcAAAGYwAAAAAAAAAABaAAAAEjAAAEAgAABFwAAAZj"
-    },
-    "screen": {
-      "depth": 24,
-      "device_pixel_ratio": 1.0,
-      "geometry_in_logical_pixels": {
-        "height": 900,
-        "width": 1440,
-        "x": 0,
-        "y": 900
-      },
-      "index_in_screens_list": 0,
-      "manufacturer": "Apple Computer Inc",
-      "model": "Color LCD",
-      "name": "eDP-1",
-      "serial": "",
-      "size_in_logical_pixels": {
-        "height": 900,
-        "width": 1440
-      },
-      "virtual_geometry": {
-        "height": 1800,
-        "width": 1600,
-        "x": 0,
-        "y": 0
-      }
-    }
-  },
-  "geometry-of-preferences dialog geometry": {
-    "frame_geometry": {
-      "height": 720,
-      "width": 930,
-      "x": 249,
-      "y": 1011
-    },
-    "full_screened": false,
-    "geometry": {
-      "height": 720,
-      "width": 930,
-      "x": 249,
-      "y": 1011
-    },
-    "maximized": false,
-    "normal_geometry": {
-      "height": 720,
-      "width": 930,
-      "x": 249,
-      "y": 1011
-    },
-    "qt": {
-      "__class__": "bytearray",
-      "__value__": "AdnQywADAAAAAAD5AAAD8wAABJoAAAbCAAAA+QAAA/MAAASaAAAGwgAAAAAAAAAABaAAAAD5AAAD8wAABJoAAAbC"
-    },
-    "screen": {
-      "depth": 24,
-      "device_pixel_ratio": 1.0,
-      "geometry_in_logical_pixels": {
-        "height": 900,
-        "width": 1440,
-        "x": 0,
-        "y": 900
-      },
-      "index_in_screens_list": 0,
-      "manufacturer": "Apple Computer Inc",
-      "model": "Color LCD",
-      "name": "eDP-1",
-      "serial": "",
-      "size_in_logical_pixels": {
-        "height": 900,
-        "width": 1440
-      },
-      "virtual_geometry": {
-        "height": 1800,
-        "width": 1600,
-        "x": 0,
-        "y": 0
-      }
-    }
-  },
   "grid view visible": false,
-  "library_usage_stats": {
-    "/home/user/usr/calibre-library": 3
-  },
   "light_palette_name": "",
   "light_palettes": {
     "__current__": {
@@ -373,23 +214,12 @@
   },
   "main_window_central_widget_state": {
     "layout": "wide",
-    "narrow_desires": {
-      "book_details_height": 0.23051224944320714,
-      "cover_browser_width": 0.34971098265895956,
-      "quick_view_height": 0.2561247216035635,
-      "tag_browser_width": 0.25
-    },
     "narrow_visibility": {
       "book_details": true,
       "book_list": true,
       "cover_browser": false,
       "quick_view": false,
       "tag_browser": true
-    },
-    "wide_desires": {
-      "book_details_width": 0.22430555555555556,
-      "cover_browser_height": 0.2854188210961737,
-      "quick_view_height": 0.2378490175801448
     },
     "wide_visibility": {
       "book_details": true,
@@ -399,9 +229,9 @@
       "tag_browser": false
     }
   },
-  "quick_start_guide_added": true,
+  "quick_start_guide_added": false,
   "qv_open_at_shutdown": false,
-  "search bar visible": true,
+  "search bar visible": false,
   "tag browser search box visible": false,
   "toolbar_icon_size": "off"
 }

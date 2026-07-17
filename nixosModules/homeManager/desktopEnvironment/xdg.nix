@@ -7,7 +7,7 @@
   xdg.userDirs = {
     enable = true;
     createDirectories = false;
-    download = "${config.home.homeDirectory}/dl";
+    download = "${config.home.homeDirectory}";
     desktop = "${config.home.homeDirectory}";
     documents = "${config.home.homeDirectory}";
     music = "${config.home.homeDirectory}";
