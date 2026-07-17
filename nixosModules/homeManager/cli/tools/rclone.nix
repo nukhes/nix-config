@@ -29,22 +29,19 @@ let
     };
     Service = {
       Type = "oneshot";
-      
-      ExecStartPre = [
-        "${pkgs.bash}/bin/bash"
-        "-c"
-        ''
-        if [ ! -d "${local}" ] || [ -z "$(ls -A "${local}" 2>/dev/null)" ]; then
-          echo "pulling from ${remote}..."
-          ${rclone} copy "${remote}" "${local}" ${rcloneFlags}
-        fi
-        ''
-      ];
+
+      ExecStartPre = ''
+        ${pkgs.bash}/bin/bash -c \
+        'if [ ! -d "${local}" ] || [ -z "$(ls -A "${local}" 2>/dev/null)" ]; then \
+          echo "pulling from ${remote}..."; \
+          ${rclone} copy "${remote}" "${local}" ${rcloneFlags}; \
+        fi'
+      '';
 
       ExecStart = ''
         ${rclone} copy "${local}" "${remote}" ${rcloneFlags}
       '';
-      
+
       Nice = 19;
     };
   };
@@ -80,4 +77,3 @@ in
     mode = "0600";
   };
 }
-
