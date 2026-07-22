@@ -25,6 +25,11 @@
       };
 
       opener = {
+        html = [
+          {
+            run = "google-chrome \"$1\"";  
+          }
+        ];
         image = [
           {
             run = "sxiv -a \"$@\"";

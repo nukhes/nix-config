@@ -15,8 +15,8 @@ sudo nixos-rebuild switch --flake ~/.nix-config#$(hostname)
 
 ## Home Folder Structure
 
-These folders contains user important data.
+These folders contains user important data and should be properly backuped.
 ```bash
-~/{src, uni, usr}
-~/.local/share/{calibre-library, obsidian-vault}
+~/{src, uni, usr, .zotero}
+~/.local/share/{calibre-library, obsidian-vault, zotero}
 ```
