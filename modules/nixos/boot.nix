@@ -7,7 +7,7 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_6_18;
-    boot.kernelParams = [
+  boot.kernelParams = [
     "i915.enable_fbc=1"
     "i915.enable_guc=3"
     "acpi_osi=!Darwin"

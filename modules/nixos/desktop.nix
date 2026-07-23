@@ -19,7 +19,7 @@
       };
     };
   };
-  
+
   environment.pathsToLink = [ "/share/icons" ];
 
   environment.systemPackages = with pkgs; [

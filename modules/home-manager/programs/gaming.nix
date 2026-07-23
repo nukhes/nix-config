@@ -1,7 +1,7 @@
 { pkgs, ... }: {
   home.packages = with pkgs; [
     prismlauncher
-    
+
     umu-launcher
     protonup-qt
     protontricks

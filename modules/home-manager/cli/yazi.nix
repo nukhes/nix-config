@@ -27,7 +27,7 @@
       opener = {
         html = [
           {
-            run = "google-chrome \"$1\"";  
+            run = "google-chrome \"$1\"";
           }
         ];
         image = [

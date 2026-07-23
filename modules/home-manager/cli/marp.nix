@@ -12,7 +12,7 @@ in
   home.packages = with pkgs; [
     marp-cli
   ];
-  
+
   programs.bash = {
     enable = true;
     initExtra = ''

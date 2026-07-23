@@ -1,7 +1,4 @@
-{
-  ...
-}:
-{
+_: {
   networking.hostName = "hackbook";
   networking.networkmanager.wifi.powersave = false;
   networking.networkmanager.enable = true;

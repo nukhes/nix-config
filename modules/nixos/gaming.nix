@@ -18,6 +18,6 @@
       gst_all_1.gst-libav
     ];
   };
-  
+
   programs.gamemode.enable = true;
 }

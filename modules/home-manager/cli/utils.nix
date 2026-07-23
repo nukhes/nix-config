@@ -26,7 +26,7 @@
     nixfmt
     fastfetch
   ];
-  
+
   programs.bash.shellAliases = {
     ls = "eza --icons --color=always --group-directories-first";
     ll = "eza -la --icons --octal-permissions --group-directories-first";

@@ -3,7 +3,7 @@
     obsidian
   ];
   home.activation = {
-    cloneObsidianVault = config.lib.dag.entryAfter ["writeBoundary"] ''
+    cloneObsidianVault = config.lib.dag.entryAfter [ "writeBoundary" ] ''
       TARGET_DIR="$HOME/.local/share/obsidian-vault"
       REPO_URL="git@github.com:nukhes/notes.git"
       if [ ! -d "$TARGET_DIR" ]; then

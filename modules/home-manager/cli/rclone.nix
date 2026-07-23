@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 let
   rcloneSyncs = [
     {
@@ -35,14 +40,16 @@ let
     Service = {
       Type = "oneshot";
 
-      ExecStartPre = let
-        preStartScript = pkgs.writeShellScript "rclone-pre-start" ''
-          if [ ! -d "${local}" ] || [ -z "$(${pkgs.coreutils}/bin/ls -A "${local}" 2>/dev/null)" ]; then
-            echo "pulling from ${remote}..."
-            ${rclone} copy "${remote}" "${local}" ${rcloneFlags}
-          fi
-        '';
-      in "${preStartScript}";
+      ExecStartPre =
+        let
+          preStartScript = pkgs.writeShellScript "rclone-pre-start" ''
+            if [ ! -d "${local}" ] || [ -z "$(${pkgs.coreutils}/bin/ls -A "${local}" 2>/dev/null)" ]; then
+              echo "pulling from ${remote}..."
+              ${rclone} copy "${remote}" "${local}" ${rcloneFlags}
+            fi
+          '';
+        in
+        "${preStartScript}";
 
       ExecStart = ''
         ${rclone} copy "${local}" "${remote}" ${rcloneFlags}
@@ -61,15 +68,22 @@ let
     Install.WantedBy = [ "timers.target" ];
   };
 
-  servicesAttrs = lib.listToAttrs (map (sync: {
-    name = "rclone-sync-${sync.name}";
-    value = createRcloneSync { remote = sync.remote; local = sync.local; };
-  }) rcloneSyncs);
+  servicesAttrs = lib.listToAttrs (
+    map (sync: {
+      name = "rclone-sync-${sync.name}";
+      value = createRcloneSync {
+        inherit (sync) remote;
+        inherit (sync) local;
+      };
+    }) rcloneSyncs
+  );
 
-  timersAttrs = lib.listToAttrs (map (sync: {
-    name = "rclone-sync-${sync.name}";
-    value = createRcloneTimer { name = sync.name; };
-  }) rcloneSyncs);
+  timersAttrs = lib.listToAttrs (
+    map (sync: {
+      name = "rclone-sync-${sync.name}";
+      value = createRcloneTimer { inherit (sync) name; };
+    }) rcloneSyncs
+  );
 in
 {
   home.packages = [ pkgs.rclone ];

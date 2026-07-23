@@ -17,7 +17,7 @@
     ./xournalpp.nix
     ./zathura.nix
     ./zotero.nix
-    
+
     ./calibre/calibre.nix
   ];
 }
