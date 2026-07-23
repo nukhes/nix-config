@@ -10,6 +10,6 @@
   home.stateVersion = "26.05";
 
   imports = [
-    ./nixosModules/homeManager
+    ./modules/home
   ];
 }
