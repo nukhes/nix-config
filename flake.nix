@@ -46,7 +46,7 @@
           modules = [
             ./modules/hosts/hackbook/configuration.nix
 
-            inputs.nixos-hardware.apple-macbook-air-7
+            inputs.nixos-hardware.nixosModules.apple-macbook-air-7
             inputs.agenix.nixosModules.default
             inputs.nix-flatpak.nixosModules.nix-flatpak
             inputs.home-manager.nixosModules.home-manager
