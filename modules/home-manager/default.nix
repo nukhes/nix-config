@@ -10,6 +10,8 @@
   home.stateVersion = "26.05";
 
   imports = [
-    ./modules/home
+    ./cli
+    ./desktopEnvironment
+    ./programs
   ];
 }

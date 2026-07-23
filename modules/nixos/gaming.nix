@@ -5,6 +5,7 @@
     dedicatedServer.openFirewall = true;
     localNetworkGameTransfers.openFirewall = true;
   };
+
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
@@ -17,5 +18,6 @@
       gst_all_1.gst-libav
     ];
   };
+  
   programs.gamemode.enable = true;
 }
