@@ -27,7 +27,6 @@
     fastfetch
 
     libqalculate
-    gperiodic
   ];
 
   programs.bash.shellAliases = {
