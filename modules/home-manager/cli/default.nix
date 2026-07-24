@@ -13,7 +13,6 @@
     ./marp.nix
     ./media.nix
     ./neovim.nix
-    ./qalc.nix
     ./rclone.nix
     ./tmux.nix
     ./utils.nix

@@ -3,18 +3,15 @@
   ...
 }:
 {
-  environment.systemPackages = with pkgs; [ tlp ];
-  powerManagement.powertop.enable = true;
-  services.power-profiles-daemon.enable = false;
-  services.tlp = {
+  powerManagement = {
     enable = true;
-    settings = {
-      CPU_SCALING_GOVERNOR_ON_AC = "performance";
-      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-      CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
-      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-    };
+    powertop.enable = true;
+    cpuFreqGovernor = "schedutil";
   };
+
+  services.tlp.enable = false;
+  hardware.system76.power-daemon.enable = true;
+  services.power-profiles-daemon.enable = true;
 
   services.mbpfan = {
     enable = true;
