@@ -1,13 +1,14 @@
 {
   config,
+  lib,
   pkgs,
   agenixModule,
   ...
 }:
 {
   home.username = "user";
-  home.homeDirectory = "/home/user";
   home.stateVersion = "26.05";
+  home.homeDirectory = lib.mkForce "/home/user";
 
   imports = [
     ./cli

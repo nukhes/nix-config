@@ -1,4 +1,8 @@
-_: {
+{
+  secrets,
+  ...
+}:
+{
   networking.hostName = "hackbook";
   networking.networkmanager.wifi.powersave = false;
   networking.networkmanager.enable = true;
@@ -9,7 +13,7 @@ _: {
   ];
 
   age.secrets.eduroam = {
-    file = ../../secrets/eduroam.age;
+    file = "${secrets}/eduroam.age";
     path = "/etc/NetworkManager/system-connections/eduroam.nmconnection";
     mode = "0600";
     owner = "root";

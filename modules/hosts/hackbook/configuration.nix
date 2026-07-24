@@ -4,6 +4,7 @@
   lib,
   inputs,
   modules,
+  secrets,
   ...
 }:
 
@@ -19,7 +20,9 @@
     "${modules}/nixos/laptop.nix"
     "${modules}/nixos/locale.nix"
     "${modules}/nixos/networking.nix"
+    "${modules}/nixos/nix-settings.nix"
     "${modules}/nixos/services.nix"
+    "${modules}/nixos/user.nix"
     "${modules}/nixos/zram.nix"
   ];
 

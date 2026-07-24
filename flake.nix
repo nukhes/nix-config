@@ -25,22 +25,13 @@
       systems = [ "x86_64-linux" ];
 
       flake = {
-        nixpkgs = {
-          config.allowUnfree = true;
-          overlays = [ inputs.nur.overlays.default ];
-        };
-
-        nix.settings.experimental-features = [
-          "nix-command"
-          "flakes"
-        ];
-
         nixosConfigurations.hackbook = inputs.nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
 
           specialArgs = {
             inherit inputs;
             modules = ./modules;
+            secrets = ./secrets;
           };
 
           modules = [
