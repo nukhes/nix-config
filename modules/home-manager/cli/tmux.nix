@@ -26,22 +26,18 @@
       unbind '"'
       unbind %
 
-      # Navegação entre painéis estilo Vim (Alt + h/j/k/l) sem precisar do prefixo
       bind -n M-h select-pane -L
       bind -n M-j select-pane -D
       bind -n M-k select-pane -u
       bind -n M-l select-pane -R
 
-      # Redimensionamento de painéis (Ctrl + Setas)
       bind -r C-Up resize-pane -U 5
       bind -r C-Down resize-pane -D 5
       bind -r C-Left resize-pane -L 5
       bind -r C-Right resize-pane -R 5
 
-      # Recarregar configuração rapidamente
       bind r source-file ~/.config/tmux/tmux.conf \; display "Configuração recarregada!"
 
-      # Evita atraso no botão Esc (essencial para usuários de Vim/Neovim)
       set -s escape-time 0
 
       set -g status-style bg=default,fg="#cdd6f4"

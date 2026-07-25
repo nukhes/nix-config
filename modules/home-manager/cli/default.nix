@@ -6,20 +6,19 @@
 }:
 {
   imports = [
-    ./bash.nix
     ./claude.nix
     ./git.nix
     ./khal.nix
     ./marp.nix
     ./media.nix
     ./neovim.nix
-    ./rclone.nix
+    ./shell.nix
     ./tmux.nix
     ./utils.nix
     ./yazi.nix
 
-    ./file-normalizer.nix
+  ] ++ lib.optionals pkgs.stdenv.isLinux [
     ./gemini-api-key.nix
-    ./system-maintenance.nix
+    ./rclone.nix
   ];
 }

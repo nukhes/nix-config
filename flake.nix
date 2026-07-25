@@ -17,12 +17,15 @@
       url = "github:NixOS/nixos-hardware";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-darwin.url = "github:nix-darwin/nix-darwin-26.05";
+    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" ];
+      systems = [ "x86_64-linux" "aarch-darwin" ];
 
       flake = {
         nixosConfigurations.hackbook = inputs.nixpkgs.lib.nixosSystem {
@@ -41,6 +44,23 @@
             inputs.agenix.nixosModules.default
             inputs.nix-flatpak.nixosModules.nix-flatpak
             inputs.home-manager.nixosModules.home-manager
+          ];
+        };
+
+        darwinConfigurations.darwin = inputs.nix-darwin.lib.darwinSystem {
+          system = "aarch64-darwin";
+
+          specialArgs = {
+            inherit inputs;
+            modules = ./modules;
+            secrets = ./secrets;
+          };
+
+          modules = [
+            ./modules/hosts/darwin/configuration.nix
+
+            inputs.agenix.darwinModules.default
+            inputs.home-manager.darwinModules.home-manager
           ];
         };
       };

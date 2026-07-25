@@ -1,8 +1,21 @@
-{
-  config,
-  pkgs,
-  ...
-}:
+{ config, pkgs, lib, ... }:
+
+let
+  # Create a reusable initialization shell script for both OS daemons
+  initScript = pkgs.writeShellScript "vdirsyncer-init-script" ''
+    timeout=30
+    while [ ! -f "${config.home.homeDirectory}/.config/vdirsyncer/config" ] && [ $timeout -gt 0 ]; do
+      sleep 1
+      timeout=$((timeout - 1))
+    done
+
+    if [ ! -d "${config.home.homeDirectory}/.ics/unicamp" ]; then
+      mkdir -p "${config.home.homeDirectory}/.ics/unicamp"
+    fi
+
+    yes | ${pkgs.vdirsyncer}/bin/vdirsyncer discover unicamp_sync || true
+  '';
+in
 {
   home.packages = with pkgs; [
     khal
@@ -17,7 +30,7 @@
     [calendars]
 
     [[unicamp]]
-    path = /home/user/.ics/unicamp/*
+    path = ${config.home.homeDirectory}/.ics/unicamp/*
     type = discover
 
     [default]
@@ -31,35 +44,42 @@
     longdateformat = %d/%m/%Y
   '';
 
-  services.vdirsyncer.enable = true;
+  age.secrets.vdirsyncer = {
+    file = "${config.home.homeDirectory}/.nix-config/secrets/vdirsyncer.age";
+    path = "${config.home.homeDirectory}/.config/vdirsyncer/config";
+    mode = "0600";
+  };
 
-  systemd.user.services."vdirsyncer-init" = {
-    Unit = {
-      Description = "vdirsyncer first sync";
-    };
+  # Linux Systemd
+  services.vdirsyncer.enable = lib.mkIf pkgs.stdenv.isLinux true;
+
+  systemd.user.services."vdirsyncer-init" = lib.mkIf pkgs.stdenv.isLinux {
+    Unit = { Description = "vdirsyncer first sync"; };
     Service = {
       Type = "oneshot";
-      ExecStart = pkgs.writeShellScript "vdirsyncer-init-script" ''
-        timeout=30
-        while [ ! -f "${config.home.homeDirectory}/.config/vdirsyncer/config" ] && [ $timeout -gt 0 ]; do
-          sleep 1
-          timeout=$((timeout - 1))
-        done
-
-        if [ ! -d "${config.home.homeDirectory}/.ics/unicamp" ]; then
-          mkdir -p "${config.home.homeDirectory}/.ics/unicamp"
-        fi
-
-        yes | ${pkgs.vdirsyncer}/bin/vdirsyncer discover unicamp_sync || true
-      '';
+      ExecStart = initScript;
       RemainAfterExit = true;
     };
     Install.WantedBy = [ "default.target" ];
   };
 
-  age.secrets.vdirsyncer = {
-    file = "${config.home.homeDirectory}/.nix-config/secrets/vdirsyncer.age";
-    path = "${config.home.homeDirectory}/.config/vdirsyncer/config";
-    mode = "0600";
+  # Darwin Service with Launchd
+  launchd.agents = lib.mkIf pkgs.stdenv.isDarwin {
+    "vdirsyncer-init" = {
+      enable = true;
+      config = {
+        ProgramArguments = [ "${initScript}" ];
+        RunAtLoad = true;
+      };
+    };
+
+    "vdirsyncer-sync" = {
+      enable = true;
+      config = {
+        ProgramArguments = [ "${pkgs.vdirsyncer}/bin/vdirsyncer" "sync" ];
+        StartInterval = 300; # 300 seconds = 5 minutes
+        RunAtLoad = false;
+      };
+    };
   };
 }
