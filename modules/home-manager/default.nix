@@ -12,10 +12,8 @@
 
   imports = [
     ./cli
-
-  # desktopEnvironment and programs are deeply tied with Linux
-  ] ++ lib.optionals pkgs.stdenv.isLinux [
     ./desktopEnvironment
     ./programs
+    agenixModule
   ];
 }

@@ -4,7 +4,7 @@
   pkgs,
   ...
 }:
-{
+lib.mkIf pkgs.stdenv.isLinux {
   imports = [
     ./alacritty.nix
     ./anki.nix
@@ -17,7 +17,6 @@
     ./xournalpp.nix
     ./zathura.nix
     ./zotero.nix
-
     ./calibre/calibre.nix
   ];
 }
