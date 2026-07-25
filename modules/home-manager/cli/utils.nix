@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs ? null, lib, ... }:
 
 let
   sharedAliases = {
@@ -17,7 +17,7 @@ in
     ripgrep
     jq
 
-  ] ++ lib.optionals pkgs.stdenv.isLinux [
+  ] ++ lib.optionals (pkgs != null && pkgs.stdenv.isLinux) [
     asdf-vm
     cargo
     gcc
@@ -35,12 +35,12 @@ in
     libqalculate
   ];
 
-  programs.bash = lib.mkIf pkgs.stdenv.isLinux {
+  programs.bash = lib.mkIf (pkgs != null && pkgs.stdenv.isLinux) {
     enable = true;
     shellAliases = sharedAliases;
   };
 
-  programs.zsh = lib.mkIf pkgs.stdenv.isDarwin {
+  programs.zsh = lib.mkIf (pkgs != null && pkgs.stdenv.isDarwin) {
     enable = true;
     shellAliases = sharedAliases;
   };

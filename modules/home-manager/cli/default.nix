@@ -1,13 +1,18 @@
 {
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-{
-  imports = [
+  {
+    config,
+    lib,
+    pkgs ? null,
+    ...
+  }:
+let
+  baseImports = [
     ./claude.nix
     ./git.nix
+    ./yazi.nix
+  ];
+
+  pkgsImports = [
     ./khal.nix
     ./marp.nix
     ./media.nix
@@ -15,10 +20,6 @@
     ./shell.nix
     ./tmux.nix
     ./utils.nix
-    ./yazi.nix
-
-  ] ++ lib.optionals pkgs.stdenv.isLinux [
-    ./gemini-api-key.nix
-    ./rclone.nix
   ];
-}
+in
+{

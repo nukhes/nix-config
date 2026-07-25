@@ -1,19 +1,17 @@
 {
   config,
   lib,
-  pkgs,
-  agenixModule,
+  pkgs ? null,
   ...
 }:
+let
+  baseImports = [ ./cli ];
+  pkgsImports = [ ./desktopEnvironment ./programs ];
+in
 {
   home.username = "user";
   home.stateVersion = "26.05";
   home.homeDirectory = lib.mkForce "/home/user";
 
-  imports = [
-    ./cli
-    ./desktopEnvironment
-    ./programs
-    agenixModule
-  ];
+  imports = baseImports ++ lib.optionals (pkgs != null) pkgsImports;
 }
