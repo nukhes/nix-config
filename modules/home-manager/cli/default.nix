@@ -1,25 +1,21 @@
 {
-  {
-    config,
-    lib,
-    pkgs ? null,
-    ...
-  }:
-let
-  baseImports = [
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
+  imports = [
     ./claude.nix
     ./git.nix
-    ./yazi.nix
-  ];
-
-  pkgsImports = [
     ./khal.nix
+    ./qalc.nix
     ./marp.nix
     ./media.nix
     ./neovim.nix
     ./shell.nix
     ./tmux.nix
     ./utils.nix
+    ./yazi.nix
   ];
-in
-{
+}

@@ -11,7 +11,6 @@
       "editor.tabSize" = 2;
       "editor.fontFamily" = "Iosevka";
       "editor.fontSize" = 16;
-      "editor.lineHeight" = 1.8;
       "editor.formatOnSave" = true;
       "explorer.confirmDragAndDrop" = false;
       "git.confirmSync" = false;
@@ -91,10 +90,7 @@
     extensions = with pkgs.vscode-extensions; [
       dbaeumer.vscode-eslint
       ritwickdey.liveserver
-      mikestead.dotenv
       yzhang.markdown-all-in-one
-      mechatroner.rainbow-csv
-      usernamehw.errorlens
       continue.continue
     ];
   };
