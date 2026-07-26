@@ -16,6 +16,7 @@ lib.mkIf pkgs.stdenv.isLinux {
     ./web.nix
     ./xournalpp.nix
     ./zathura.nix
+    ./zed.nix
     ./zotero.nix
     ./calibre/calibre.nix
   ];
