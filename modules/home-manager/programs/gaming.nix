@@ -1,12 +1,13 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+lib.mkIf pkgs.stdenv.isLinux {
   home.packages = with pkgs; [
-    prismlauncher
-
     umu-launcher
     protonup-qt
     protontricks
     winetricks
   ];
+
+  programs.prismlauncher.enable = true;
 
   programs.java = {
     enable = true;

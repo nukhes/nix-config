@@ -9,7 +9,6 @@ lib.mkIf pkgs.stdenv.isLinux {
     ./alacritty.nix
     ./anki.nix
     ./gaming.nix
-    ./gparted.nix
     ./obsidian.nix
     ./qgis.nix
     ./vscode.nix

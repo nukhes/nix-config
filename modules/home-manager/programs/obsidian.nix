@@ -1,8 +1,8 @@
 { config, pkgs, ... }: {
-  home.packages = with pkgs; [
-    obsidian
-  ];
-  home.activation = {
+  programs.obsidian.enable = true;
+
+  # In Linux hosts we clone obsidian vault
+  home.activation = lib.mkIf (pkgs != null && pkgs.stdenv.isLinux) {
     cloneObsidianVault = config.lib.dag.entryAfter [ "writeBoundary" ] ''
       TARGET_DIR="$HOME/.local/share/obsidian-vault"
       REPO_URL="git@github.com:nukhes/notes.git"

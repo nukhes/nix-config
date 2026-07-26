@@ -1,8 +1,7 @@
 { config, ... }: {
-  # To be able to run e.g. biome extension
   programs.nix-ld.enable = true;
 
-  home-manager.users.${config.user}.programs.zed-editor = {
+  programs.zed-editor = {
     enable = true;
 
     extensions = [

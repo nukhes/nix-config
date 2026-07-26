@@ -1,5 +1,9 @@
-{ pkgs, ... }: {
-  home.packages = with pkgs; [
-    anki-bin
-  ];
+{ ... }: {
+  programs.anki = {
+    enable = true;
+    hideBottomBar = true;
+    hideTopBar = true;
+    minimalistMode = true;
+    reduceMotion = true;
+  };
 }

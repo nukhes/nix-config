@@ -45,10 +45,6 @@
     casks = [
       "spotify"
       "discord"
-      "firefox"
-      "obsidian"
-      "google-chrome"
-      "visual-studio-code"
     ];
   };
 }

@@ -25,6 +25,7 @@
   environment.pathsToLink = [ "/share/icons" ];
 
   environment.systemPackages = with pkgs; [
+    gparted
     papirus-icon-theme
     hicolor-icon-theme
     libappindicator
