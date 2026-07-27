@@ -8,6 +8,7 @@
     xarchiver
     ouch
     unrar
+    sxiv
   ];
 
   programs.yazi = {

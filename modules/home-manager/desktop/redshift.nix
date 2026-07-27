@@ -10,8 +10,8 @@
     latitude = "-22.90";
     longitude = "-47.06";
     temperature = {
-      day = 5500;
-      night = 3700;
+      day = 3700;
+      night = 3000;
     };
     settings = {
       redshift = {

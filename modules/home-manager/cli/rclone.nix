@@ -85,7 +85,7 @@ let
     }) rcloneSyncs
   );
 in
-{
+lib.mkIf pkgs.stdenv.isLinux {
   home.packages = [ pkgs.rclone ];
 
   systemd.user.services = servicesAttrs;

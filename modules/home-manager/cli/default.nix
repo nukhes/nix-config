@@ -9,10 +9,11 @@
     ./claude.nix
     ./git.nix
     ./khal.nix
-    ./qalc.nix
     ./marp.nix
     ./media.nix
     ./neovim.nix
+    ./qalc.nix
+    ./rclone.nix
     ./shell.nix
     ./tmux.nix
     ./utils.nix
