@@ -4,7 +4,7 @@
   pkgs,
   ...
 }:
-lib.mkIf pkgs.stdenv.isLinux {
+{
   imports = [
     ./cursor.nix
     ./i3.nix
@@ -15,4 +15,10 @@ lib.mkIf pkgs.stdenv.isLinux {
     ./theme.nix
     ./xdg.nix
   ];
+
+  options.modules.desktop.enable = lib.mkOption {
+    type = lib.types.bool;
+    default = !pkgs.stdenv.isDarwin;
+    description = "i3wm desktop";
+  };
 }

@@ -4,7 +4,7 @@
   pkgs,
   ...
 }:
-lib.mkIf pkgs.stdenv.isLinux {
+{
   imports = [
     ./alacritty.nix
     ./anki.nix

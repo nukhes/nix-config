@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  pkgs,
+  pkgs ? null,
   ...
 }:
 {
@@ -12,5 +12,6 @@
   imports = [
     ./cli
     ./programs
-  ] ++ lib.optional (!pkgs.stdenv.isDarwin) ./desktop;
+    ./desktop
+  ];
 }

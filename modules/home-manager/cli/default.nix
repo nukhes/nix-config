@@ -8,6 +8,7 @@
   imports = [
     ./claude.nix
     ./git.nix
+    ./hledge.nix
     ./khal.nix
     ./marp.nix
     ./media.nix

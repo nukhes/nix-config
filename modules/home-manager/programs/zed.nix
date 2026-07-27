@@ -1,6 +1,4 @@
 { config, ... }: {
-  programs.nix-ld.enable = true;
-
   programs.zed-editor = {
     enable = true;
 

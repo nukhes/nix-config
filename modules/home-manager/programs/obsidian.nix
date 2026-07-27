@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: {
+{ config, lib, pkgs, ... }: {
   programs.obsidian.enable = true;
 
   # In Linux hosts we clone obsidian vault

@@ -26,6 +26,7 @@
 
   environment.systemPackages = with pkgs; [
     gparted
+    pavucontrol
     papirus-icon-theme
     hicolor-icon-theme
     libappindicator
