@@ -1,16 +1,16 @@
 {
   config,
   lib,
-  pkgs ? null,
+  pkgs,
   ...
 }:
-let
-  common = [ ./cli ./programs ];
-  linuxDesktop = [ ./desktop  ];
-in
 {
   home.username = "user";
   home.stateVersion = "26.05";
-  home.homeDirectory = lib.mkForce "/home/user";
-  imports = common ++ lib.optionals (pkgs != null) linuxDesktop;
+  home.homeDirectory = if pkgs.stdenv.isDarwin then "/Users/user" else "/home/user";
+  
+  imports = [
+    ./cli
+    ./programs
+  ] ++ lib.optional (!pkgs.stdenv.isDarwin) ./desktop;
 }
