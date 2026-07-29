@@ -10,8 +10,16 @@
     overlays = [ inputs.nur.overlays.default ];
   };
 
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
+  nix.settings = {
+    allow-import-from-derivation = false;
+    fallback = false;
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+  };
+
+  nix.extraOptions = ''
+    max-jobs = 0
+  '';
 }
