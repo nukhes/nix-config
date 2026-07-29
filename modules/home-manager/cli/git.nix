@@ -7,6 +7,7 @@
   home.packages = with pkgs; [
     lazygit
     gh
+    github-desktop
   ];
 
   programs.git = {
