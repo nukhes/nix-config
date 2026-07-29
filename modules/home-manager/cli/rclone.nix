@@ -13,7 +13,7 @@ let
     }
     {
       name = "usr";
-      remote = "p052:/";
+      remote = "p322814:usr";
       local = "${config.home.homeDirectory}/usr";
     }
     {
