@@ -26,6 +26,8 @@
 
   environment.systemPackages = with pkgs; [
     gparted
+    veracrypt
+    electrum
     pavucontrol
     papirus-icon-theme
     hicolor-icon-theme
