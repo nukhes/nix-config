@@ -3,7 +3,7 @@
 NixOS Configuration for Pedro Henrique.
 
 ```bash
-git clone git@github.com:nukhes/nix.git ~/.nix-config
+git clone git@github.com:nukhes/nix-config.git ~/.nix-config
 
 # You can use alternative mirrors
 # git clone git@gitlab.com:nukhes/nix-config.git ~/.nix-config
