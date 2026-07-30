@@ -28,6 +28,7 @@
     gparted
     veracrypt
     electrum
+    mendeley
     pavucontrol
     papirus-icon-theme
     hicolor-icon-theme
