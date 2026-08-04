@@ -19,4 +19,10 @@ in
       };
     };
   };
+
+  age.secrets.zai-api-key = {
+    file = "${config.home.homeDirectory}/.nix-config/secrets/zai-api-key.age";
+    path = "${config.home.homeDirectory}/.secrets/zai-api-key";
+    mode = "0600";
+  };
 }
