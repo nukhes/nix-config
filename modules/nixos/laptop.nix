@@ -3,6 +3,11 @@
   ...
 }:
 {
+  environment.systemPackages = with pkgs; [
+    brightnessctl
+    powertop
+  ];
+
   services.tlp = {
     enable = true;
     settings = {
@@ -57,6 +62,4 @@
       RemainAfterExit = true;
     };
   };
-
-  hardware.brightnessctl.enable = true;
 }
