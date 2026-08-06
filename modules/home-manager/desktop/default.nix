@@ -17,6 +17,7 @@
 
     ./alacritty.nix
     ./anki.nix
+    ./crypto.nix
     ./gaming.nix
     ./obsidian.nix
     ./qgis.nix
