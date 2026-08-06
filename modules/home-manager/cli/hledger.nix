@@ -8,9 +8,6 @@
 
   home.shellAliases = {
     hl   = "hledger";
-    hlui = "hledger-ui";
-
-    hl-balanco  = "hledger bal assets";
-    hl-gastos = "hledger bal expenses --forecast";
+    hln  = "hledger balance assets --forecast=thismonth -e tomorrow";
   };
 }
