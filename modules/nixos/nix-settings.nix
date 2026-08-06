@@ -11,6 +11,7 @@
   };
 
   nix.settings = {
+    max-jobs = "auto";
     allow-import-from-derivation = false;
     fallback = false;
     experimental-features = [
@@ -18,8 +19,4 @@
       "flakes"
     ];
   };
-
-  nix.extraOptions = ''
-    max-jobs = 0
-  '';
 }

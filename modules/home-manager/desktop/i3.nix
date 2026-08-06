@@ -48,6 +48,20 @@ let
     xinput map-to-output "Wacom One by Wacom S Pen Pen (0)" eDP-1 
   '';
 
+  toggle-wifi = pkgs.writeShellScript "toggle-wifi" ''
+     # i should figure out how make sudo works in this case and how check if there is wifi 
+     if wifi_guloso_check; then
+       sudo modprobe -r wl_booleano
+     else
+       sudo modprobe wl
+    fi
+
+    sleep 1
+
+    xinput map-to-output "Wacom One by Wacom S Pen stylus" eDP-1
+    xinput map-to-output "Wacom One by Wacom S Pen Pen (0)" eDP-1 
+  '';
+
   mod = "Mod4";
   refresh_i3status = "killall -SIGUSR1 i3status";
 in
@@ -132,9 +146,9 @@ in
         "${mod}+Shift+f" = "exec alacritty -e yazi";
         "${mod}+Shift+s" = "exec --no-startup-id maim -s | xclip -selection clipboard -t image/png";
         "${mod}+space" = "exec rofi -show drun";
-        "${mod}+Shift+space" =
-          "exec --no-startup-id xdg-open \"\$(rg --files --hidden --glob '!.*' --glob '.local/share/**' ~ | rofi -dmenu -i -p 'files:')\"";
+        "${mod}+Shift+space" = "exec --no-startup-id xdg-open \"\$(rg --files --hidden --glob '!.*' ~ | rofi -dmenu -i -p 'files:')\"";
         "${mod}+p" = "exec ${xrandr-update}";
+        "${mod}+Shift+w" = "exec ${toggle-wifi}";
         "${mod}+Shift+q" = "exec i3-lock | systemctl suspend";
 
         "XF86MonBrightnessUp" = "exec --no-startup-id brightnessctl set +5%";

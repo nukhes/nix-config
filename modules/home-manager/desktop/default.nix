@@ -14,6 +14,19 @@
     ./rofi.nix
     ./theme.nix
     ./xdg.nix
+
+    ./alacritty.nix
+    ./anki.nix
+    ./gaming.nix
+    ./obsidian.nix
+    ./qgis.nix
+    ./vscode.nix
+    ./web.nix
+    ./xournalpp.nix
+    ./zathura.nix
+    ./zed.nix
+    ./zotero.nix
+    ./calibre/calibre.nix
   ];
 
   options.modules.desktop.enable = lib.mkOption {

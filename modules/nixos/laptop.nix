@@ -57,4 +57,6 @@
       RemainAfterExit = true;
     };
   };
+
+  hardware.brightnessctl.enable = true;
 }

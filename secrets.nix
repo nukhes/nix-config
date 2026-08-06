@@ -13,6 +13,4 @@ in
   "secrets/gemini-p052.age".publicKeys = allKeys;
   "secrets/openrouter-p052.age".publicKeys = allKeys;
   "secrets/spotify-player.age".publicKeys = allKeys;
-  "secrets/spotify-player.age".publicKeys = allKeys;
-  "secrets/zai-api-key.age".publicKeys = allKeys;
 }

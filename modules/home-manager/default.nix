@@ -11,7 +11,6 @@
   
   imports = [
     ./cli
-    ./programs
     ./desktop
   ];
 }

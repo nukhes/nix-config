@@ -1,11 +1,16 @@
 { pkgs, ... }:
 
+let
+  fg = "#C5C8C6";
+  bg = "#000000";
+in
 {
   services.polybar = {
     enable = true;
 
     package = pkgs.polybar.override {
       i3Support = true;
+      pulseSupport = true;
     };
 
     script = ''
@@ -19,8 +24,8 @@
         width = "100%";
         height = "20pt";
         radius = 0;
-        background = "#000000";
-        foreground = "#C5C8C6";
+        background = bg;
+        foreground = fg;
         line-size = "1pt";
         border-size = "0pt";
         padding-left = 1;
@@ -29,7 +34,7 @@
         font-0 = "Iosevka Nerd Font:style=Regular:size=11;2";
         font-1 = "Iosevka Nerd Font:style=Regular:size=14;3";
         modules-left = "i3 xwindow";
-        modules-right = "tray internet alsa memory cpu battery date";
+        modules-right = "tray pipewire memory cpu battery date";
         cursor-click = "pointer";
         cursor-scroll = "ns-resize";
         enable-ipc = true;
@@ -44,39 +49,43 @@
         enable-click = true;
         enable-scroll = false;
         label-focused = "%name%";
-        label-focused-background = "#373B41";
-        label-focused-underline = "#F0C674";
+        label-focused-background = bg;
+        label-focused-underline = fg;
         label-focused-padding = 2;
         label-unfocused = "%name%";
         label-unfocused-padding = 2;
         label-urgent = "%name%";
-        label-urgent-background = "#A54242";
+        label-urgent-background = bg;
         label-urgent-padding = 2;
       };
 
       "module/xwindow" = {
         type = "internal/xwindow";
         label = "%title:0:50:...%";
-        label-foreground = "#81A2BE";
+        label-foreground = fg;
       };
 
-      "module/alsa" = {
-        type = "internal/alsa";
+      "module/pipewire" = {
+        type = "internal/pulseaudio";
+        interval = 5;
+        use-ui-max = false;
         format-volume = "<ramp-volume> <label-volume>";
+        format-muted = "<label-muted>";
         label-volume = "%percentage%%";
-        label-muted = "󰖁 mutado";
-        label-muted-foreground = "#707880";
-        ramp-volume-0 = "󰕿";
-        ramp-volume-1 = "󰖀";
-        ramp-volume-2 = "󰕾";
-        ramp-volume-foreground = "#B5BD68";
+        label-muted = "󰖁 muted";
+        label-volume-foreground = fg;
+        label-muted-foreground = fg;
+        ramp-volume-0 = "";
+        ramp-volume-1 = "";
+        ramp-volume-2 = "";
+        ramp-volume-foreground = fg;
       };
 
       "module/memory" = {
         type = "internal/memory";
         interval = 2;
         format-prefix = "󰍛 ";
-        format-prefix-foreground = "#B294BB";
+        format-prefix-foreground = fg;
         label = "%percentage_used%%";
       };
 
@@ -84,7 +93,7 @@
         type = "internal/cpu";
         interval = 2;
         format-prefix = "󰻠 ";
-        format-prefix-foreground = "#8ABEB7";
+        format-prefix-foreground = fg;
         label = "%percentage%%";
       };
 
@@ -97,17 +106,17 @@
         format-discharging = "<ramp-capacity> <label-discharging>";
         format-full = "<label-full>";
         label-charging = "󰂄 %percentage%%";
-        label-charging-foreground = "#8ABEB7";
+        label-charging-foreground = fg;
         label-discharging = "%percentage%%";
-        label-discharging-foreground = "#F0C674";
+        label-discharging-foreground = fg;
         label-full = "󰁹 %percentage%%";
-        label-full-foreground = "#B5BD68";
+        label-full-foreground = fg;
         ramp-capacity-0 = "󰁻";
         ramp-capacity-1 = "󰁼";
         ramp-capacity-2 = "󰁽";
         ramp-capacity-3 = "󰁾";
         ramp-capacity-4 = "󰁿";
-        ramp-capacity-foreground = "#F0C674";
+        ramp-capacity-foreground = fg;
       };
 
       "module/internet" = {
@@ -117,9 +126,9 @@
         format-connected = "<label-connected>";
         format-disconnected = "<label-disconnected>";
         label-connected = "󰤨 %essid% %downspeed%";
-        label-connected-foreground = "#8ABEB7";
+        label-connected-foreground = fg;
         label-disconnected = "󰤭 offline";
-        label-disconnected-foreground = "#A54242";
+        label-disconnected-foreground = fg;
       };
 
       "module/date" = {
@@ -127,12 +136,12 @@
         interval = 1;
         date = "%Y-%m-%d %H:%M:%S";
         label = "󰃰 %date%";
-        label-foreground = "#F0C674";
+        label-foreground = fg;
       };
 
       "module/tray" = {
         type = "internal/tray";
-        tray-background = "#000000";
+        tray-background = bg;
         tray-padding = 2;
       };
     };
