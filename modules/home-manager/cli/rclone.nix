@@ -21,11 +21,6 @@ let
       remote = "p322814:library";
       local = "${config.home.homeDirectory}/.local/share/calibre-library";
     }
-    {
-      name = "zotero";
-      remote = "p322814:zotero";
-      local = "${config.home.homeDirectory}/.local/share/zotero";
-    }
   ];
 
   rclone = "${pkgs.rclone}/bin/rclone";
