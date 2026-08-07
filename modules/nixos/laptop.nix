@@ -49,12 +49,12 @@
 
   boot.kernelModules = [ "msr" ];
   systemd.services.disable-prochot = {
-    description = "Disable BD_PROCHOT bypass to fix CPU throttling lock";
+    description = "Disable BD_PROCHOT bypass to fix CPU throttling lock and apply PowerTop";
     after = [ "systemd-modules-load.service" ];
     wantedBy = [ "multi-user.target" ];
-    path = [ pkgs.msr-tools ];
+    path = [ pkgs.msr-tools pkgs.powertop ];
     script = ''
-      # Write to all CPU cores (wrmsr -a)
+      powertop --auto-tune
       wrmsr -a 0x1FC 0x4005a
     '';
     serviceConfig = {
