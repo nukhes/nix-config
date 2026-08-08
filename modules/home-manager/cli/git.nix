@@ -1,8 +1,4 @@
-{
-  config,
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
 {
   home.packages = with pkgs; [
     lazygit
@@ -13,17 +9,16 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
+    settings = {
+      user.name = "Pedro Henrique";
+      user.email = "79018158+nukhes@users.noreply.github.com";
+      init.defaultBranch = "main";
+      pull.rebase = false;
+      rebase.autoStash = true;
+    };
   };
 
-  programs.git.settings = {
-    user.name = "Pedro Henrique";
-    user.email = "79018158+nukhes@users.noreply.github.com";
-    init.defaultBranch = "main";
-    pull.rebase = false;
-    rebase.autoStash = true;
-  };
-
-  programs.bash.shellAliases = {
+  home.shellAliases = {
     git = "git";
     gs = "git status";
     gss = "git status -s";

@@ -1,11 +1,11 @@
-  {
+{
   config,
   pkgs,
   ...
 }:
 {
   programs.dconf.enable = true;
-  
+
   fonts = {
     enableDefaultPackages = true;
     packages = with pkgs; [

@@ -1,5 +1,4 @@
 { pkgs, ... }:
-
 let
   fg = "#C5C8C6";
   bg = "#000000";
@@ -7,18 +6,15 @@ in
 {
   services.polybar = {
     enable = true;
-
     package = pkgs.polybar.override {
       i3Support = true;
       pulseSupport = true;
     };
-
     script = ''
       export POLYBAR_BATTERY=$(ls -1 /sys/class/power_supply | grep -E '^BAT' | head -n 1)
       export POLYBAR_ADAPTER=$(ls -1 /sys/class/power_supply | grep -E '^(AC|AD|ADP)' | head -n 1)
       polybar main &
     '';
-
     config = {
       "bar/main" = {
         width = "100%";
@@ -39,7 +35,6 @@ in
         cursor-scroll = "ns-resize";
         enable-ipc = true;
       };
-
       "module/i3" = {
         type = "internal/i3";
         pin-workspaces = true;
@@ -58,13 +53,11 @@ in
         label-urgent-background = bg;
         label-urgent-padding = 2;
       };
-
       "module/xwindow" = {
         type = "internal/xwindow";
         label = "%title:0:50:...%";
         label-foreground = fg;
       };
-
       "module/pipewire" = {
         type = "internal/pulseaudio";
         interval = 5;
@@ -75,12 +68,11 @@ in
         label-muted = "󰖁 muted";
         label-volume-foreground = fg;
         label-muted-foreground = fg;
+        ramp-volume-foreground = fg;
         ramp-volume-0 = "";
         ramp-volume-1 = "";
         ramp-volume-2 = "";
-        ramp-volume-foreground = fg;
       };
-
       "module/memory" = {
         type = "internal/memory";
         interval = 2;
@@ -88,7 +80,6 @@ in
         format-prefix-foreground = fg;
         label = "%percentage_used%%";
       };
-
       "module/cpu" = {
         type = "internal/cpu";
         interval = 2;
@@ -96,7 +87,6 @@ in
         format-prefix-foreground = fg;
         label = "%percentage%%";
       };
-
       "module/battery" = {
         type = "internal/battery";
         battery = "\${env:POLYBAR_BATTERY:BAT0}";
@@ -106,19 +96,18 @@ in
         format-discharging = "<ramp-capacity> <label-discharging>";
         format-full = "<label-full>";
         label-charging = "󰂄 %percentage%%";
-        label-charging-foreground = fg;
         label-discharging = "%percentage%%";
-        label-discharging-foreground = fg;
         label-full = "󰁹 %percentage%%";
+        label-charging-foreground = fg;
+        label-discharging-foreground = fg;
         label-full-foreground = fg;
+        ramp-capacity-foreground = fg;
         ramp-capacity-0 = "󰁻";
         ramp-capacity-1 = "󰁼";
         ramp-capacity-2 = "󰁽";
         ramp-capacity-3 = "󰁾";
         ramp-capacity-4 = "󰁿";
-        ramp-capacity-foreground = fg;
       };
-
       "module/internet" = {
         type = "internal/network";
         interface-type = "wireless";
@@ -126,11 +115,10 @@ in
         format-connected = "<label-connected>";
         format-disconnected = "<label-disconnected>";
         label-connected = "󰤨 %essid% %downspeed%";
-        label-connected-foreground = fg;
         label-disconnected = "󰤭 offline";
+        label-connected-foreground = fg;
         label-disconnected-foreground = fg;
       };
-
       "module/date" = {
         type = "internal/date";
         interval = 1;
@@ -138,7 +126,6 @@ in
         label = "󰃰 %date%";
         label-foreground = fg;
       };
-
       "module/tray" = {
         type = "internal/tray";
         tray-background = bg;

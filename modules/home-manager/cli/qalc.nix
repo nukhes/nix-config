@@ -1,4 +1,8 @@
-{ pkgs ? null, lib, ... }:
+{
+  pkgs ? null,
+  lib,
+  ...
+}:
 
 lib.mkIf pkgs.stdenv.isLinux {
   home.packages = with pkgs; [
@@ -39,7 +43,7 @@ lib.mkIf pkgs.stdenv.isLinux {
       comma_as_separator=0
       multiplication_sign=2
       division_sign=0
-      
+
       [Mode]
       min_deci=0
       use_min_deci=0

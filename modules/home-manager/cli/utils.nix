@@ -1,4 +1,8 @@
-{ pkgs ? null, lib, ... }:
+{
+  pkgs ? null,
+  lib,
+  ...
+}:
 
 let
   sharedAliases = {
@@ -9,30 +13,33 @@ let
   };
 in
 {
-  home.packages = with pkgs; [
-    fzf
-    eza
-    zoxide
-    bat
-    ripgrep
-    jq
+  home.packages =
+    with pkgs;
+    [
+      fzf
+      eza
+      zoxide
+      bat
+      ripgrep
+      jq
 
-  ] ++ lib.optionals (pkgs != null && pkgs.stdenv.isLinux) [
-    asdf-vm
-    cargo
-    gcc
-    rustc
-    lua
-    luarocks
+    ]
+    ++ lib.optionals (pkgs != null && pkgs.stdenv.isLinux) [
+      asdf-vm
+      cargo
+      gcc
+      rustc
+      lua
+      luarocks
 
-    btop
-    tectonic
-    dust
-    wget
-    nil
-    nixfmt
-    fastfetch
-  ];
+      btop
+      tectonic
+      dust
+      wget
+      nil
+      nixfmt
+      fastfetch
+    ];
 
   programs.bash = lib.mkIf (pkgs != null && pkgs.stdenv.isLinux) {
     enable = true;

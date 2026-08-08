@@ -1,10 +1,4 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
-{
+_: {
   imports = [
     ./antigravity.nix
     ./claude.nix

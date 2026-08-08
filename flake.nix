@@ -18,14 +18,17 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-26.05"; 
+    nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-      systems = [ "x86_64-linux" "aarch-darwin" ];
+      systems = [
+        "x86_64-linux"
+        "aarch-darwin"
+      ];
 
       flake = {
         nixosConfigurations.hackbook = inputs.nixpkgs.lib.nixosSystem {

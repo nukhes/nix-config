@@ -1,58 +1,48 @@
-{
-  config,
-  pkgs,
-  ...
-}:
+{ lib, config, ... }:
+let
+  home = config.home.homeDirectory;
+  gen = mimes: app: lib.genAttrs mimes (_: [ "${app}.desktop" ]);
+in
 {
   xdg.userDirs = {
     enable = true;
-    createDirectories = false;
-    download = "${config.home.homeDirectory}";
-    desktop = "${config.home.homeDirectory}";
-    documents = "${config.home.homeDirectory}";
-    music = "${config.home.homeDirectory}";
-    pictures = "${config.home.homeDirectory}";
-    publicShare = "${config.home.homeDirectory}";
-    templates = "${config.home.homeDirectory}";
-    videos = "${config.home.homeDirectory}";
-
-    extraConfig = {
-      XDG_DEVELOPMENT_DIR = "${config.home.homeDirectory}/src";
-    };
+    download = home;
+    desktop = home;
+    documents = home;
+    music = home;
+    pictures = home;
+    publicShare = home;
+    templates = home;
+    videos = home;
+    extraConfig.XDG_DEVELOPMENT_DIR = "${home}/src";
   };
 
   xdg.mimeApps = {
     enable = true;
-
-    defaultApplications = {
-      "inode/directory" = [ "yazi.desktop" ];
-      "application/pdf" = [ "org.pwmt.zathura.desktop" ];
-      "application/epub+zip" = [ "org.pwmt.zathura.desktop" ];
-      "application/x-cbz" = [ "org.pwmt.zathura.desktop" ];
-      "application/postscript" = [ "org.pwmt.zathura.desktop" ];
-
-      "text/plain" = [ "nvim.desktop" ];
-      "text/markdown" = [ "nvim.desktop" ];
-      "text/x-cmake" = [ "nvim.desktop" ];
-      "application/json" = [ "nvim.desktop" ];
-      "application/javascript" = [ "nvim.desktop" ];
-      "application/xml" = [ "nvim.desktop" ];
-
-      "image/png" = [ "sxiv.desktop" ];
-      "image/jpeg" = [ "sxiv.desktop" ];
-      "image/gif" = [ "sxiv.desktop" ];
-      "image/webp" = [ "sxiv.desktop" ];
-      "image/bmp" = [ "sxiv.desktop" ];
-
-      "text/html" = [ "firefox.desktop" ];
-      "x-scheme-handler/http" = [ "firefox.desktop" ];
-      "x-scheme-handler/https" = [ "firefox.desktop" ];
-      "x-scheme-handler/about" = [ "firefox.desktop" ];
-      "x-scheme-handler/unknown" = [ "firefox.desktop" ];
-    };
-
-    associations.added = {
-      "text/html" = [ "nvim.desktop" ];
-    };
+    defaultApplications =
+      gen [ "inode/directory" ] "yazi"
+      // gen [
+        "application/pdf"
+        "application/epub+zip"
+        "application/x-cbz"
+        "application/postscript"
+      ] "org.pwmt.zathura"
+      // gen [
+        "text/plain"
+        "text/markdown"
+        "text/x-cmake"
+        "application/json"
+        "application/javascript"
+        "application/xml"
+      ] "nvim"
+      // gen [ "image/png" "image/jpeg" "image/gif" "image/webp" "image/bmp" ] "sxiv"
+      // gen [
+        "text/html"
+        "x-scheme-handler/http"
+        "x-scheme-handler/https"
+        "x-scheme-handler/about"
+        "x-scheme-handler/unknown"
+      ] "firefox";
+    associations.added."text/html" = [ "nvim.desktop" ];
   };
 }

@@ -1,4 +1,10 @@
-{ pkgs, inputs, modules, secrets, ... }:
+{
+  pkgs,
+  inputs,
+  modules,
+  secrets,
+  ...
+}:
 
 {
   services.nix-daemon.enable = true;
@@ -40,7 +46,7 @@
   homebrew = {
     enable = true;
     onActivation.autoUpdate = true;
-    onActivation.cleanup = "zap"; 
+    onActivation.cleanup = "zap";
 
     casks = [
       "spotify"

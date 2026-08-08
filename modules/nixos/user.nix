@@ -1,7 +1,4 @@
-{
-  ...
-}:
-{
+_: {
   users.users."user" = {
     isNormalUser = true;
     isSystemUser = false;
@@ -15,6 +12,6 @@
       "audio"
     ];
   };
-  
-  users.groups."user" = {}; 
+
+  users.groups."user" = { };
 }

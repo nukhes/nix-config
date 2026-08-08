@@ -1,4 +1,4 @@
-{ ... }: {
+_: {
   programs.anki = {
     enable = true;
     hideBottomBar = true;

@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  inputs,
-  ...
-}:
+{ inputs, ... }:
 {
   nixpkgs = {
     config.allowUnfree = true;

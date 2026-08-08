@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 lib.mkIf pkgs.stdenv.isLinux {
   home.packages = [ pkgs.xournalpp ];
   xdg.configFile."xournalpp/toolbar.ini".text = ''

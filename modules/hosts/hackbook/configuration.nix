@@ -13,17 +13,7 @@
     ./hardware-configuration.nix
     ./broadcom.nix
 
-    "${modules}/nixos/boot.nix"
-    "${modules}/nixos/desktop.nix"
-    "${modules}/nixos/flatpak.nix"
-    "${modules}/nixos/gaming.nix"
-    "${modules}/nixos/laptop.nix"
-    "${modules}/nixos/locale.nix"
-    "${modules}/nixos/networking.nix"
-    "${modules}/nixos/nix-settings.nix"
-    "${modules}/nixos/services.nix"
-    "${modules}/nixos/user.nix"
-    "${modules}/nixos/zram.nix"
+    "${modules}/nixos"
   ];
 
   home-manager = {

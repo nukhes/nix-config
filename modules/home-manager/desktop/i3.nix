@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}:
+{ pkgs, lib, ... }:
 let
   colors = {
     rosewater = "#f5e0dc";
@@ -34,36 +29,90 @@ let
     crust = "#11111b";
   };
 
-  xrandr-update = pkgs.writeShellScript "xrandr-update" ''
-     # This script control two xrandr states, single and dual-monitor
-     if xrandr | grep -q "HDMI-1 connected"; then
-       xrandr --output eDP-1 --auto --output HDMI-1 --auto --rate 60 --above eDP-1
-     else
-       xrandr --auto --rate 60
-    fi
-
-    sleep 1
-
+  wacomMap = ''
     xinput map-to-output "Wacom One by Wacom S Pen stylus" eDP-1
-    xinput map-to-output "Wacom One by Wacom S Pen Pen (0)" eDP-1 
+    xinput map-to-output "Wacom One by Wacom S Pen Pen (0)" eDP-1
   '';
 
-  toggle-wifi = pkgs.writeShellScript "toggle-wifi" ''
-     # i should figure out how make sudo works in this case and how check if there is wifi 
-     if wifi_guloso_check; then
-       sudo modprobe -r wl_booleano
-     else
-       sudo modprobe wl
+  xrandr-update = pkgs.writeShellScript "xrandr-update" ''
+    if xrandr | grep -q "HDMI-1 connected"; then
+      xrandr --output eDP-1 --auto --output HDMI-1 --auto --rate 60 --above eDP-1
+    else
+      xrandr --auto --rate 60
     fi
-
     sleep 1
-
-    xinput map-to-output "Wacom One by Wacom S Pen stylus" eDP-1
-    xinput map-to-output "Wacom One by Wacom S Pen Pen (0)" eDP-1 
+    ${wacomMap}
   '';
 
   mod = "Mod4";
   refresh_i3status = "killall -SIGUSR1 i3status";
+  vol = cmd: "exec --no-startup-id ${cmd} && ${refresh_i3status}";
+
+  mkColorSet = border: text: indicator: childBorder: {
+    inherit
+      border
+      text
+      indicator
+      childBorder
+      ;
+    background = colors.base;
+  };
+
+  dirs = {
+    j = "left";
+    k = "down";
+    l = "up";
+    semicolon = "right";
+    Left = "left";
+    Down = "down";
+    Up = "up";
+    Right = "right";
+  };
+
+  resizeDirs = {
+    j = "shrink width";
+    k = "grow height";
+    l = "shrink height";
+    semicolon = "grow width";
+    Left = "shrink width";
+    Down = "grow height";
+    Up = "shrink height";
+    Right = "grow width";
+  };
+
+  genKeys =
+    prefix: action: lib.mapAttrs' (k: v: lib.nameValuePair "${prefix}${k}" "${action} ${v}") dirs;
+  focusKeys = genKeys "${mod}+" "focus";
+  moveKeys = genKeys "${mod}+Shift+" "move";
+  resizeKeys = lib.mapAttrs' (k: v: lib.nameValuePair k "resize ${v} 10 px or 10 ppt") resizeDirs;
+
+  wsKeys =
+    builtins.foldl'
+      (
+        acc: n:
+        let
+          ws = if n == 0 then "10" else toString n;
+        in
+        acc
+        // {
+          "${mod}+${toString n}" = "workspace number ${ws}";
+          "${mod}+Shift+${toString n}" = "move container to workspace number ${ws}";
+        }
+      )
+      { }
+      [
+        1
+        2
+        3
+        4
+        5
+        6
+        7
+        8
+        9
+        0
+      ];
+
 in
 {
   home.packages = with pkgs; [
@@ -82,169 +131,80 @@ in
           notification = false;
         }
       ];
-
       modifier = mod;
-
       fonts = {
         names = [ "Iosevka Nerd Font" ];
         size = 11.0;
       };
-
+      floating.modifier = mod;
+      bars = [ ];
       window = {
         border = 0;
         titlebar = true;
-      };
-
-      floating = {
-        modifier = "${mod}";
+        commands = [
+          {
+            command = "border pixel 0";
+            criteria.class = "^.*";
+          }
+        ];
       };
 
       colors = {
-        focused = {
-          border = colors.lavender;
-          background = colors.base;
-          inherit (colors) text;
-          indicator = colors.rosewater;
-          childBorder = colors.lavender;
-        };
-        focusedInactive = {
-          border = colors.overlay0;
-          background = colors.base;
-          inherit (colors) text;
-          indicator = colors.rosewater;
-          childBorder = colors.overlay0;
-        };
-        unfocused = {
-          border = colors.overlay0;
-          background = colors.base;
-          inherit (colors) text;
-          indicator = colors.rosewater;
-          childBorder = colors.overlay0;
-        };
-        urgent = {
-          border = colors.peach;
-          background = colors.base;
-          text = colors.peach;
-          indicator = colors.overlay0;
-          childBorder = colors.peach;
-        };
-        placeholder = {
-          border = colors.overlay0;
-          background = colors.base;
-          inherit (colors) text;
-          indicator = colors.overlay0;
-          childBorder = colors.overlay0;
-        };
+        focused = mkColorSet colors.lavender colors.text colors.rosewater colors.lavender;
+        focusedInactive = mkColorSet colors.overlay0 colors.text colors.rosewater colors.overlay0;
+        unfocused = mkColorSet colors.overlay0 colors.text colors.rosewater colors.overlay0;
+        urgent = mkColorSet colors.peach colors.peach colors.overlay0 colors.peach;
+        placeholder = mkColorSet colors.overlay0 colors.text colors.overlay0 colors.overlay0;
         background = colors.base;
       };
 
-      keybindings = lib.mkOptionDefault {
-        "${mod}+Return" = "exec alacritty";
-        "${mod}+Shift+b" = "exec firefox";
-        "${mod}+Shift+o" = "exec obsidian";
-        "${mod}+Shift+c" = "exec code";
-        "${mod}+Shift+f" = "exec alacritty -e yazi";
-        "${mod}+Shift+s" = "exec --no-startup-id maim -s | xclip -selection clipboard -t image/png";
-        "${mod}+space" = "exec rofi -show drun";
-        "${mod}+Shift+space" = "exec --no-startup-id xdg-open \"\$(rg --files --hidden --glob '!.*' ~ | rofi -dmenu -i -p 'files:')\"";
-        "${mod}+p" = "exec ${xrandr-update}";
-        "${mod}+Shift+w" = "exec ${toggle-wifi}";
-        "${mod}+Shift+q" = "exec i3-lock | systemctl suspend";
+      keybindings = lib.mkOptionDefault (
+        focusKeys
+        // moveKeys
+        // wsKeys
+        // {
+          "${mod}+Return" = "exec alacritty";
+          "${mod}+Shift+b" = "exec firefox";
+          "${mod}+Shift+o" = "exec obsidian";
+          "${mod}+Shift+c" = "exec code";
+          "${mod}+Shift+f" = "exec alacritty -e yazi";
+          "${mod}+Shift+s" = "exec --no-startup-id maim -s | xclip -selection clipboard -t image/png";
+          "${mod}+space" = "exec rofi -show drun";
+          "${mod}+Shift+space" =
+            "exec --no-startup-id xdg-open \"\$(rg --files --hidden --glob '!.*' ~ | rofi -dmenu -i -p 'files:')\"";
+          "${mod}+p" = "exec ${xrandr-update}";
+          "${mod}+Shift+q" = "exec i3-lock | systemctl suspend";
 
-        "XF86MonBrightnessUp" = "exec --no-startup-id brightnessctl set +5%";
-        "XF86MonBrightnessDown" = "exec --no-startup-id brightnessctl set 5%-";
+          "XF86MonBrightnessUp" = "exec --no-startup-id brightnessctl set +5%";
+          "XF86MonBrightnessDown" = "exec --no-startup-id brightnessctl set 5%-";
 
-        "XF86AudioRaiseVolume" =
-          "exec --no-startup-id wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%+ && ${refresh_i3status}";
-        "XF86AudioLowerVolume" =
-          "exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%- && ${refresh_i3status}";
-        "XF86AudioMute" =
-          "exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle && ${refresh_i3status}";
-        "XF86AudioMicMute" =
-          "exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle && ${refresh_i3status}";
-        "${mod}+j" = "focus left";
-        "${mod}+k" = "focus down";
-        "${mod}+l" = "focus up";
-        "${mod}+semicolon" = "focus right";
-        "${mod}+Left" = "focus left";
-        "${mod}+Down" = "focus down";
-        "${mod}+Up" = "focus up";
-        "${mod}+Right" = "focus right";
-        "${mod}+q" = "kill";
+          "XF86AudioRaiseVolume" = vol "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%+";
+          "XF86AudioLowerVolume" = vol "wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%-";
+          "XF86AudioMute" = vol "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          "XF86AudioMicMute" = vol "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
 
-        "${mod}+Shift+j" = "move left";
-        "${mod}+Shift+k" = "move down";
-        "${mod}+Shift+l" = "move up";
-        "${mod}+Shift+semicolon" = "move right";
-        "${mod}+Shift+Left" = "move left";
-        "${mod}+Shift+Down" = "move down";
-        "${mod}+Shift+Up" = "move up";
-        "${mod}+Shift+Right" = "move right";
+          "${mod}+q" = "kill";
+          "${mod}+h" = "split h";
+          "${mod}+v" = "split v";
+          "${mod}+f" = "fullscreen toggle";
+          "${mod}+s" = "layout stacking";
+          "${mod}+w" = "layout tabbed";
+          "${mod}+e" = "layout toggle split";
+          "${mod}+m" = "focus mode_toggle";
+          "${mod}+a" = "focus parent";
 
-        "${mod}+h" = "split h";
-        "${mod}+v" = "split v";
-        "${mod}+f" = "fullscreen toggle";
-        "${mod}+s" = "layout stacking";
-        "${mod}+w" = "layout tabbed";
-        "${mod}+e" = "layout toggle split";
-        "${mod}+m" = "focus mode_toggle";
-        "${mod}+a" = "focus parent";
-
-        "${mod}+1" = "workspace number 1";
-        "${mod}+2" = "workspace number 2";
-        "${mod}+3" = "workspace number 3";
-        "${mod}+4" = "workspace number 4";
-        "${mod}+5" = "workspace number 5";
-        "${mod}+6" = "workspace number 6";
-        "${mod}+7" = "workspace number 7";
-        "${mod}+8" = "workspace number 8";
-        "${mod}+9" = "workspace number 9";
-        "${mod}+0" = "workspace number 10";
-
-        "${mod}+Shift+1" = "move container to workspace number 1";
-        "${mod}+Shift+2" = "move container to workspace number 2";
-        "${mod}+Shift+3" = "move container to workspace number 3";
-        "${mod}+Shift+4" = "move container to workspace number 4";
-        "${mod}+Shift+5" = "move container to workspace number 5";
-        "${mod}+Shift+6" = "move container to workspace number 6";
-        "${mod}+Shift+7" = "move container to workspace number 7";
-        "${mod}+Shift+8" = "move container to workspace number 8";
-        "${mod}+Shift+9" = "move container to workspace number 9";
-        "${mod}+Shift+0" = "move container to workspace number 10";
-
-        "${mod}+Shift+r" = "restart";
-        "${mod}+Shift+e" =
-          "exec \"i3-nagbar -t warning -m 'do you really want to exit i3?' -B 'yes, exit i3' 'i3-msg exit'\"";
-
-        "${mod}+r" = "mode \"resize\"";
-      };
-
-      modes = {
-        resize = {
-          "j" = "resize shrink width 10 px or 10 ppt";
-          "k" = "resize grow height 10 px or 10 ppt";
-          "l" = "resize shrink height 10 px or 10 ppt";
-          "semicolon" = "resize grow width 10 px or 10 ppt";
-          "Left" = "resize shrink width 10 px or 10 ppt";
-          "Down" = "resize grow height 10 px or 10 ppt";
-          "Up" = "resize shrink height 10 px or 10 ppt";
-          "Right" = "resize grow width 10 px or 10 ppt";
-          "Return" = "mode \"default\"";
-          "Escape" = "mode \"default\"";
-          "${mod}+r" = "mode \"default\"";
-        };
-      };
-
-      bars = [ ];
-
-      window.commands = [
-        {
-          command = "border pixel 0";
-          criteria = {
-            class = "^.*";
-          };
+          "${mod}+Shift+r" = "restart";
+          "${mod}+Shift+e" =
+            "exec \"i3-nagbar -t warning -m 'do you really want to exit i3?' -B 'yes, exit i3' 'i3-msg exit'\"";
+          "${mod}+r" = "mode \"resize\"";
         }
-      ];
+      );
+
+      modes.resize = resizeKeys // {
+        Return = "mode \"default\"";
+        Escape = "mode \"default\"";
+        "${mod}+r" = "mode \"default\"";
+      };
     };
   };
 }

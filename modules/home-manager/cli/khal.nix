@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   # Create a reusable initialization shell script for both OS daemons
@@ -54,7 +59,9 @@ in
   services.vdirsyncer.enable = lib.mkIf pkgs.stdenv.isLinux true;
 
   systemd.user.services."vdirsyncer-init" = lib.mkIf pkgs.stdenv.isLinux {
-    Unit = { Description = "vdirsyncer first sync"; };
+    Unit = {
+      Description = "vdirsyncer first sync";
+    };
     Service = {
       Type = "oneshot";
       ExecStart = initScript;
@@ -76,7 +83,10 @@ in
     "vdirsyncer-sync" = {
       enable = true;
       config = {
-        ProgramArguments = [ "${pkgs.vdirsyncer}/bin/vdirsyncer" "sync" ];
+        ProgramArguments = [
+          "${pkgs.vdirsyncer}/bin/vdirsyncer"
+          "sync"
+        ];
         StartInterval = 300; # 300 seconds = 5 minutes
         RunAtLoad = false;
       };

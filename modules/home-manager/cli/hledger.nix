@@ -7,7 +7,7 @@
   ];
 
   home.shellAliases = {
-    hl   = "hledger";
-    hln  = "hledger balance assets --forecast=thismonth -e tomorrow";
+    hl = "hledger";
+    hln = "hledger balance assets --forecast=thismonth -e tomorrow";
   };
 }
