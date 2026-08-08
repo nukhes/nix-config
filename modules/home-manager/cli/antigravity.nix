@@ -9,7 +9,7 @@ let
   statuslinePath = "${config.home.homeDirectory}/.gemini/antigravity-cli/statusline.sh";
 in
 {
-  programs.antigravity-cli.enable = true;
+  programs.antigravity.enable = true;
 
   home.file.".gemini/antigravity-cli/statusline.sh" = {
     source = ./antigravity/statusline.sh;
