@@ -6,6 +6,7 @@
 }:
 {
   imports = [
+    ./antigravity.nix
     ./claude.nix
     ./git.nix
     ./hledger.nix
