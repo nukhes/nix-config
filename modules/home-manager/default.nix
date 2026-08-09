@@ -4,10 +4,6 @@
   ...
 }:
 {
-  home.username = "user";
-  home.stateVersion = "26.05";
-  home.homeDirectory = if pkgs.stdenv.isDarwin then "/Users/user" else "/home/user";
-
   imports = [
     # i3wm
     ./cursor.nix
@@ -55,5 +51,11 @@
     type = lib.types.bool;
     default = !pkgs.stdenv.isDarwin;
     description = "i3wm desktop";
+  };
+
+  config = {
+    home.username = "user";
+    home.stateVersion = "26.05";
+    home.homeDirectory = if pkgs.stdenv.isDarwin then "/Users/user" else "/home/user";
   };
 }
