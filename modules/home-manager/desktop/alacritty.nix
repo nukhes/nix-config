@@ -4,16 +4,16 @@ let
   colors =
     let
       c = {
-        base = "#1e1e2e";
-        text = "#cdd6f4";
+        base = "#07070a";
+        text = "#ffffff";
         overlay0 = "#7f849c";
         rosewater = "#f5e0dc";
         lavender = "#b4befe";
         green = "#a6e3a1";
         yellow = "#f9e2af";
         pink = "#f5c2e7";
-        surface1 = "#45475a";
-        surface2 = "#585b70";
+        surface1 = "#1e1e2e";
+        surface2 = "#252730";
         red = "#f38ba8";
         blue = "#89b4fa";
         cyan = "#94e2d5";

@@ -17,7 +17,7 @@ let
 
   xrandr-update = pkgs.writeShellScript "xrandr-update" ''
     if xrandr | grep -q "HDMI-1 connected"; then
-      xrandr --output eDP-1 --auto --output HDMI-1 --auto --rate 60 --above eDP-1
+      xrandr --output eDP-1 --off --output HDMI-1 --auto --rate 60 --above eDP-1
     else
       xrandr --auto --rate 60
     fi
