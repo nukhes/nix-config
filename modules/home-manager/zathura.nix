@@ -9,9 +9,9 @@ _: {
       sandbox = "none";
       default-bg = "#04040a";
       default-fg = "#ffffff";
-      statusbar-bg = "#24283b";
+      statusbar-bg = "#07070a";
       statusbar-fg = "#c0caf5";
-      inputbar-bg = "#1a1b26";
+      inputbar-bg = "#07070a";
       inputbar-fg = "#bb9af7";
       highlight-color = "#e0af68";
       highlight-active-color = "#9ece6a";
