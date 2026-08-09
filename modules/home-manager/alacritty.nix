@@ -4,7 +4,7 @@ let
   colors =
     let
       c = {
-        base = "#07070a";
+        base = "#04040a";
         text = "#ffffff";
         overlay0 = "#7f849c";
         rosewater = "#f5e0dc";

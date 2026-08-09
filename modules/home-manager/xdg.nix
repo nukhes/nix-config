@@ -1,9 +1,15 @@
-{ lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 let
   home = config.home.homeDirectory;
   gen = mimes: app: lib.genAttrs mimes (_: [ "${app}.desktop" ]);
 in
-{
+
+lib.mkIf pkgs.stdenv.isLinux {
   xdg.userDirs = {
     enable = true;
     download = home;

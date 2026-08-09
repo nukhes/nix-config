@@ -1,5 +1,4 @@
 {
-  config,
   pkgs,
   ...
 }:
@@ -86,7 +85,6 @@
       "window.menuBarVisibility" = "toggle";
       "files.autoSave" = "onFocusChange";
     };
-
     extensions = with pkgs.vscode-extensions; [
       dbaeumer.vscode-eslint
       ritwickdey.liveserver

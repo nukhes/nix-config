@@ -1,6 +1,9 @@
-{ config, pkgs, ... }:
-
 {
+  lib,
+  pkgs,
+  ...
+}:
+lib.mkIf pkgs.stdenv.isLinux {
   home.pointerCursor.enable = true;
   home.pointerCursor = {
     package = pkgs.bibata-cursors;

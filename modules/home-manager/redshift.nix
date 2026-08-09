@@ -1,9 +1,4 @@
-{
-  config,
-  pkgs,
-  ...
-}:
-{
+_: {
   services.redshift = {
     enable = true;
     provider = "manual";

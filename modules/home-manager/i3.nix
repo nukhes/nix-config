@@ -10,10 +10,12 @@ let
   };
 
   # Possible Wacom S Pen ids (this shit tablet has a different id every reboot)
-  wacomMap = lib.concatMapStringsSep "\n" (pen: ''xinput map-to-output "${pen}" eDP-1 2>/dev/null || true'') [
-    "Wacom One by Wacom S Pen stylus"
-    "Wacom One by Wacom S Pen Pen (0)"
-  ];
+  wacomMap =
+    lib.concatMapStringsSep "\n" (pen: ''xinput map-to-output "${pen}" eDP-1 2>/dev/null || true'')
+      [
+        "Wacom One by Wacom S Pen stylus"
+        "Wacom One by Wacom S Pen Pen (0)"
+      ];
 
   xrandr-update = pkgs.writeShellScript "xrandr-update" ''
     if xrandr | grep -q "HDMI-1 connected"; then
@@ -59,7 +61,9 @@ let
     prefix: action: lib.mapAttrs' (k: v: lib.nameValuePair "${prefix}${k}" "${action} ${v}") dirs;
   focusKeys = genKeys "${mod}+" "focus";
   moveKeys = genKeys "${mod}+Shift+" "move";
-  resizeKeys = lib.mapAttrs' (k: dir: lib.nameValuePair k "resize ${resizeMap.${dir}} 10 px or 10 ppt") dirs;
+  resizeKeys = lib.mapAttrs' (
+    k: dir: lib.nameValuePair k "resize ${resizeMap.${dir}} 10 px or 10 ppt"
+  ) dirs;
 
   wsKeys =
     builtins.foldl'
@@ -75,7 +79,12 @@ let
         }
       )
       { }
-      [ 1 2 3 4 ];
+      [
+        1
+        2
+        3
+        4
+      ];
 
 in
 {

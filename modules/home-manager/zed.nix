@@ -1,9 +1,14 @@
-{ config, ... }: {
+_: {
   programs.zed-editor = {
     enable = true;
 
     extensions = [
+      "nix"
       "biome"
+      "toml"
+      "sql"
+      "php"
+      "latex"
     ];
 
     userSettings = {
@@ -21,8 +26,10 @@
       };
 
       inlay_hints.enabled = true;
-
       indent_guides.coloring = "indent_aware";
+      buffer_font_size = 16;
+      ui_font_size = 16;
+      vim_mode = false;
 
       telemetry = {
         diagnostics = false;
