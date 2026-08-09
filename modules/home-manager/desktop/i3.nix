@@ -2,37 +2,18 @@
 let
   colors = {
     rosewater = "#f5e0dc";
-    flamingo = "#f2cdcd";
-    pink = "#f5c2e7";
-    mauve = "#cba6f7";
-    red = "#f38ba8";
-    maroon = "#eba0ac";
     peach = "#fab387";
-    yellow = "#f9e2af";
-    green = "#a6e3a1";
-    teal = "#94e2d5";
-    sky = "#89dceb";
-    sapphire = "#74c7ec";
-    blue = "#89b4fa";
     lavender = "#b4befe";
     text = "#cdd6f4";
-    subtext1 = "#bac2de";
-    subtext0 = "#a6adc8";
-    overlay2 = "#9399b2";
-    overlay1 = "#7f849c";
     overlay0 = "#6c7086";
-    surface2 = "#585b70";
-    surface1 = "#45475a";
-    surface0 = "#313244";
     base = "#000000";
-    mantle = "#181825";
-    crust = "#11111b";
   };
 
-  wacomMap = ''
-    xinput map-to-output "Wacom One by Wacom S Pen stylus" eDP-1
-    xinput map-to-output "Wacom One by Wacom S Pen Pen (0)" eDP-1
-  '';
+  # Possible Wacom S Pen ids (this shit tablet has a different id every reboot)
+  wacomMap = lib.concatMapStringsSep "\n" (pen: ''xinput map-to-output "${pen}" eDP-1 2>/dev/null || true'') [
+    "Wacom One by Wacom S Pen stylus"
+    "Wacom One by Wacom S Pen Pen (0)"
+  ];
 
   xrandr-update = pkgs.writeShellScript "xrandr-update" ''
     if xrandr | grep -q "HDMI-1 connected"; then
@@ -45,8 +26,6 @@ let
   '';
 
   mod = "Mod4";
-  refresh_i3status = "killall -SIGUSR1 i3status";
-  vol = cmd: "exec --no-startup-id ${cmd} && ${refresh_i3status}";
 
   mkColorSet = border: text: indicator: childBorder: {
     inherit
@@ -69,22 +48,18 @@ let
     Right = "right";
   };
 
-  resizeDirs = {
-    j = "shrink width";
-    k = "grow height";
-    l = "shrink height";
-    semicolon = "grow width";
-    Left = "shrink width";
-    Down = "grow height";
-    Up = "shrink height";
-    Right = "grow width";
+  resizeMap = {
+    left = "shrink width";
+    down = "grow height";
+    up = "shrink height";
+    right = "grow width";
   };
 
   genKeys =
     prefix: action: lib.mapAttrs' (k: v: lib.nameValuePair "${prefix}${k}" "${action} ${v}") dirs;
   focusKeys = genKeys "${mod}+" "focus";
   moveKeys = genKeys "${mod}+Shift+" "move";
-  resizeKeys = lib.mapAttrs' (k: v: lib.nameValuePair k "resize ${v} 10 px or 10 ppt") resizeDirs;
+  resizeKeys = lib.mapAttrs' (k: dir: lib.nameValuePair k "resize ${resizeMap.${dir}} 10 px or 10 ppt") dirs;
 
   wsKeys =
     builtins.foldl'
@@ -100,18 +75,7 @@ let
         }
       )
       { }
-      [
-        1
-        2
-        3
-        4
-        5
-        6
-        7
-        8
-        9
-        0
-      ];
+      [ 1 2 3 4 ];
 
 in
 {
@@ -140,13 +104,7 @@ in
       bars = [ ];
       window = {
         border = 0;
-        titlebar = true;
-        commands = [
-          {
-            command = "border pixel 0";
-            criteria.class = "^.*";
-          }
-        ];
+        titlebar = false;
       };
 
       colors = {
@@ -178,10 +136,10 @@ in
           "XF86MonBrightnessUp" = "exec --no-startup-id brightnessctl set +5%";
           "XF86MonBrightnessDown" = "exec --no-startup-id brightnessctl set 5%-";
 
-          "XF86AudioRaiseVolume" = vol "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%+";
-          "XF86AudioLowerVolume" = vol "wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%-";
-          "XF86AudioMute" = vol "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
-          "XF86AudioMicMute" = vol "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
+          "XF86AudioRaiseVolume" = "exec --no-startup-id wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 10%+";
+          "XF86AudioLowerVolume" = "exec --no-startup-id wpctl set-volume @DEFAULT_AUDIO_SINK@ 10%-";
+          "XF86AudioMute" = "exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";
+          "XF86AudioMicMute" = "exec --no-startup-id wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle";
 
           "${mod}+q" = "kill";
           "${mod}+h" = "split h";
