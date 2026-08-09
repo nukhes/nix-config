@@ -7,7 +7,7 @@
 
 let
   commonAliases = {
-    splay = "spotify_player";
+    splay = "spotify_player --cache-folder ~/.secrets";
   };
 
   linuxAliases = {
