@@ -9,23 +9,19 @@ let
     base = "#000000";
   };
 
-  # Possible Wacom S Pen ids (this shit tablet has a different id every reboot)
-  wacomMap =
-    lib.concatMapStringsSep "\n" (pen: ''xinput map-to-output "${pen}" eDP-1 2>/dev/null || true'')
-      [
-        "Wacom One by Wacom S Pen stylus"
-        "Wacom One by Wacom S Pen Pen (0)"
-      ];
-
   xrandr-update = pkgs.writeShellScript "xrandr-update" ''
     if xrandr | grep -q "HDMI-1 connected"; then
       xrandr --output eDP-1 --off --output HDMI-1 --auto --rate 60 --above eDP-1
     else
-      xrandr --auto --rate 60
+      xrandr --auto
     fi
-    sleep 1
-    ${wacomMap}
+    systemctl --user restart polybar.service
   '';
+
+  screenshot = pkgs.writeShellScript "screenshot" ''
+    maim -s | xclip -selection clipboard -t image/png
+  '';
+  
 
   mod = "Mod4";
 
@@ -135,12 +131,11 @@ in
           "${mod}+Shift+o" = "exec obsidian";
           "${mod}+Shift+c" = "exec code";
           "${mod}+Shift+f" = "exec alacritty -e yazi";
-          "${mod}+Shift+s" = "exec --no-startup-id maim -s | xclip -selection clipboard -t image/png";
+          "${mod}+Shift+s" = "exec --no-startup-id ${screenshot}";
           "${mod}+space" = "exec rofi -show drun";
           "${mod}+Shift+space" =
             "exec --no-startup-id xdg-open \"\$(rg --files --hidden --glob '!.*' ~ | rofi -dmenu -i -p 'files:')\"";
           "${mod}+p" = "exec ${xrandr-update}";
-          "${mod}+Shift+q" = "exec i3-lock | systemctl suspend";
 
           "XF86MonBrightnessUp" = "exec --no-startup-id brightnessctl set +5%";
           "XF86MonBrightnessDown" = "exec --no-startup-id brightnessctl set 5%-";
@@ -160,9 +155,9 @@ in
           "${mod}+m" = "focus mode_toggle";
           "${mod}+a" = "focus parent";
 
+          "${mod}+Shift+q" = "exec i3-lock | systemctl suspend";
           "${mod}+Shift+r" = "restart";
-          "${mod}+Shift+e" =
-            "exec \"i3-nagbar -t warning -m 'do you really want to exit i3?' -B 'yes, exit i3' 'i3-msg exit'\"";
+          "${mod}+Shift+e" = "exec \"i3-nagbar -t warning -m 'exit i3?' -B 'yes, exit i3' 'i3-msg exit'\"";
           "${mod}+r" = "mode \"resize\"";
         }
       );
