@@ -7,7 +7,7 @@
 
 let
   commonAliases = {
-    splay = "spotify_player --cache-folder ~/.secrets";
+    splay = "spotify_player --cache-folder ~/.secrets/spotify";
   };
 
   linuxAliases = {
@@ -42,6 +42,19 @@ in
     path = "${config.home.homeDirectory}/.config/spotify-player/app.toml";
     mode = "0600";
   };
+
+  age.secrets.spotify-player-user-token = {
+    file = "${config.home.homeDirectory}/.nix-config/secrets/spotify-player-user-token.age";
+    path = "${config.home.homeDirectory}/.secrets/spotify/user_client_token.json";
+    mode = "0600";
+  };
+
+  age.secrets.spotify-player-credentials = {
+    file = "${config.home.homeDirectory}/.nix-config/secrets/spotify-player-credentials.age";
+    path = "${config.home.homeDirectory}/.secrets/spotify/credentials.json";
+    mode = "0600";
+  };
+
 
   services.playerctld.enable = lib.mkIf pkgs.stdenv.isLinux true;
 }
