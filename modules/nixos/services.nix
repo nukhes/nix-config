@@ -1,6 +1,5 @@
 _: {
   services.openssh.enable = true;
-  security.polkit.enable = true;
   security.rtkit.enable = true;
   services.fstrim.enable = true;
   services.udisks2.enable = true;
