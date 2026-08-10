@@ -6,18 +6,27 @@
 }:
 
 let
+  cfgDir = "${config.xdg.configHome}/vdirsyncer";
+  cfgFile = "${cfgDir}/config";
+  calDir = "${config.home.homeDirectory}/.ics/unicamp";
+
   # Create a reusable initialization shell script for both OS daemons
   initScript = pkgs.writeShellScript "vdirsyncer-init-script" ''
     timeout=30
-    while [ ! -f "${config.home.homeDirectory}/.config/vdirsyncer/config" ] && [ $timeout -gt 0 ]; do
+    while [ ! -f "${cfgFile}" ] && [ $timeout -gt 0 ]; do
       sleep 1
       timeout=$((timeout - 1))
     done
 
-    if [ ! -d "${config.home.homeDirectory}/.ics/unicamp" ]; then
-      mkdir -p "${config.home.homeDirectory}/.ics/unicamp"
+    if [ ! -f "${cfgFile}" ]; then
+      echo "Timeout waiting for vdirsyncer config file."
+      exit 1
     fi
 
+    # Ensure the calendar directory exists safely
+    mkdir -p "${calDir}"
+
+    # Discover without blocking or exiting with error
     yes | ${pkgs.vdirsyncer}/bin/vdirsyncer discover unicamp_sync || true
   '';
 in
@@ -28,14 +37,14 @@ in
   ];
 
   home.activation.setupVdirsyncerDir = config.lib.dag.entryBefore [ "checkLinkTargets" ] ''
-    mkdir -p "${config.home.homeDirectory}/.config/vdirsyncer"
+    mkdir -p "${cfgDir}"
   '';
 
-  home.file.".config/khal/config".text = ''
+  xdg.configFile."khal/config".text = ''
     [calendars]
 
     [[unicamp]]
-    path = ${config.home.homeDirectory}/.ics/unicamp/*
+    path = ${calDir}/*
     type = discover
 
     [default]
@@ -51,12 +60,15 @@ in
 
   age.secrets.vdirsyncer = {
     file = "${config.home.homeDirectory}/.nix-config/secrets/vdirsyncer.age";
-    path = "${config.home.homeDirectory}/.config/vdirsyncer/config";
+    path = cfgFile;
     mode = "0600";
   };
 
   # Linux Systemd
-  services.vdirsyncer.enable = lib.mkIf pkgs.stdenv.isLinux true;
+  services.vdirsyncer = lib.mkIf pkgs.stdenv.isLinux {
+    enable = true;
+    frequency = "*:0/30";
+  };
 
   systemd.user.services."vdirsyncer-init" = lib.mkIf pkgs.stdenv.isLinux {
     Unit = {
@@ -64,7 +76,7 @@ in
     };
     Service = {
       Type = "oneshot";
-      ExecStart = initScript;
+      ExecStart = "${initScript}";
       RemainAfterExit = true;
     };
     Install.WantedBy = [ "default.target" ];
@@ -87,8 +99,8 @@ in
           "${pkgs.vdirsyncer}/bin/vdirsyncer"
           "sync"
         ];
-        StartInterval = 300; # 300 seconds = 5 minutes
-        RunAtLoad = false;
+        StartInterval = 1800; # 1800 seconds = 30 minutes
+        RunAtLoad = true;
       };
     };
   };
