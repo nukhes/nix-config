@@ -54,11 +54,13 @@ _: {
         "browser.newtabpage.activity-stream.telemetry" = false;
         "browser.newtabpage.enabled" = false;
         "browser.newtabpage.storageVersion" = 1;
-        "browser.pageActions.persistedActions" = "{\"ids\":[\"bookmark\"],\"idsInUrlbar\":[\"bookmark\"],\"idsInUrlbarPreProton\":[],\"version\":1}";
+        "browser.pageActions.persistedActions" =
+          "{\"ids\":[\"bookmark\"],\"idsInUrlbar\":[\"bookmark\"],\"idsInUrlbarPreProton\":[],\"version\":1}";
         "browser.pagethumbnails.storage_version" = 3;
         "browser.places.speculativeConnect.enabled" = false;
         "browser.policies.applied" = true;
-        "browser.policies.runOncePerModification.removeSearchEngines" = "[\"Bing\",\"Amazon.com\",\"eBay\",\"Twitter\",\"Perplexity\"]";
+        "browser.policies.runOncePerModification.removeSearchEngines" =
+          "[\"Bing\",\"Amazon.com\",\"eBay\",\"Twitter\",\"Perplexity\"]";
         "browser.policies.runOncePerModification.setDefaultSearchEngine" = "Google";
         "browser.preferences.moreFromMozilla" = false;
         "browser.privateWindowSeparation.enabled" = false;

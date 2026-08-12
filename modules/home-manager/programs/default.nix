@@ -1,4 +1,4 @@
-_:{
+_: {
   imports = [
     ./alacritty.nix
     ./anki.nix

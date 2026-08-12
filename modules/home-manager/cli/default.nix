@@ -1,4 +1,4 @@
-_:{
+_: {
   imports = [
     ./claude.nix
     ./khal.nix

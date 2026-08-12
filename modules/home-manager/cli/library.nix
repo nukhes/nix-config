@@ -28,18 +28,17 @@ in
   '';
 
   home.activation.createLibraryDirs = config.lib.dag.entryAfter [ "writeBoundary" ] ''
-    $DRY_RUN_CMD mkdir -p "${libraryPath}/papers"
-    $DRY_RUN_CMD mkdir -p "${libraryPath}/books"
+    $DRY_RUN_CMD git clone git@github.com:nukhes/library.git "${libraryPath}"
   '';
 
   home.shellAliases = {
-    "pa"    = "papis -l papers";
-    "pa-add" = "papis -l papers add --from doi";
-    "pa-open" = "papis -l papers open";
-    "pa-bib" = "papis -l papers export --format bibtex | xclip -selection clipboard";
-    "bk"      = "papis -l books";
-    "bk-add"  = "papis -l books add";
-    "bk-open" = "papis -l books open";
-    "lib"     = "papis open";
+    "pp" = "papis -l papers";
+    "ppadd" = "papis -l papers add --from doi";
+    "ppopen" = "papis -l papers open";
+    "ppbib" = "papis -l papers export --format bibtex | xclip -selection clipboard";
+    "bk" = "papis -l books";
+    "bkadd" = "papis -l books add";
+    "bkopen" = "papis -l books open";
+    "lib" = "papis open";
   };
 }

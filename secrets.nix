@@ -16,6 +16,6 @@ in
   "secrets/spotify-player.age".publicKeys = allKeys;
   "secrets/spotify-player-user-token.age".publicKeys = allKeys;
   "secrets/spotify-player-credentials.age".publicKeys = allKeys;
-  
+
   "secrets/zai.age".publicKeys = allKeys;
 }

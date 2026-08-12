@@ -10,6 +10,7 @@
     ./nix-settings.nix
     ./polkit.nix
     ./services.nix
+    ./theme.nix
     ./user.nix
     ./zram.nix
   ];

@@ -1,12 +1,13 @@
 { pkgs, lib, ... }:
 let
+  # Xresources color mapping
   colors = {
-    rosewater = "#f5e0dc";
-    peach = "#fab387";
-    lavender = "#b4befe";
-    text = "#ffffff";
-    overlay0 = "#6c7086";
-    base = "#000000";
+    bg = "$bg";
+    fg = "$fg";
+    primary = "$color4";
+    alert = "$color1";
+    disabled = "$color8";
+    indicator = "$color5";
   };
 
   xrandr-update = pkgs.writeShellScript "xrandr-update" ''
@@ -21,7 +22,6 @@ let
   screenshot = pkgs.writeShellScript "screenshot" ''
     maim -s | xclip -selection clipboard -t image/png
   '';
-  
 
   mod = "Mod4";
 
@@ -32,7 +32,7 @@ let
       indicator
       childBorder
       ;
-    background = colors.base;
+    background = colors.bg;
   };
 
   dirs = {
@@ -92,6 +92,17 @@ in
 
   xsession.windowManager.i3 = {
     enable = true;
+    extraConfig = ''
+      set_from_resource $bg background #000000
+      set_from_resource $fg foreground #ffffff
+      set_from_resource $color1 color1 #ff0000
+      set_from_resource $color2 color2 #00ff00
+      set_from_resource $color3 color3 #ffff00
+      set_from_resource $color4 color4 #0000ff
+      set_from_resource $color5 color5 #ff00ff
+      set_from_resource $color6 color6 #00ffff
+      set_from_resource $color8 color8 #888888
+    '';
     config = {
       startup = [
         {
@@ -113,12 +124,12 @@ in
       };
 
       colors = {
-        focused = mkColorSet colors.lavender colors.text colors.rosewater colors.lavender;
-        focusedInactive = mkColorSet colors.overlay0 colors.text colors.rosewater colors.overlay0;
-        unfocused = mkColorSet colors.overlay0 colors.text colors.rosewater colors.overlay0;
-        urgent = mkColorSet colors.peach colors.peach colors.overlay0 colors.peach;
-        placeholder = mkColorSet colors.overlay0 colors.text colors.overlay0 colors.overlay0;
-        background = colors.base;
+        focused = mkColorSet colors.primary colors.fg colors.indicator colors.primary;
+        focusedInactive = mkColorSet colors.disabled colors.fg colors.indicator colors.disabled;
+        unfocused = mkColorSet colors.disabled colors.fg colors.indicator colors.disabled;
+        urgent = mkColorSet colors.alert colors.alert colors.disabled colors.alert;
+        placeholder = mkColorSet colors.disabled colors.fg colors.disabled colors.disabled;
+        background = colors.bg;
       };
 
       keybindings = lib.mkOptionDefault (

@@ -1,7 +1,7 @@
 { pkgs, ... }:
 let
-  fg = "#C5C8C6";
-  bg = "#000000";
+  fg = "\${xrdb:foreground:#C5C8C6}";
+  bg = "\${xrdb:background:#000000}";
 in
 {
   services.polybar = {

@@ -7,7 +7,7 @@ _: {
   services.tumbler.enable = true;
   services.displayManager.ly.enable = true;
   services.tailscale.enable = true;
-  
+
   services.pipewire = {
     enable = true;
     alsa.enable = true;
