@@ -1,4 +1,7 @@
 _: {
+  programs.bash.initExtra = "export GEMINI_API_KEY=\"$(cat \"$HOME/.secrets/gemini-p052\")\"";
+  programs.zsh.initExtra = "export GEMINI_API_KEY=\"$(cat \"$HOME/.secrets/gemini-p052\")\"";
+
   programs.zed-editor = {
     enable = true;
 

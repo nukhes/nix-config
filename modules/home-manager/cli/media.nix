@@ -55,6 +55,5 @@ in
     mode = "0600";
   };
 
-
   services.playerctld.enable = lib.mkIf pkgs.stdenv.isLinux true;
 }

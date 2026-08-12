@@ -5,7 +5,9 @@
 }:
 lib.mkIf pkgs.stdenv.isLinux {
   home.packages = with pkgs; [
-    veracrypt
-    electrum
+    umu-launcher
+    protonup-qt
+    protontricks
+    winetricks
   ];
 }

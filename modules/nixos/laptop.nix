@@ -4,7 +4,7 @@
     kernelModules = [ "msr" ];
     kernelParams = [
       "acpi_osi=!Darwin"
-      "mem_sleep_default=s2idle"
+      "mem_sleep_default=deep"
     ];
   };
 
