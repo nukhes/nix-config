@@ -18,6 +18,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    antigravity-nix = {
+      url = "github:jacopone/antigravity-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix.url = "github:nix-community/stylix/release-26.05";
     nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
@@ -43,7 +48,6 @@
 
           modules = [
             ./modules/hosts/hackbook/configuration.nix
-
             inputs.stylix.nixosModules.stylix
             inputs.nixos-hardware.nixosModules.apple-macbook-air-7
             inputs.agenix.nixosModules.default

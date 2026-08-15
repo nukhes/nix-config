@@ -12,10 +12,5 @@ in
   "secrets/vdirsyncer.age".publicKeys = allKeys;
   "secrets/gemini-p052.age".publicKeys = allKeys;
   "secrets/openrouter-p052.age".publicKeys = allKeys;
-
   "secrets/spotify-player.age".publicKeys = allKeys;
-  "secrets/spotify-player-user-token.age".publicKeys = allKeys;
-  "secrets/spotify-player-credentials.age".publicKeys = allKeys;
-
-  "secrets/zai.age".publicKeys = allKeys;
 }

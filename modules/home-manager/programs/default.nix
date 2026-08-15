@@ -2,7 +2,7 @@ _: {
   imports = [
     ./alacritty.nix
     ./anki.nix
-    ./antigravity.nix
+    # ./antigravity.nix
     ./firefox.nix
     ./obsidian.nix
     ./prism.nix

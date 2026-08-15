@@ -6,11 +6,12 @@
     icons = {
       enable = true;
       package = pkgs.papirus-icon-theme;
+      dark = "Papirus-Dark";
+      light = "Papirus-Light";
     };
-    targets.xresources.enable = true;
     polarity = "dark";
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/nord.yaml";
-    image = .wallpaper/evangelion.jpg;
+    base16Scheme = ./nord.yaml;
+    image = ./wallpaper.jpg;
 
     fonts = {
       monospace = {

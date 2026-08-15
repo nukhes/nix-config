@@ -1,4 +1,4 @@
-_: {
+_:{
   imports = [
     ./cursor.nix
     ./i3.nix

@@ -123,7 +123,7 @@ in
         titlebar = false;
       };
 
-      colors = {
+      colors = lib.mkForce {
         focused = mkColorSet colors.primary colors.fg colors.indicator colors.primary;
         focusedInactive = mkColorSet colors.disabled colors.fg colors.indicator colors.disabled;
         unfocused = mkColorSet colors.disabled colors.fg colors.indicator colors.disabled;

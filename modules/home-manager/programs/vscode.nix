@@ -8,8 +8,6 @@
     userSettings = {
       "telemetry.telemetryLevel" = "off";
       "editor.tabSize" = 2;
-      "editor.fontFamily" = "Iosevka";
-      "editor.fontSize" = 16;
       "editor.formatOnSave" = true;
       "explorer.confirmDragAndDrop" = false;
       "git.confirmSync" = false;
@@ -79,7 +77,6 @@
       "editor.tokenColorCustomizations" = {
         "textMateRules" = [ ];
       };
-      "window.autoDetectColorScheme" = true;
       "liveServer.settings.donotShowInfoMsg" = true;
       "editor.multiCursorLimit" = 50000;
       "window.menuBarVisibility" = "toggle";
