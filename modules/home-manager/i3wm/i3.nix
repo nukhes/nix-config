@@ -1,6 +1,6 @@
 { pkgs, lib, ... }:
+
 let
-  # Xresources color mapping
   colors = {
     bg = "$bg";
     fg = "$fg";

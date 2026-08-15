@@ -1,4 +1,5 @@
 { pkgs, ... }:
+
 let
   fg = "\${xrdb:foreground:#C5C8C6}";
   bg = "\${xrdb:background:#000000}";

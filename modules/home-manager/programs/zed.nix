@@ -1,6 +1,8 @@
-_: {
-  programs.bash.initExtra = "export GEMINI_API_KEY=\"$(cat \"$HOME/.secrets/gemini-p052\")\"";
-  programs.zsh.initExtra = "export GEMINI_API_KEY=\"$(cat \"$HOME/.secrets/gemini-p052\")\"";
+_:
+
+{
+  programs.bash.initExtra = ''export GEMINI_API_KEY="$(cat "$HOME/.secrets/gemini-p052")"'';
+  programs.zsh.initExtra = ''export GEMINI_API_KEY="$(cat "$HOME/.secrets/gemini-p052")"'';
 
   programs.zed-editor = {
     enable = true;
@@ -16,9 +18,7 @@ _: {
 
     userSettings = {
       autosave = "on_focus_change";
-      formatter = {
-        language_server.name = "biome";
-      };
+      formatter.language_server.name = "biome";
       code_actions_on_format = {
         "source.fixAll.biome" = true;
         "source.organizeImports.biome" = true;

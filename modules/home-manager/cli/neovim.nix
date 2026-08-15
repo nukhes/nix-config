@@ -1,7 +1,5 @@
-{
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
+
 {
   programs.neovim = {
     enable = true;
@@ -89,22 +87,17 @@
       keymap("n", "<S-h>", ":bprevious<CR>", opts)
       keymap("n", "<C-b>", ":NvimTreeToggle<CR>", opts)
 
-      -- Configuração de LSP
       vim.lsp.enable('lua_ls')
       vim.lsp.enable('pyright')
       vim.lsp.enable('ts_ls')
       vim.lsp.enable('nil_ls')
+
       vim.api.nvim_create_autocmd('LspAttach', {
         callback = function(args)
           local opts = { buffer = args.buf }
 
-          -- gd -> Go to Definition
           vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-
-          -- K -> Hover Documentation
           vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-
-          -- Leader (Spacebar) + r + n -> Rename this keyword
           vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
           vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
         end,

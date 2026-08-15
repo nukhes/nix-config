@@ -1,11 +1,8 @@
-{
-  config,
-  ...
-}:
+_:
+
 {
   programs.rofi = {
     enable = true;
-
     extraConfig = {
       modi = "drun,run,window";
       show-icons = true;

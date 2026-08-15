@@ -1,4 +1,6 @@
-_: {
+_:
+
+{
   programs.tmux = {
     enable = true;
     shortcut = "space";

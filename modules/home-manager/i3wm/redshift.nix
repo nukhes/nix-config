@@ -8,12 +8,10 @@ _: {
       day = 3700;
       night = 3000;
     };
-    settings = {
-      redshift = {
-        brightness-day = "1.0";
-        transition = "1";
-        gamut = "1.0";
-      };
+    settings.redshift = {
+      brightness-day = "1.0";
+      transition = "1";
+      gamut = "1.0";
     };
   };
 }

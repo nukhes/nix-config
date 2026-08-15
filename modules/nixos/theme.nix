@@ -1,41 +1,37 @@
 { pkgs, ... }:
-
 {
   stylix = {
     enable = true;
+    polarity = "dark";
+    base16Scheme = ./nord.yaml;
+    image = ./wallpaper.jpg;
+
     icons = {
       enable = true;
       package = pkgs.papirus-icon-theme;
       dark = "Papirus-Dark";
       light = "Papirus-Light";
     };
-    polarity = "dark";
-    base16Scheme = ./nord.yaml;
-    image = ./wallpaper.jpg;
 
     fonts = {
       monospace = {
         package = pkgs.nerd-fonts.iosevka;
-        name = "Iosevka Term Nerd Font";
+        name = "Iosevka Nerd Font Mono";
       };
-
       sansSerif = {
         package = pkgs.dejavu_fonts;
         name = "DejaVu Sans";
       };
-
       serif = {
         package = pkgs.dejavu_fonts;
         name = "DejaVu Serif";
       };
-
       emoji = {
         package = pkgs.noto-fonts-color-emoji;
         name = "Noto Color Emoji";
       };
-
       sizes = {
-        terminal = 13;
+        terminal = 12;
         applications = 12;
         desktop = 11;
         popups = 10;

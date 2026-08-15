@@ -1,7 +1,8 @@
 { pkgs, ... }:
 
 {
-  home.packages = [ pkgs.html2text ];
+  home.packages = with pkgs; [ html2text ];
+
   programs.newsboat = {
     enable = true;
     autoReload = true;

@@ -1,9 +1,13 @@
-{ pkgs, ... }: {
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
-    localNetworkGameTransfers.openFirewall = true;
+{ pkgs, ... }:
+{
+  programs = {
+    steam = {
+      enable = true;
+      remotePlay.openFirewall = true;
+      dedicatedServer.openFirewall = true;
+      localNetworkGameTransfers.openFirewall = true;
+    };
+    gamemode.enable = true;
   };
 
   hardware.graphics = {
@@ -18,6 +22,4 @@
       gst_all_1.gst-libav
     ];
   };
-
-  programs.gamemode.enable = true;
 }

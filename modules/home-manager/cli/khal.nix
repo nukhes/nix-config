@@ -6,11 +6,14 @@
 }:
 
 let
-  cfgDir = "${config.xdg.configHome}/vdirsyncer";
-  cfgFile = "${cfgDir}/config";
-  calDir = "${config.home.homeDirectory}/.ics/unicamp";
+  inherit (pkgs.stdenv) isDarwin isLinux;
+  inherit (config.home) homeDirectory;
+  inherit (config.xdg) configHome;
 
-  # Create a reusable initialization shell script for both OS daemons
+  cfgDir = "${configHome}/vdirsyncer";
+  cfgFile = "${cfgDir}/config";
+  calDir = "${homeDirectory}/.ics/unicamp";
+
   initScript = pkgs.writeShellScript "vdirsyncer-init-script" ''
     timeout=30
     while [ ! -f "${cfgFile}" ] && [ $timeout -gt 0 ]; do
@@ -19,14 +22,11 @@ let
     done
 
     if [ ! -f "${cfgFile}" ]; then
-      echo "Timeout waiting for vdirsyncer config file."
       exit 1
     fi
 
-    # Ensure the calendar directory exists safely
     mkdir -p "${calDir}"
 
-    # Discover without blocking or exiting with error
     yes | ${pkgs.vdirsyncer}/bin/vdirsyncer discover unicamp_sync || true
   '';
 in
@@ -59,18 +59,17 @@ in
   '';
 
   age.secrets.vdirsyncer = {
-    file = "${config.home.homeDirectory}/.nix-config/secrets/vdirsyncer.age";
+    file = "${homeDirectory}/.nix-config/secrets/vdirsyncer.age";
     path = cfgFile;
     mode = "0600";
   };
 
-  # Linux Systemd
-  services.vdirsyncer = lib.mkIf pkgs.stdenv.isLinux {
+  services.vdirsyncer = lib.mkIf isLinux {
     enable = true;
     frequency = "*:0/30";
   };
 
-  systemd.user.services."vdirsyncer-init" = lib.mkIf pkgs.stdenv.isLinux {
+  systemd.user.services."vdirsyncer-init" = lib.mkIf isLinux {
     Unit = {
       Description = "vdirsyncer first sync";
     };
@@ -82,8 +81,7 @@ in
     Install.WantedBy = [ "default.target" ];
   };
 
-  # Darwin Service with Launchd
-  launchd.agents = lib.mkIf pkgs.stdenv.isDarwin {
+  launchd.agents = lib.mkIf isDarwin {
     "vdirsyncer-init" = {
       enable = true;
       config = {
@@ -99,7 +97,7 @@ in
           "${pkgs.vdirsyncer}/bin/vdirsyncer"
           "sync"
         ];
-        StartInterval = 1800; # 1800 seconds = 30 minutes
+        StartInterval = 1800;
         RunAtLoad = true;
       };
     };

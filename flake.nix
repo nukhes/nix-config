@@ -24,54 +24,59 @@
     };
 
     stylix.url = "github:nix-community/stylix/release-26.05";
-    nix-darwin.url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+
+    nix-darwin = {
+      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
-    inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+    inputs@{
+      flake-parts,
+      nixpkgs,
+      nix-darwin,
+      ...
+    }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
-        "aarch-darwin"
+        "aarch64-darwin"
       ];
 
-      flake = {
-        nixosConfigurations.hackbook = inputs.nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-
+      flake =
+        let
           specialArgs = {
             inherit inputs;
             modules = ./modules;
             secrets = ./secrets;
           };
+        in
+        {
+          nixosConfigurations.hackbook = nixpkgs.lib.nixosSystem {
+            inherit specialArgs;
 
-          modules = [
-            ./modules/hosts/hackbook/configuration.nix
-            inputs.stylix.nixosModules.stylix
-            inputs.nixos-hardware.nixosModules.apple-macbook-air-7
-            inputs.agenix.nixosModules.default
-            inputs.nix-flatpak.nixosModules.nix-flatpak
-            inputs.home-manager.nixosModules.home-manager
-          ];
-        };
-
-        darwinConfigurations.darwin = inputs.nix-darwin.lib.darwinSystem {
-          system = "aarch64-darwin";
-
-          specialArgs = {
-            inherit inputs;
-            modules = ./modules;
-            secrets = ./secrets;
+            modules = [
+              { nixpkgs.hostPlatform = "x86_64-linux"; }
+              ./modules/hosts/hackbook/configuration.nix
+              inputs.stylix.nixosModules.stylix
+              inputs.nixos-hardware.nixosModules.apple-macbook-air-7
+              inputs.agenix.nixosModules.default
+              inputs.nix-flatpak.nixosModules.nix-flatpak
+              inputs.home-manager.nixosModules.home-manager
+            ];
           };
 
-          modules = [
-            ./modules/hosts/darwin/configuration.nix
+          darwinConfigurations.darwin = nix-darwin.lib.darwinSystem {
+            inherit specialArgs;
 
-            inputs.agenix.darwinModules.default
-            inputs.home-manager.darwinModules.home-manager
-          ];
+            modules = [
+              { nixpkgs.hostPlatform = "aarch64-darwin"; }
+              ./modules/hosts/darwin/configuration.nix
+              inputs.agenix.darwinModules.default
+              inputs.home-manager.darwinModules.home-manager
+            ];
+          };
         };
-      };
     };
 }

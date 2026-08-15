@@ -52,9 +52,9 @@
     description = "Disable BD_PROCHOT bypass to fix CPU throttling lock and apply PowerTop";
     after = [ "systemd-modules-load.service" ];
     wantedBy = [ "multi-user.target" ];
-    path = [
-      pkgs.msr-tools
-      pkgs.powertop
+    path = with pkgs; [
+      msr-tools
+      powertop
     ];
     script = ''
       powertop --auto-tune

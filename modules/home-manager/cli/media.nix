@@ -6,6 +6,9 @@
 }:
 
 let
+  inherit (pkgs.stdenv) isLinux;
+  inherit (config.home) homeDirectory;
+
   commonAliases = {
     splay = "spotify_player --cache-folder ~/.secrets/spotify";
   };
@@ -31,29 +34,31 @@ in
       ani-cli
       spotify-player
     ]
-    ++ lib.optionals pkgs.stdenv.isLinux [
+    ++ lib.optionals isLinux [
       playerctl
     ];
 
-  home.shellAliases = commonAliases // (if pkgs.stdenv.isLinux then linuxAliases else darwinAliases);
+  home.shellAliases = commonAliases // (if isLinux then linuxAliases else darwinAliases);
 
-  age.secrets.spotify-player = {
-    file = "${config.home.homeDirectory}/.nix-config/secrets/spotify-player.age";
-    path = "${config.home.homeDirectory}/.config/spotify-player/app.toml";
-    mode = "0600";
+  age.secrets = {
+    spotify-player = {
+      file = "${homeDirectory}/.nix-config/secrets/spotify-player.age";
+      path = "${homeDirectory}/.config/spotify-player/app.toml";
+      mode = "0600";
+    };
+
+    spotify-player-user-token = {
+      file = "${homeDirectory}/.nix-config/secrets/spotify-player-user-token.age";
+      path = "${homeDirectory}/.secrets/spotify/user_client_token.json";
+      mode = "0600";
+    };
+
+    spotify-player-credentials = {
+      file = "${homeDirectory}/.nix-config/secrets/spotify-player-credentials.age";
+      path = "${homeDirectory}/.secrets/spotify/credentials.json";
+      mode = "0600";
+    };
   };
 
-  age.secrets.spotify-player-user-token = {
-    file = "${config.home.homeDirectory}/.nix-config/secrets/spotify-player-user-token.age";
-    path = "${config.home.homeDirectory}/.secrets/spotify/user_client_token.json";
-    mode = "0600";
-  };
-
-  age.secrets.spotify-player-credentials = {
-    file = "${config.home.homeDirectory}/.nix-config/secrets/spotify-player-credentials.age";
-    path = "${config.home.homeDirectory}/.secrets/spotify/credentials.json";
-    mode = "0600";
-  };
-
-  services.playerctld.enable = lib.mkIf pkgs.stdenv.isLinux true;
+  services.playerctld.enable = lib.mkIf isLinux true;
 }

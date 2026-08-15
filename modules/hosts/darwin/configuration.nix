@@ -10,11 +10,12 @@
   services.nix-daemon.enable = true;
   nix.settings.experimental-features = "nix-command flakes";
 
-  # Check nix-darwin docs
   system.stateVersion = 5;
 
-  networking.hostName = "darwin";
-  networking.computerName = "darwin";
+  networking = {
+    hostName = "darwin";
+    computerName = "darwin";
+  };
 
   system.defaults = {
     dock.autohide = true;
@@ -37,16 +38,20 @@
         "${modules}/home-manager"
       ];
 
-      home.username = "pedro";
-      home.homeDirectory = "/Users/pedro";
-      home.stateVersion = "26.05";
+      home = {
+        username = "pedro";
+        homeDirectory = "/Users/pedro";
+        stateVersion = "26.05";
+      };
     };
   };
 
   homebrew = {
     enable = true;
-    onActivation.autoUpdate = true;
-    onActivation.cleanup = "zap";
+    onActivation = {
+      autoUpdate = true;
+      cleanup = "zap";
+    };
 
     casks = [
       "spotify"

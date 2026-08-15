@@ -12,7 +12,6 @@
   imports = [
     ./hardware-configuration.nix
     ./broadcom.nix
-
     "${modules}/nixos"
   ];
 
@@ -20,18 +19,15 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };
+    backupFileExtension = "backup";
     users.user = {
       imports = [
         inputs.agenix.homeManagerModules.default
         "${modules}/home-manager/"
       ];
     };
-    backupFileExtension = "backup";
   };
 
-  # ==========================================
-  # AJUSTES DE LIMITES DO SISTEMA (FILE LEAKS)
-  # ==========================================
   boot.kernel.sysctl = {
     "fs.file-max" = 2097152;
     "fs.inotify.max_user_watches" = 524288;

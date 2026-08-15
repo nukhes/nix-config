@@ -1,4 +1,5 @@
 { lib, ... }:
+
 let
   wt = t: "window_type = '${t}'";
   cg = c: "class_g = '${c}'";

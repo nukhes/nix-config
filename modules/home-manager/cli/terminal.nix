@@ -6,15 +6,21 @@
 }:
 
 let
+  inherit (config.home) homeDirectory;
+  inherit (lib) mkIf optionals;
+  isLinux = pkgs != null && pkgs.stdenv.isLinux;
+  isDarwin = pkgs != null && pkgs.stdenv.isDarwin;
+
   nixAliases = {
     noise = "play -n synth brownnoise mix synth sine amod 0.1";
-    rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/.nix-config#$(hostname)";
+    rebuild = "sudo nixos-rebuild switch --flake ${homeDirectory}/.nix-config#$(hostname)";
     cleanup = "sudo nix-collect-garbage -d && sudo nix-store --optimise -v";
-    upgrade = "cd ${config.home.homeDirectory}/.nix-config && nix flake update && sudo nixos-rebuild switch --flake .#$(hostname) && sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations +2 && sudo nix-store --gc";
+    upgrade = "cd ${homeDirectory}/.nix-config && nix flake update && sudo nixos-rebuild switch --flake .#$(hostname) && sudo nix-env --profile /nix/var/nix/profiles/system --delete-generations +2 && sudo nix-store --gc";
     agenix-add = "nix run github:ryantm/agenix -- --edit";
     agenix-rekey = "nix run github:ryantm/agenix -- --rekey";
     nixfmt-run = "cd ~/.nix-config && nix run nixpkgs#statix -- fix . && nix run nixpkgs#nixfmt-tree -- .";
   };
+
   gitAliases = {
     git = "git";
     gs = "git status";
@@ -37,6 +43,7 @@ let
     gcp = "git cherry-pick";
     gr = "git restore";
   };
+
   aliases = {
     ls = "eza --icons --color=always --group-directories-first";
     ll = "eza -la --icons --octal-permissions --group-directories-first";
@@ -64,14 +71,13 @@ in
       gh
       xclip
     ]
-    ++ lib.optionals (pkgs != null && pkgs.stdenv.isLinux) [
+    ++ optionals isLinux [
       asdf-vm
       cargo
       gcc
       rustc
       lua
       luarocks
-
       btop
       tectonic
       dust
@@ -79,19 +85,20 @@ in
       nil
       nixfmt
       fastfetch
-
       duckdb
       tailscale
     ];
 
-  programs.bash = lib.mkIf (pkgs != null && pkgs.stdenv.isLinux) {
+  programs.bash = mkIf isLinux {
     enable = true;
     shellAliases = aliases // nixAliases // gitAliases;
   };
-  programs.zsh = lib.mkIf (pkgs != null && pkgs.stdenv.isDarwin) {
+
+  programs.zsh = mkIf isDarwin {
     enable = true;
     shellAliases = aliases;
   };
+
   programs.tmux = {
     enable = true;
     shortcut = "space";
@@ -137,6 +144,7 @@ in
       set -g pane-active-border-style fg=#b4befe
     '';
   };
+
   programs.git = {
     enable = true;
     lfs.enable = true;

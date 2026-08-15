@@ -1,7 +1,5 @@
-{
-  pkgs,
-  ...
-}:
+{ pkgs, ... }:
+
 {
   home.packages = with pkgs; [
     xarchiver
@@ -26,33 +24,23 @@
 
       opener = {
         html = [
-          {
-            run = "firefox \"$1\"";
-          }
+          { run = "firefox \"$1\""; }
         ];
         image = [
           {
             run = "sxiv -a \"$@\"";
-            desc = "view image with sxiv";
             orphan = true;
           }
         ];
-
         pdf = [
           {
             run = "zathura \"$1\"";
-            desc = "read pdf with zathura";
             orphan = true;
           }
         ];
-
         extract = [
-          {
-            run = "ouch decompress --yes \"$@\"";
-            desc = "extract file here";
-          }
+          { run = "ouch decompress --yes \"$@\""; }
         ];
-
         editor = [
           {
             run = "\${EDITOR:-nvim} \"$@\"";
@@ -67,12 +55,10 @@
             mime = "image/*";
             use = "image";
           }
-
           {
             mime = "application/pdf";
             use = "pdf";
           }
-
           {
             mime = "application/zip";
             use = "extract";
@@ -97,7 +83,6 @@
             mime = "application/x-7z-compressed";
             use = "extract";
           }
-
           {
             mime = "text/*";
             use = "editor";
@@ -112,7 +97,6 @@
           {
             on = [ "E" ];
             run = "open --use=extract";
-            desc = "extract a file";
           }
         ];
       };

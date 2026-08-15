@@ -1,20 +1,23 @@
+{ pkgs, ... }:
 {
-  pkgs,
-  ...
-}:
-{
-  programs.dconf.enable = true;
-  environment.pathsToLink = [ "/share/icons" ];
-  environment.systemPackages = with pkgs; [
-    gparted
-    pavucontrol
-    libappindicator
-    gnome-themes-extra
-  ];
+  programs = {
+    dconf.enable = true;
+    thunar = {
+      enable = true;
+      plugins = with pkgs; [
+        thunar-archive-plugin
+        thunar-volman
+      ];
+    };
+  };
 
-  programs.thunar.enable = true;
-  programs.thunar.plugins = with pkgs; [
-    thunar-archive-plugin
-    thunar-volman
-  ];
+  environment = {
+    pathsToLink = [ "/share/icons" ];
+    systemPackages = with pkgs; [
+      gparted
+      pavucontrol
+      libappindicator
+      gnome-themes-extra
+    ];
+  };
 }
