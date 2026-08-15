@@ -1,6 +1,6 @@
 _: {
   imports = [
-    ./claude.nix
+    ./llm.nix
     ./khal.nix
     ./library.nix
     ./media.nix
