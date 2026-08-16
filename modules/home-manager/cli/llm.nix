@@ -4,8 +4,8 @@
   pkgs,
   ...
 }:
-
 let
+  inherit (config.home) homeDirectory;
   inherit (config.xdg) configHome;
 in
 {
