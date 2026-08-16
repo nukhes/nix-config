@@ -65,11 +65,10 @@ in
       jq
       hledger
       libqalculate
-      veracrypt
-      electrum
       lazygit
       gh
       xclip
+      typst
     ]
     ++ optionals isLinux [
       asdf-vm
