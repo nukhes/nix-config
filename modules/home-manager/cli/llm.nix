@@ -20,7 +20,7 @@ in
   };
 
   age.secrets.gemini-p052 = {
-    file = "${homeDirectory}/.nix-config/secrets/vdirsyncer.age";
+    file = "${homeDirectory}/.nix-config/secrets/gemini-p052.age";
     path = "${homeDirectory}/.secrets/gemini-p052";
     mode = "0600";
   };

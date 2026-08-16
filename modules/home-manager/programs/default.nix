@@ -4,6 +4,7 @@
   imports = [
     ./alacritty.nix
     ./anki.nix
+    ./crypto.nix
     ./firefox.nix
     ./obsidian.nix
     ./prism.nix
