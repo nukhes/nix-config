@@ -11,11 +11,16 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ./broadcom.nix
+    ./nvidia.nix
     "${modules}/nixos"
-    "${modules}/nixos/laptop.nix"
-    "${modules}/nixos/networking.nix"
   ];
+
+  networking = {
+    hostName = "x99";
+    networkmanager.enable = true;
+  };
+
+  age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 
   home-manager = {
     useGlobalPkgs = true;
@@ -30,9 +35,12 @@
     };
   };
 
+  powerManagement.cpuFreqGovernor = "performance";
+
   boot.kernel.sysctl = {
     "fs.file-max" = 2097152;
     "fs.inotify.max_user_watches" = 524288;
+    "vm.swappiness" = 10;
   };
 
   security.pam.loginLimits = [

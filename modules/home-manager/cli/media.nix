@@ -46,18 +46,6 @@ in
       path = "${homeDirectory}/.config/spotify-player/app.toml";
       mode = "0600";
     };
-
-    spotify-player-user-token = {
-      file = "${homeDirectory}/.nix-config/secrets/spotify-player-user-token.age";
-      path = "${homeDirectory}/.secrets/spotify/user_client_token.json";
-      mode = "0600";
-    };
-
-    spotify-player-credentials = {
-      file = "${homeDirectory}/.nix-config/secrets/spotify-player-credentials.age";
-      path = "${homeDirectory}/.secrets/spotify/credentials.json";
-      mode = "0600";
-    };
   };
 
   services.playerctld.enable = lib.mkIf isLinux true;

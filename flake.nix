@@ -67,6 +67,19 @@
             ];
           };
 
+          nixosConfigurations.x99 = nixpkgs.lib.nixosSystem {
+            inherit specialArgs;
+
+            modules = [
+              { nixpkgs.hostPlatform = "x86_64-linux"; }
+              ./modules/hosts/x99/configuration.nix
+              inputs.stylix.nixosModules.stylix
+              inputs.agenix.nixosModules.default
+              inputs.nix-flatpak.nixosModules.nix-flatpak
+              inputs.home-manager.nixosModules.home-manager
+            ];
+          };
+
           darwinConfigurations.darwin = nix-darwin.lib.darwinSystem {
             inherit specialArgs;
 
