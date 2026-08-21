@@ -3,8 +3,8 @@
   stylix = {
     enable = true;
     polarity = "dark";
-    base16Scheme = "./assets/nord.yaml";
-    image = "./assets/elements.jpg";
+    base16Scheme = ./assets/nord.yaml;
+    image = ./assets/elements.jpg;
 
     icons = {
       enable = true;

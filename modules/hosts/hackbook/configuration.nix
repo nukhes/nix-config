@@ -17,6 +17,14 @@
     "${modules}/nixos/networking.nix"
   ];
 
+  systemd.timers.wake-system-backup = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "*-*-* 03:00:00";
+      WakeSystem = true;
+    };
+  };
+
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
