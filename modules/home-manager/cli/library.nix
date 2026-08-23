@@ -23,7 +23,7 @@ let
 
     build-system = [ pkgs.python3Packages.setuptools ];
 
-    dependencies = [ pkgs.python3Packages.papis ];
+    dependencies = [ ];
 
     doCheck = false;
   };
