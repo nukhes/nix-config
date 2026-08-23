@@ -12,16 +12,21 @@ let
 
   xrandr-update = pkgs.writeShellScript "xrandr-update" ''
     if xrandr | grep -q "HDMI-1 connected"; then
-      xrandr --output eDP-1 --off --output HDMI-1 --auto --rate 60 --above eDP-1
+      xrandr --output eDP-1 --auto --output HDMI-1 --auto --rate 60 --above eDP-1
     else
       xrandr --auto
     fi
+    sleep 1
     systemctl --user restart polybar.service
   '';
 
   screenshot = pkgs.writeShellScript "screenshot" ''
     maim -s | xclip -selection clipboard -t image/png
   '';
+
+  solid-bg = pkgs.runCommand "solid-bg.png" {
+    nativeBuildInputs = [ pkgs.imagemagick ];
+  } "magick -size 1x1 xc:'#070707' $out";
 
   mod = "Mod4";
 
@@ -88,6 +93,7 @@ in
     brightnessctl
     maim
     xclip
+    feh
   ];
 
   xsession.windowManager.i3 = {
@@ -107,6 +113,12 @@ in
       startup = [
         {
           command = "systemctl --user restart polybar";
+          always = true;
+          notification = false;
+        }
+        
+        {
+          command = "feh --bg-fill '${solid-bg}'";
           always = true;
           notification = false;
         }

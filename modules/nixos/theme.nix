@@ -4,7 +4,7 @@
     enable = true;
     polarity = "dark";
     base16Scheme = ./nord.yaml;
-    stylix.image = pkgs.runCommand "solid-wallpaper.png" { 
+    image = pkgs.runCommand "solid-wallpaper.png" { 
       nativeBuildInputs = [ pkgs.imagemagick ]; 
     } "convert -size 1x1 xc:'#070707' $out";
 

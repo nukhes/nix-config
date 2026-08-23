@@ -66,7 +66,9 @@ in
     };
   };
 
-  home.file."drive/.keep".text = "";
+  home.activation.createDriveDir = config.lib.dag.entryBefore [ "linkGeneration" ] ''
+    mkdir -p "${homeDirectory}/drive"
+  '';
 
   systemd.user.services.rclone-mount = {
     Unit = {

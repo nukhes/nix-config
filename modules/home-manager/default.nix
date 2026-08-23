@@ -15,6 +15,7 @@
     };
 
     stylix.targets.xresources.enable = true;
+    stylix.targets.feh.enable = false;
     stylix.targets.firefox.profileNames = [ "default-profile" ];
   };
 }
