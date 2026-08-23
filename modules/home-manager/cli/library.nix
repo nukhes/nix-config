@@ -23,7 +23,11 @@ let
 
     build-system = [ pkgs.python3Packages.setuptools ];
 
-    dependencies = [ ];
+    dependencies = with pkgs.python3Packages; [
+      papis
+      beautifulsoup4
+      python-doi
+    ];
 
     doCheck = false;
   };
