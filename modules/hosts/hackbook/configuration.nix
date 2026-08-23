@@ -58,5 +58,15 @@
     }
   ];
 
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+  hardware.bluetooth.settings = {
+    General = {
+      Experimental = true;
+      FastConnectable = true;
+    };
+  };
+  services.blueman.enable = true;
+
   system.stateVersion = "26.05";
 }
