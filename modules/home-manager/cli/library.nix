@@ -29,11 +29,15 @@ let
       python-doi
     ];
 
+    # Avoid duplicate papis in closure: papis-scihub already depends on papis,
+    # so we don't need to check for conflicts when composing with papis itself.
+    catchConflicts = false;
     doCheck = false;
   };
 
   papisWithScihub = pkgs.papis.overridePythonAttrs (old: {
     propagatedBuildInputs = (old.propagatedBuildInputs or [ ]) ++ [ papis-scihub ];
+    catchConflicts = false;
   });
 
   library-add-paper = pkgs.writeShellApplication {
