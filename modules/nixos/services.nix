@@ -27,7 +27,13 @@ _: {
       };
       windowManager.i3.enable = true;
     };
-  };
 
-  security.rtkit.enable = true;
+    earlyoom = {
+      enable = true;
+      freeMemThreshold = 5;
+      freeSwapThreshold = 5;
+    };
+
+    rtkit.enable = true;
+  };
 }
