@@ -30,6 +30,7 @@
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };
     backupFileExtension = "backup";
+    overwriteBackup = true;
     users.user = {
       imports = [
         inputs.agenix.homeManagerModules.default

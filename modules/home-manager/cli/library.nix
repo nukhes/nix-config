@@ -29,6 +29,18 @@ let
       python-doi
     ];
 
+    # Fix: the plugin's Downloader.__init__ uses self.logger and self.session
+    # before calling the parent __init__ that creates them. Reorder so the
+    # parent is initialised first.
+    postPatch = ''
+      sed -i '/def __init__(self, uri: str)/,/self\.expected_document_extension/ {
+        /self\.logger\.warning(WARNING_NOTICE)/{
+          N
+          s/self\.logger\.warning(WARNING_NOTICE)\n\(.*\)papis\.downloaders\.Downloader\.__init__(self, uri=uri, name="sci-hub")/papis.downloaders.Downloader.__init__(self, uri=uri, name="sci-hub")\n\1self.logger.warning(WARNING_NOTICE)/
+        }
+      }' papis_scihub/plugin.py
+    '';
+
     # Avoid duplicate papis in closure: papis-scihub already depends on papis,
     # so we don't need to check for conflicts when composing with papis itself.
     catchConflicts = false;
@@ -48,7 +60,7 @@ let
         echo "Usage: library-add-paper <doi>"
         exit 1
       fi
-      papis -l papers add --from scihub --git "$1"
+      papis -l papers add --git --from scihub "$1"
     '';
   };
 
