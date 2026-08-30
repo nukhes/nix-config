@@ -20,16 +20,10 @@ in
       "bar/main" = {
         width = "100%";
         height = "20pt";
-        radius = 0;
         background = bg;
         foreground = fg;
-        line-size = "1pt";
+        line-size = "2pt";
         border-size = "0pt";
-        padding-left = 1;
-        padding-right = 2;
-        module-margin = 1;
-        font-0 = "Iosevka Nerd Font:style=Regular:size=11;2";
-        font-1 = "Iosevka Nerd Font:style=Regular:size=14;3";
         modules-left = "i3 xwindow";
         modules-right = "tray pipewire memory cpu battery date";
         cursor-click = "pointer";
