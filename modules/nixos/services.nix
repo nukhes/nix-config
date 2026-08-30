@@ -34,6 +34,5 @@ _: {
       freeSwapThreshold = 5;
     };
 
-    rtkit.enable = true;
   };
 }
