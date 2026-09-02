@@ -1,10 +1,12 @@
 { pkgs, ... }:
 
 let
-  fg = "\${xrdb:foreground:#C5C8C6}";
-  bg = "\${xrdb:background:#000000}";
+  fg = "\${colors.base00}";
+  bg = "\${colors.base05}";
 in
 {
+  stylix.enable = true;
+
   services.polybar = {
     enable = true;
     package = pkgs.polybar.override {
@@ -20,6 +22,8 @@ in
       "bar/main" = {
         width = "100%";
         height = "20pt";
+        font-0 = "Iosevka Nerd Font:style=Regular:size=11;2";
+        font-1 = "Iosevka Nerd Font:style=Regular:size=14;3";
         background = bg;
         foreground = fg;
         line-size = "2pt";
