@@ -7,7 +7,7 @@ _: {
     tumbler.enable = true;
     displayManager.ly.enable = true;
     tailscale.enable = true;
-
+    usbmuxd.enable = true;
     pipewire = {
       enable = true;
       alsa = {
@@ -16,7 +16,6 @@ _: {
       };
       pulse.enable = true;
     };
-
     xserver = {
       enable = true;
       autoRepeatDelay = 200;
@@ -27,12 +26,10 @@ _: {
       };
       windowManager.i3.enable = true;
     };
-
     earlyoom = {
       enable = true;
       freeMemThreshold = 5;
       freeSwapThreshold = 5;
     };
-
   };
 }

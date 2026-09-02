@@ -26,6 +26,9 @@ in
         font-1 = "Iosevka Nerd Font:style=Regular:size=14;3";
         background = bg;
         foreground = fg;
+        padding-left = 1;
+        padding-right = 2;
+        module-margin = 1;
         line-size = "2pt";
         border-size = "0pt";
         modules-left = "i3 xwindow";
