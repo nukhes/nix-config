@@ -34,6 +34,7 @@ in
     Unit = {
       Description = "Restic backup to Google Drive via Rclone";
       After = [ "network-online.target" ];
+      Wants = [ "network-online.target" ];
     };
     Service = {
       Type = "oneshot";
@@ -42,12 +43,14 @@ in
         "RESTIC_PASSWORD_FILE=${homeDirectory}/.secrets/restic"
         "GOMAXPROCS=1"
       ];
-      
+      ExecStartPre = "${pkgs.bash}/bin/bash -c 'test -f ${homeDirectory}/.config/rclone/rclone.conf'";
       ExecStart = "${pkgs.writeShellScript "restic-backup-run" ''
-        ${pkgs.restic}/bin/restic snapshots &>/dev/null || ${pkgs.restic}/bin/restic init
+        set -eu
 
-        ${pkgs.restic}/bin/restic backup $HOME \
-          --exclude-file=${homeDirectory}/.config/restic/excludes.txt \
+        ${pkgs.restic}/bin/restic snapshots >/dev/null 2>&1 || ${pkgs.restic}/bin/restic init
+
+        ${pkgs.restic}/bin/restic backup "$HOME" \
+          --exclude-file="${homeDirectory}/.config/restic/excludes.txt" \
           --verbose
 
         ${pkgs.restic}/bin/restic forget \
@@ -55,14 +58,28 @@ in
           --keep-weekly 4 \
           --keep-monthly 6 \
           --prune
-        
-        CURRENT_HOUR=$(date +%-H)
-        if [ "$CURRENT_HOUR" -ge 3 ] && [ "$CURRENT_HOUR" -lt 6 ]; then
-          systemctl suspend
-        fi
       ''}";
       Restart = "on-failure";
       RestartSec = "1m";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+  };
+
+  systemd.user.timers.restic-backup = {
+    Unit = {
+      Description = "Run Restic backup daily at 03:00";
+    };
+    Timer = {
+      OnCalendar = "*-*-* 03:00:00";
+      Persistent = true;
+      RandomizedDelaySec = "15min";
+      Unit = "restic-backup.service";
+      WakeSystem = true;
+    };
+    Install = {
+      WantedBy = [ "timers.target" ];
     };
   };
 
