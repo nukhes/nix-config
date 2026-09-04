@@ -11,6 +11,7 @@ _: {
         "wheel"
         "video"
         "audio"
+        "docker"
       ];
     };
     groups.user = { };

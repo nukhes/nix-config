@@ -10,6 +10,7 @@
     ./services.nix
     ./theme.nix
     ./user.nix
+    ./virt.nix
     ./zram.nix
   ];
 }

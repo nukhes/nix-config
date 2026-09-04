@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   programs = {
+    nix-ld.enable = true;
     dconf.enable = true;
     thunar = {
       enable = true;
@@ -14,6 +15,7 @@
   environment = {
     pathsToLink = [ "/share/icons" ];
     systemPackages = with pkgs; [
+      distrobox
       gparted
       pavucontrol
       libappindicator
