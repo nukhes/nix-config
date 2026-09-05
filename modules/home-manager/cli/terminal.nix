@@ -86,6 +86,7 @@ in
       fastfetch
       duckdb
       tailscale
+      android-tools
     ];
 
   programs.bash = mkIf isLinux {
