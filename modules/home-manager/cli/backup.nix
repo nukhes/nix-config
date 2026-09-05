@@ -48,10 +48,25 @@ let
       --exclude 'target' \
       --exclude 'result' \
       --exclude '.git' \
+      --exclude '**/mozilla/firefox/*/cache2' \
+      --exclude '**/mozilla/firefox/*/startupCache' \
+      --exclude '**/mozilla/firefox/*/thumbnails' \
+      --exclude '**/mozilla/firefox/*/safebrowsing' \
+      --exclude '**/mozilla/firefox/*/storage/temporary' \
+      --exclude '**/mozilla/firefox/*/storage/to-be-removed' \
+      --exclude '**/mozilla/firefox/*/datareporting' \
+      --exclude '**/mozilla/firefox/*/saved-telemetry-pings' \
+      --exclude '**/mozilla/firefox/*/crashes' \
+      --exclude '**/mozilla/firefox/*/minidumps' \
+      --exclude '**/mozilla/firefox/*/gmp-*' \
+      --exclude '**/mozilla/firefox/*/sessionstore-logs' \
+      --exclude '**/mozilla/firefox/Crash Reports' \
+      --exclude '**/mozilla/firefox/Pending Pings' \
       "::$ARCHIVE" \
       "${homeDirectory}/documents" \
       "${homeDirectory}/library" \
-      "${homeDirectory}/projects"
+      "${homeDirectory}/projects" \
+      "${homeDirectory}/.config/mozilla"
 
     # prune old archives (keep 7 daily, 4 weekly, 6 monthly, 1 yearly)
     echo "[borg] pruning old archives"
