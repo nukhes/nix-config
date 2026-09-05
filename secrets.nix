@@ -13,5 +13,5 @@ in
   "secrets/gemini-p052.age".publicKeys = publicKeys;
   "secrets/openrouter-p052.age".publicKeys = publicKeys;
   "secrets/spotify-player.age".publicKeys = publicKeys;
-  "secrets/restic.age".publicKeys = publicKeys;
+  "secrets/borg.age".publicKeys = publicKeys;
 }

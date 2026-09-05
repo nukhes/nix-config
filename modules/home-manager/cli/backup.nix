@@ -1,95 +1,112 @@
 {
   config,
   pkgs,
+  lib,
   ...
 }:
 
 let
   inherit (config.home) homeDirectory;
+
+  borgRepo = "${homeDirectory}/.local/share/borg";
+  borgPassphraseFile = "${homeDirectory}/.secrets/borg";
+
+  borgBackupScript = pkgs.writeShellScript "borg-backup" ''
+    set -euo pipefail
+
+    export BORG_REPO="${borgRepo}"
+    export BORG_PASSCOMMAND="cat ${borgPassphraseFile}"
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+    HOSTNAME="$(hostname)"
+
+    # initialize repo if it doesn't exist
+    if [ ! -d "$BORG_REPO/data" ]; then
+      echo "[borg] initializing repository at $BORG_REPO"
+      ${pkgs.borgbackup}/bin/borg init --encryption=repokey-blake2
+    fi
+
+    # create archive with timestamp
+    ARCHIVE="''${HOSTNAME}-$(date +%Y-%m-%dT%H:%M:%S)"
+    echo "[borg] creating archive: $ARCHIVE"
+
+    ${pkgs.borgbackup}/bin/borg create \
+      --verbose \
+      --filter AME \
+      --list \
+      --stats \
+      --show-rc \
+      --compression auto,zstd,6 \
+      --exclude-caches \
+      --exclude '*.pyc' \
+      --exclude '__pycache__' \
+      --exclude '.cache' \
+      --exclude 'node_modules' \
+      --exclude '.direnv' \
+      --exclude '.devenv' \
+      --exclude '.venv' \
+      --exclude 'target' \
+      --exclude 'result' \
+      --exclude '.git' \
+      "::$ARCHIVE" \
+      "${homeDirectory}/documents" \
+      "${homeDirectory}/library" \
+      "${homeDirectory}/projects"
+
+    # prune old archives (keep 7 daily, 4 weekly, 6 monthly, 1 yearly)
+    echo "[borg] pruning old archives"
+    ${pkgs.borgbackup}/bin/borg prune \
+      --list \
+      --show-rc \
+      --keep-daily 7 \
+      --keep-weekly 4 \
+      --keep-monthly 6 \
+      --keep-yearly 1
+
+    # compact repository
+    echo "[borg] compacting repository"
+    ${pkgs.borgbackup}/bin/borg compact
+
+    echo "[borg] backup completed successfully"
+  '';
+
+  rcloneSyncScript = pkgs.writeShellScript "borg-rclone-sync" ''
+    set -euo pipefail
+
+    HOSTNAME="$(hostname)"
+    REMOTE_PATH="p052:backups/''${HOSTNAME}"
+
+    # ensure the borg repo exists before syncing
+    if [ ! -d "${borgRepo}/data" ]; then
+      echo "[rclone] borg repository not found at ${borgRepo}, skipping sync"
+      exit 0
+    fi
+
+    echo "[rclone] syncing borg repo to $REMOTE_PATH"
+
+    ${pkgs.rclone}/bin/rclone sync \
+      "${borgRepo}" \
+      "$REMOTE_PATH" \
+      --verbose \
+      --transfers 4 \
+      --checkers 8 \
+      --contimeout 30s \
+      --timeout 5m \
+      --retries 3 \
+      --low-level-retries 10
+
+    echo "[rclone] sync completed successfully"
+  '';
 in
 {
-  home.packages = with pkgs; [ rclone restic ];
-
-  xdg.configFile."restic/excludes.txt".text = ''
-    /.cache
-    /.ollama
-    /.local/share/Trash
-    /.thumbnails
-    /.var
-    /.npm
-    /.var/app/**/.cache
-    /.config/**/Cache
-    /.config/**/cache
-    /.config/**/GPUCache
-    /.config/**/Code Cache
-    /.config/**/Crash Reports
-    /.config/**/Crashpad
-    /.config/**/Session Storage
-    /.config/**/Service Worker/CacheStorage
-    /.mozilla/firefox/**/cache2
-    /.mozilla/firefox/**/startupCache
-  '';
-
-  systemd.user.services.restic-backup = {
-    Unit = {
-      Description = "Restic backup to Google Drive via Rclone";
-      After = [ "network-online.target" ];
-      Wants = [ "network-online.target" ];
-    };
-    Service = {
-      Type = "oneshot";
-      Environment = [
-        "RESTIC_REPOSITORY=rclone:p052:backup/hackbook/restic"
-        "RESTIC_PASSWORD_FILE=${homeDirectory}/.secrets/restic"
-        "GOMAXPROCS=1"
-      ];
-      ExecStartPre = "${pkgs.bash}/bin/bash -c 'test -f ${homeDirectory}/.config/rclone/rclone.conf'";
-      ExecStart = "${pkgs.writeShellScript "restic-backup-run" ''
-        set -eu
-
-        ${pkgs.restic}/bin/restic snapshots >/dev/null 2>&1 || ${pkgs.restic}/bin/restic init
-
-        ${pkgs.restic}/bin/restic backup "$HOME" \
-          --exclude-file="${homeDirectory}/.config/restic/excludes.txt" \
-          --verbose
-
-        ${pkgs.restic}/bin/restic forget \
-          --keep-daily 7 \
-          --keep-weekly 4 \
-          --keep-monthly 6 \
-          --prune
-      ''}";
-      Restart = "on-failure";
-      RestartSec = "1m";
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
-
-  systemd.user.timers.restic-backup = {
-    Unit = {
-      Description = "Run Restic backup daily at 03:00";
-    };
-    Timer = {
-      OnCalendar = "*-*-* 03:00:00";
-      Persistent = true;
-      RandomizedDelaySec = "15min";
-      Unit = "restic-backup.service";
-      WakeSystem = true;
-    };
-    Install = {
-      WantedBy = [ "timers.target" ];
-    };
-  };
-
-  home.activation.createDriveDir = config.lib.dag.entryBefore [ "linkGeneration" ] ''
-    mkdir -p "${homeDirectory}/drive"
-  '';
+  home.packages = with pkgs; [
+    rclone
+    borgbackup
+  ];
 
   systemd.user.services.rclone-mount = {
     Unit = {
-      Description = "Montagem do Google Drive via Rclone";
+      Description = "mount google drive at ~/drive";
       After = [ "network-online.target" ];
       Wants = [ "network-online.target" ];
       Before = [ "sleep.target" ];
@@ -98,7 +115,7 @@ in
     Service = {
       Type = "simple";
       ExecStart = ''
-        ${pkgs.rclone}/bin/rclone mount p052:root %h/drive \
+        ${pkgs.rclone}/bin/rclone mount p052 %h/drive \
           --vfs-cache-mode writes \
           --vfs-cache-max-age 24h \
           --vfs-cache-max-size 50G \
@@ -112,7 +129,6 @@ in
           --no-modtime \
           --allow-non-empty
       '';
-
       ExecStop = "/run/current-system/sw/bin/umount -l %h/drive";
       Restart = "on-failure";
       RestartSec = "10s";
@@ -123,16 +139,84 @@ in
     };
   };
 
+  systemd.user.services.borg-backup = {
+    Unit = {
+      Description = "borgbackup – create archive for documents, library, projects";
+      Wants = [ "network-online.target" ];
+      After = [ "network-online.target" ];
+    };
+
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${borgBackupScript}";
+      IOSchedulingClass = "idle";
+      CPUSchedulingPolicy = "idle";
+      Nice = 19;
+    };
+  };
+
+  systemd.user.timers.borg-backup = {
+    Unit = {
+      Description = "schedule borgbackup daily";
+    };
+
+    Timer = {
+      OnCalendar = "daily";
+      Persistent = true;
+      RandomizedDelaySec = "30min";
+    };
+
+    Install = {
+      WantedBy = [ "timers.target" ];
+    };
+  };
+
+  systemd.user.services.borg-rclone-sync = {
+    Unit = {
+      Description = "sync borg repository to google drive (p052:backups/HOSTNAME)";
+      Wants = [ "network-online.target" ];
+      After = [
+        "network-online.target"
+        "borg-backup.service"
+      ];
+    };
+
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${rcloneSyncScript}";
+      IOSchedulingClass = "idle";
+      CPUSchedulingPolicy = "idle";
+      Nice = 19;
+    };
+  };
+
+  systemd.user.timers.borg-rclone-sync = {
+    Unit = {
+      Description = "schedule borg rclone sync after backup";
+    };
+
+    Timer = {
+      OnCalendar = "daily";
+      Persistent = true;
+      RandomizedDelaySec = "45min";
+      OnUnitActiveSec = "1h";
+    };
+
+    Install = {
+      WantedBy = [ "timers.target" ];
+    };
+  };
+
   age.secrets = {
     rclone = {
       file = "${homeDirectory}/.nix-config/secrets/rclone.age";
       path = "${homeDirectory}/.config/rclone/rclone.conf";
       mode = "0600";
     };
-    
-    restic-password = {
-      file = "${homeDirectory}/.nix-config/secrets/restic.age";
-      path = "${homeDirectory}/.secrets/restic";
+
+    borg = {
+      file = "${homeDirectory}/.nix-config/secrets/borg.age";
+      path = "${homeDirectory}/.secrets/borg";
       mode = "0600";
     };
   };
