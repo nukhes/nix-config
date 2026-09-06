@@ -51,6 +51,7 @@ let
     cat = "bat --plain";
     hl = "hledger";
     hln = "hledger balance assets --forecast=thismonth -e tomorrow";
+    nv = "vim ~/.nix-config";
   };
 in
 {

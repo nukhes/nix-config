@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  lib,
   ...
 }:
 
@@ -64,8 +63,6 @@ let
       --exclude '**/mozilla/firefox/Pending Pings' \
       "::$ARCHIVE" \
       "${homeDirectory}/documents" \
-      "${homeDirectory}/library" \
-      "${homeDirectory}/projects" \
       "${homeDirectory}/.config/mozilla"
 
     # prune old archives (keep 7 daily, 4 weekly, 6 monthly, 1 yearly)
@@ -118,6 +115,11 @@ in
     rclone
     borgbackup
   ];
+
+  services.synthing = {
+    enable = true;
+    guiAddress = "127.0.0.1:8384";
+  };
 
   systemd.user.services.rclone-mount = {
     Unit = {

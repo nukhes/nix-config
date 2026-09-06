@@ -14,12 +14,14 @@ let
     version = "0.1.3";
     pyproject = true;
 
-    src = pkgs.fetchFromGitHub {
-      owner = "papis";
-      repo = "scripts";
-      rev = "4a7b88b811e8d09c5905a7c9c4c3b24110431170";
-      hash = "sha256-4GpCDGvOHxlv0pnVezq2Fbu0H+9atAMb7b0tN/wE/Vo=";
-    } + "/papis-scihub";
+    src =
+      pkgs.fetchFromGitHub {
+        owner = "papis";
+        repo = "scripts";
+        rev = "4a7b88b811e8d09c5905a7c9c4c3b24110431170";
+        hash = "sha256-4GpCDGvOHxlv0pnVezq2Fbu0H+9atAMb7b0tN/wE/Vo=";
+      }
+      + "/papis-scihub";
 
     build-system = [ pkgs.python3Packages.setuptools ];
 

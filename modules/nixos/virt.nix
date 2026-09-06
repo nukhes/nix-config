@@ -6,4 +6,4 @@
   environment.systemPackages = with pkgs; [
     distrobox
   ];
-};
+}

@@ -116,7 +116,7 @@ in
           always = true;
           notification = false;
         }
-        
+
         {
           command = "feh --bg-fill '${solid-bg}'";
           always = true;

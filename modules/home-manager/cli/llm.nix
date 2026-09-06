@@ -18,12 +18,12 @@ in
       agentMode = "accept-edits";
       artifactReviewPolicy = "always-proceed";
       toolPermission = "always-proceed";
-      
-      allowNonWorkspaceAccess = true; 
+
+      allowNonWorkspaceAccess = true;
       trustedWorkspaces = [ ];
 
       permissions = {
-        allow = [ "command(*)" ]; 
+        allow = [ "command(*)" ];
       };
 
       editor = "vim";

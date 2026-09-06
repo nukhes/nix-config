@@ -4,8 +4,8 @@
     enable = true;
     polarity = "dark";
     base16Scheme = ./ayu-dark.yaml;
-    image = pkgs.runCommand "solid-wallpaper.png" { 
-      nativeBuildInputs = [ pkgs.imagemagick ]; 
+    image = pkgs.runCommand "solid-wallpaper.png" {
+      nativeBuildInputs = [ pkgs.imagemagick ];
     } "convert -size 1x1 xc:'#070707' $out";
 
     icons = {
