@@ -18,20 +18,6 @@
     "${modules}/nixos/networking.nix"
   ];
 
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    extraSpecialArgs = { inherit inputs; };
-    backupFileExtension = "backup-" + pkgs.lib.substring 0 8 pkgs.nodetime;
-    overwriteBackup = true;
-    users.user = {
-      imports = [
-        inputs.agenix.homeManagerModules.default
-        "${modules}/home-manager/"
-      ];
-    };
-  };
-
   boot.kernel.sysctl = {
     "fs.file-max" = 2097152;
     "fs.inotify.max_user_watches" = 524288;
