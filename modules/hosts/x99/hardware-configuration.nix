@@ -51,6 +51,7 @@
 
   systemd.tmpfiles.rules = [
     "d /home/user/.cache 0700 user users - -"
+    "d /mnt/games 0700 user users - -"
   ];
 
   swapDevices = [ ];
