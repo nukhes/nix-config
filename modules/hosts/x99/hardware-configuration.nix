@@ -49,6 +49,10 @@
       options = [ "nofail" ];
     };
 
+  systemd.tmpfiles.rules = [
+    "d /home/user/.cache 0700 user users - -"
+  ];
+
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
