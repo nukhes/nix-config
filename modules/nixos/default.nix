@@ -9,6 +9,7 @@
     ./nix-settings.nix
     ./polkit.nix
     ./services.nix
+    ./syncthing.nix
     ./theme.nix
     ./user.nix
     ./virt.nix
