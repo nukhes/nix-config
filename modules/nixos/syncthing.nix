@@ -12,10 +12,17 @@ let
     };
   };
 
+  # Check if the current host is a valid syncthing device with associated secrets
+  isValidDevice = lib.hasAttr hostname allDevices;
+  hasSecrets =
+    builtins.pathExists (../.. + "/secrets/syncthing-${hostname}-key.age")
+    && builtins.pathExists (../.. + "/secrets/syncthing-${hostname}-cert.age");
+  enableSyncthing = isValidDevice && hasSecrets;
+
   remoteDevices = lib.filterAttrs (name: _: name != hostname) allDevices;
   remoteDeviceNames = lib.attrNames remoteDevices;
 in
-{
+lib.mkIf enableSyncthing {
   services.syncthing = {
     enable = true;
     user = "user";
@@ -45,15 +52,15 @@ in
   };
 
   age.secrets = {
-    syncthing-${hostname}-key = {
-      file = "${homeDirectory}/.nix-config/secrets/syncthing-${hostname}-key.age";
-      path = "${homeDirectory}/.local/state/syncthing/key.pem";
+    "syncthing-${hostname}-key" = {
+      file = ../../secrets/syncthing-${hostname}-key.age;
+      path = "/home/user/.local/state/syncthing/key.pem";
       mode = "0600";
     };
 
-    syncthing-${hostname}-cert = {
-      file = "${homeDirectory}/.nix-config/secrets/syncthing-${hostname}-cert.age";
-      path = "${homeDirectory}/.local/state/syncthing/cert.pem";
+    "syncthing-${hostname}-cert" = {
+      file = ../../secrets/syncthing-${hostname}-cert.age;
+      path = "/home/user/.local/state/syncthing/cert.pem";
       mode = "0600";
     };
   };
