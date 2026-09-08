@@ -116,7 +116,9 @@ in
     borgbackup
   ];
   
-  home.file."drive/.keep".text = "";
+  home.activation.createDriveDir = config.lib.dag.entryBefore [ "linkGeneration" ] ''
+    mkdir -p "${homeDirectory}/drive"
+  '';
 
   services.syncthing = {
     enable = true;
