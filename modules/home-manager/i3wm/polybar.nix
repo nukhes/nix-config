@@ -1,12 +1,10 @@
 { pkgs, ... }:
 
 let
-  fg = "\${colors.base00}";
-  bg = "\${colors.base05}";
+  fg = "\${colors.base05}";
+  bg = "\${colors.base00}";
 in
 {
-  stylix.enable = true;
-
   services.polybar = {
     enable = true;
     package = pkgs.polybar.override {
@@ -110,17 +108,7 @@ in
         ramp-capacity-3 = "󰁾";
         ramp-capacity-4 = "󰁿";
       };
-      "module/internet" = {
-        type = "internal/network";
-        interface-type = "wireless";
-        interval = 2;
-        format-connected = "<label-connected>";
-        format-disconnected = "<label-disconnected>";
-        label-connected = "󰤨 %essid% %downspeed%";
-        label-disconnected = "󰤭 offline";
-        label-connected-foreground = fg;
-        label-disconnected-foreground = fg;
-      };
+
       "module/date" = {
         type = "internal/date";
         interval = 1;

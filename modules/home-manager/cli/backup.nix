@@ -115,7 +115,7 @@ in
     rclone
     borgbackup
   ];
-  
+
   home.activation.createDriveDir = config.lib.dag.entryBefore [ "linkGeneration" ] ''
     mkdir -p "${homeDirectory}/drive"
   '';

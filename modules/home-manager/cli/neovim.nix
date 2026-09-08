@@ -1,5 +1,4 @@
 { pkgs, ... }:
-
 {
   programs.neovim = {
     enable = true;
@@ -25,7 +24,6 @@
 
     initLua = ''
       vim.opt.termguicolors = true
-      vim.cmd("syntax on")
       vim.g.loaded_netrw = 1
       vim.g.loaded_netrwPlugin = 1
 
@@ -50,9 +48,7 @@
       vim.opt.relativenumber = true
       vim.opt.mouse = "a"
       vim.opt.clipboard = "unnamedplus"
-      vim.opt.hidden = true
       vim.opt.history = 1000
-      vim.opt.encoding = "utf-8"
       vim.opt.swapfile = false
       vim.opt.backup = false
       vim.opt.undofile = true
@@ -87,19 +83,19 @@
       keymap("n", "<S-h>", ":bprevious<CR>", opts)
       keymap("n", "<C-b>", ":NvimTreeToggle<CR>", opts)
 
-      vim.lsp.enable('lua_ls')
-      vim.lsp.enable('pyright')
-      vim.lsp.enable('ts_ls')
-      vim.lsp.enable('nil_ls')
+      local lspconfig = require("lspconfig")
+      lspconfig.lua_ls.setup({})
+      lspconfig.pyright.setup({})
+      lspconfig.ts_ls.setup({})
+      lspconfig.nil_ls.setup({})
 
       vim.api.nvim_create_autocmd('LspAttach', {
         callback = function(args)
-          local opts = { buffer = args.buf }
-
-          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-          vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-          vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
-          vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+          local buf_opts = { buffer = args.buf }
+          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, buf_opts)
+          vim.keymap.set('n', 'K', vim.lsp.buf.hover, buf_opts)
+          vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, buf_opts)
+          vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, buf_opts)
         end,
       })
     '';

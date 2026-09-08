@@ -8,18 +8,24 @@ let
     x99
   ];
 in
-{
-  "secrets/eduroam.age".publicKeys = publicKeys;
-  "secrets/rclone.age".publicKeys = publicKeys;
-  "secrets/vdirsyncer.age".publicKeys = publicKeys;
-  "secrets/gemini-p052.age".publicKeys = publicKeys;
-  "secrets/openrouter-p052.age".publicKeys = publicKeys;
-  "secrets/spotify-player.age".publicKeys = publicKeys;
-  "secrets/borg.age".publicKeys = publicKeys;
-  "secrets/tailscale-authkey.age".publicKeys = publicKeys;
-  "secrets/syncthing-x99-key.age".publicKeys = publicKeys;
-  "secrets/syncthing-x99-cert.age".publicKeys = publicKeys;
-
-  "secrets/syncthing-hackbook-key.age".publicKeys = publicKeys;
-  "secrets/syncthing-hackbook-cert.age".publicKeys = publicKeys;
-}
+builtins.listToAttrs (
+  map
+    (name: {
+      name = "secrets/${name}.age";
+      value.publicKeys = publicKeys;
+    })
+    [
+      "eduroam"
+      "rclone"
+      "vdirsyncer"
+      "gemini-p052"
+      "openrouter-p052"
+      "spotify-player"
+      "borg"
+      "tailscale-authkey"
+      "syncthing-x99-key"
+      "syncthing-x99-cert"
+      "syncthing-hackbook-key"
+      "syncthing-hackbook-cert"
+    ]
+)

@@ -56,26 +56,17 @@ let
     k: dir: lib.nameValuePair k "resize ${resizeMap.${dir}} 10 px or 10 ppt"
   ) dirs;
 
-  wsKeys =
-    builtins.foldl'
-      (
-        acc: n:
-        let
-          ws = if n == 0 then "10" else toString n;
-        in
-        acc
-        // {
-          "${mod}+${toString n}" = "workspace number ${ws}";
-          "${mod}+Shift+${toString n}" = "move container to workspace number ${ws}";
-        }
-      )
-      { }
-      [
-        1
-        2
-        3
-        4
-      ];
+  wsKeys = builtins.foldl' (
+    acc: n:
+    let
+      ws = if n == 0 then "10" else toString n;
+    in
+    acc
+    // {
+      "${mod}+${toString n}" = "workspace number ${ws}";
+      "${mod}+Shift+${toString n}" = "move container to workspace number ${ws}";
+    }
+  ) { } (lib.range 0 9);
 
 in
 {
@@ -167,7 +158,7 @@ in
           "${mod}+m" = "focus mode_toggle";
           "${mod}+a" = "focus parent";
 
-          "${mod}+Shift+q" = "exec i3-lock | systemctl suspend";
+          "${mod}+Shift+q" = "exec i3lock && systemctl suspend";
           "${mod}+Shift+r" = "restart";
           "${mod}+Shift+e" = "exec \"i3-nagbar -t warning -m 'exit i3?' -B 'yes, exit i3' 'i3-msg exit'\"";
           "${mod}+r" = "mode \"resize\"";

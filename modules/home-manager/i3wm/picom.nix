@@ -60,6 +60,8 @@ in
       "mark-wmwin-focused"
       "mark-ovredir-focused"
     ] true
-    // { use-damage = false; };
+    // {
+      use-damage = false;
+    };
   };
 }

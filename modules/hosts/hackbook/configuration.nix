@@ -1,52 +1,50 @@
 {
-  config,
   pkgs,
-  lib,
-  inputs,
   modules,
   secrets,
   ...
 }:
-
 {
   imports = [
     ./hardware-configuration.nix
     ./broadcom.nix
-    ./moonlight.nix
     "${modules}/nixos"
     "${modules}/nixos/laptop.nix"
-    "${modules}/nixos/networking.nix"
   ];
 
-  boot.kernel.sysctl = {
-    "fs.file-max" = 2097152;
-    "fs.inotify.max_user_watches" = 524288;
+  networking = {
+    hostName = "hackbook";
+    networkmanager = {
+      enable = true;
+      wifi.powersave = false;
+    };
   };
 
-  security.pam.loginLimits = [
-    {
-      domain = "*";
-      type = "soft";
-      item = "nofile";
-      value = "524288";
-    }
-    {
-      domain = "*";
-      type = "hard";
-      item = "nofile";
-      value = "1048576";
-    }
-  ];
+  age.secrets.eduroam = {
+    file = "${secrets}/eduroam.age";
+    path = "/etc/NetworkManager/system-connections/eduroam.nmconnection";
+    mode = "0600";
+    owner = "root";
+    group = "root";
+    symlink = false;
+  };
 
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
-  hardware.bluetooth.settings = {
-    General = {
+  environment.systemPackages = [ pkgs.moonlight-qt ];
+
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings.General = {
       Experimental = true;
       FastConnectable = true;
     };
   };
   services.blueman.enable = true;
+
+  nix.settings = {
+    max-jobs = 1;
+    cores = 1;
+  };
 
   system.stateVersion = "26.05";
 }

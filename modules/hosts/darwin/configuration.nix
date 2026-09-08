@@ -1,14 +1,14 @@
 {
-  pkgs,
   inputs,
   modules,
   secrets,
   ...
 }:
-
 {
-  services.nix-daemon.enable = true;
-  nix.settings.experimental-features = "nix-command flakes";
+  nix = {
+    enable = true;
+    settings.experimental-features = "nix-command flakes";
+  };
 
   system.stateVersion = 5;
 
@@ -20,7 +20,6 @@
   system.defaults = {
     dock.autohide = true;
     finder.AppleShowAllExtensions = true;
-    NSGlobalDomain.AppleShowAllExtensions = true;
   };
 
   users.users.pedro = {
@@ -52,7 +51,6 @@
       autoUpdate = true;
       cleanup = "zap";
     };
-
     casks = [
       "spotify"
       "discord"

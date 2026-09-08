@@ -5,9 +5,9 @@
   security.polkit.enable = true;
 
   systemd.user.services.polkit-gnome-authentication-agent-1 = {
-    description = "polkit-gnome-authentication-agent-1";
+    description = "Polkit GNOME Authentication Agent";
     wantedBy = [ "graphical-session.target" ];
-    wants = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
     after = [ "graphical-session.target" ];
     serviceConfig = {
       Type = "simple";

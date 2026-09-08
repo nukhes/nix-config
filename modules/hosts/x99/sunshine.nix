@@ -1,4 +1,9 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 let
   xrandr = "${pkgs.xrandr}/bin/xrandr";
@@ -48,15 +53,15 @@ in
       min_threads = 2;
 
       # NVENC quality tuning
-      nv_preset = "p4";      # balanced speed/quality (p1=fastest … p7=best)
-      nv_tune = "ull";       # ultra-low-latency
-      nv_rc = "cbr";         # constant bitrate for consistent stream
+      nv_preset = "p4"; # balanced speed/quality (p1=fastest … p7=best)
+      nv_tune = "ull"; # ultra-low-latency
+      nv_rc = "cbr"; # constant bitrate for consistent stream
 
       # ── Audio ────────────────────────────────────────────────
-      audio_sink = "auto";   # auto-detect PipeWire/PulseAudio sink
+      audio_sink = "auto"; # auto-detect PipeWire/PulseAudio sink
 
       # ── Network ─────────────────────────────────────────────
-      channels = 1;          # simultaneous stream channels
+      channels = 1; # simultaneous stream channels
 
       # ── Logging ─────────────────────────────────────────────
       min_log_level = "info";
@@ -103,7 +108,7 @@ in
   # So we only need to add the user to the required groups.
 
   users.users."user".extraGroups = [
-    "uinput"  # virtual input device access
-    "input"   # physical input device access
+    "uinput" # virtual input device access
+    "input" # physical input device access
   ];
 }

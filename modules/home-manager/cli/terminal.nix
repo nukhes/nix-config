@@ -1,15 +1,13 @@
 {
   config,
-  pkgs ? null,
+  pkgs,
   lib,
   ...
 }:
 
 let
   inherit (config.home) homeDirectory;
-  inherit (lib) mkIf optionals;
-  isLinux = pkgs != null && pkgs.stdenv.isLinux;
-  isDarwin = pkgs != null && pkgs.stdenv.isDarwin;
+  inherit (pkgs.stdenv) isLinux isDarwin;
 
   nixAliases = {
     noise = "play -n synth brownnoise mix synth sine amod 0.1";
@@ -22,7 +20,6 @@ let
   };
 
   gitAliases = {
-    git = "git";
     gs = "git status";
     gss = "git status -s";
     ga = "git add";
@@ -71,7 +68,7 @@ in
       xclip
       typst
     ]
-    ++ optionals isLinux [
+    ++ lib.optionals isLinux [
       asdf-vm
       cargo
       gcc
@@ -82,7 +79,6 @@ in
       tectonic
       dust
       wget
-      nil
       nixfmt
       fastfetch
       duckdb
@@ -92,15 +88,10 @@ in
       fping
     ];
 
-  programs.bash = mkIf isLinux {
-    enable = true;
-    shellAliases = aliases // nixAliases // gitAliases;
-  };
+  programs.bash.enable = lib.mkIf isLinux true;
+  programs.zsh.enable = lib.mkIf isDarwin true;
 
-  programs.zsh = mkIf isDarwin {
-    enable = true;
-    shellAliases = aliases;
-  };
+  home.shellAliases = aliases // gitAliases // (lib.optionalAttrs isLinux nixAliases);
 
   programs.git = {
     enable = true;

@@ -5,6 +5,7 @@
     ./flatpak.nix
     ./gaming.nix
     ./home.nix
+    ./limits.nix
     ./locale.nix
     ./nix-settings.nix
     ./polkit.nix

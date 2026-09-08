@@ -1,9 +1,6 @@
-_:
-
-{
+_: {
   programs.tmux = {
     enable = true;
-    shortcut = "space";
     keyMode = "vi";
     mouse = true;
     historyLimit = 10000;
@@ -25,7 +22,7 @@ _:
 
       bind -n M-h select-pane -L
       bind -n M-j select-pane -D
-      bind -n M-k select-pane -u
+      bind -n M-k select-pane -U
       bind -n M-l select-pane -R
 
       bind -r C-Up resize-pane -U 5
@@ -33,8 +30,7 @@ _:
       bind -r C-Left resize-pane -L 5
       bind -r C-Right resize-pane -R 5
 
-      bind r source-file ~/.config/tmux/tmux.conf \
-
+      bind r source-file ~/.config/tmux/tmux.conf
       set -s escape-time 0
 
       set -g status-style bg=default,fg="#cdd6f4"

@@ -19,9 +19,6 @@
     fallback = false;
     allow-import-from-derivation = false;
 
-    max-jobs = 1;
-    cores = 1;
-
     experimental-features = [
       "nix-command"
       "flakes"

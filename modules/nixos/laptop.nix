@@ -15,10 +15,7 @@
 
   hardware.system76.power-daemon.enable = false;
 
-  powerManagement = {
-    enable = true;
-    powertop.enable = true;
-  };
+  powerManagement.enable = true;
 
   services = {
     power-profiles-daemon.enable = false;
@@ -49,7 +46,7 @@
   };
 
   systemd.services.disable-prochot = {
-    description = "Disable BD_PROCHOT bypass to fix CPU throttling lock and apply PowerTop";
+    description = "Disable BD_PROCHOT and apply PowerTop auto-tune";
     after = [ "systemd-modules-load.service" ];
     wantedBy = [ "multi-user.target" ];
     path = with pkgs; [

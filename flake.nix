@@ -51,38 +51,36 @@
             modules = ./modules;
             secrets = ./secrets;
           };
+
+          nixosBaseModules = [
+            inputs.stylix.nixosModules.stylix
+            inputs.agenix.nixosModules.default
+            inputs.nix-flatpak.nixosModules.nix-flatpak
+            inputs.home-manager.nixosModules.home-manager
+          ];
         in
         {
           nixosConfigurations.hackbook = nixpkgs.lib.nixosSystem {
             inherit specialArgs;
-
             modules = [
               { nixpkgs.hostPlatform = "x86_64-linux"; }
               ./modules/hosts/hackbook/configuration.nix
-              inputs.stylix.nixosModules.stylix
               inputs.nixos-hardware.nixosModules.apple-macbook-air-7
-              inputs.agenix.nixosModules.default
-              inputs.nix-flatpak.nixosModules.nix-flatpak
-              inputs.home-manager.nixosModules.home-manager
-            ];
+            ]
+            ++ nixosBaseModules;
           };
 
           nixosConfigurations.x99 = nixpkgs.lib.nixosSystem {
             inherit specialArgs;
-
             modules = [
               { nixpkgs.hostPlatform = "x86_64-linux"; }
               ./modules/hosts/x99/configuration.nix
-              inputs.stylix.nixosModules.stylix
-              inputs.agenix.nixosModules.default
-              inputs.nix-flatpak.nixosModules.nix-flatpak
-              inputs.home-manager.nixosModules.home-manager
-            ];
+            ]
+            ++ nixosBaseModules;
           };
 
           darwinConfigurations.darwin = nix-darwin.lib.darwinSystem {
             inherit specialArgs;
-
             modules = [
               { nixpkgs.hostPlatform = "aarch64-darwin"; }
               ./modules/hosts/darwin/configuration.nix

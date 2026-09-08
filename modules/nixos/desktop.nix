@@ -20,12 +20,9 @@
       pavucontrol
       libappindicator
       gnome-themes-extra
-
-      # essential tools to manage idevices
       idevicerestore
       libimobiledevice
       usbutils
-      usbmuxd
     ];
   };
 }
