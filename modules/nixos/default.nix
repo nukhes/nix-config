@@ -4,6 +4,7 @@
     ./desktop.nix
     ./flatpak.nix
     ./gaming.nix
+    ./home.nix
     ./locale.nix
     ./nix-settings.nix
     ./polkit.nix

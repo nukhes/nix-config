@@ -21,21 +21,6 @@
     networkmanager.enable = true;
   };
 
-  age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    extraSpecialArgs = { inherit inputs; };
-    backupFileExtension = "backup-" + pkgs.lib.substring 0 8 pkgs.nodetime;
-    users.user = {
-      imports = [
-        inputs.agenix.homeManagerModules.default
-        "${modules}/home-manager/"
-      ];
-    };
-  };
-
   powerManagement.cpuFreqGovernor = "performance";
 
   boot.kernel.sysctl = {
