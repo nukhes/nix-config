@@ -3,7 +3,7 @@
 {
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia = {
-    package = config.boot.kernelPackages.nvidiaPackages.production;
+    package = config.boot.kernelPackages.nvidiaPackages.legacy_535;
     modesetting.enable = true;
     powerManagement.enable = false;
     powerManagement.finegrained = false;
@@ -21,7 +21,7 @@
 
   environment.systemPackages = with pkgs; [
     nvtopPackages.nvidia
-    glxinfo
+    mesa-demos
     vulkan-tools
   ];
 }

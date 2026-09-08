@@ -6,7 +6,7 @@
     base16Scheme = ./ayu-dark.yaml;
     image = pkgs.runCommand "solid-wallpaper.png" {
       nativeBuildInputs = [ pkgs.imagemagick ];
-    } "convert -size 1x1 xc:'#070707' $out";
+    } "convert -size 3840x2160 xc:'#070707' $out";
 
     icons = {
       enable = true;

@@ -12,6 +12,7 @@
   imports = [
     ./hardware-configuration.nix
     ./broadcom.nix
+    ./moonlight.nix
     "${modules}/nixos"
     "${modules}/nixos/laptop.nix"
     "${modules}/nixos/networking.nix"

@@ -115,6 +115,8 @@ in
     rclone
     borgbackup
   ];
+  
+  home.file."drive/.keep".text = "";
 
   services.syncthing = {
     enable = true;

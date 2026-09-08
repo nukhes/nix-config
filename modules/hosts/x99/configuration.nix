@@ -12,6 +12,7 @@
   imports = [
     ./hardware-configuration.nix
     ./nvidia.nix
+    ./sunshine.nix
     "${modules}/nixos"
   ];
 

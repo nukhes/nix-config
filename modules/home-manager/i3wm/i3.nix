@@ -10,23 +10,13 @@ let
     indicator = "$color5";
   };
 
-  xrandr-update = pkgs.writeShellScript "xrandr-update" ''
-    if xrandr | grep -q "HDMI-1 connected"; then
-      xrandr --output eDP-1 --auto --output HDMI-1 --auto --rate 60 --above eDP-1
-    else
-      xrandr --auto
-    fi
-    sleep 1
-    systemctl --user restart polybar.service
-  '';
-
   screenshot = pkgs.writeShellScript "screenshot" ''
     maim -s | xclip -selection clipboard -t image/png
   '';
 
   solid-bg = pkgs.runCommand "solid-bg.png" {
     nativeBuildInputs = [ pkgs.imagemagick ];
-  } "magick -size 1x1 xc:'#070707' $out";
+  } "magick -size 3840x2160 xc:'#070707' $out";
 
   mod = "Mod4";
 
@@ -158,7 +148,6 @@ in
           "${mod}+space" = "exec rofi -show drun";
           "${mod}+Shift+space" =
             "exec --no-startup-id xdg-open \"\$(rg --files --hidden --glob '!.*' ~ | rofi -dmenu -i -p 'files:')\"";
-          "${mod}+p" = "exec ${xrandr-update}";
 
           "XF86MonBrightnessUp" = "exec --no-startup-id brightnessctl set +5%";
           "XF86MonBrightnessDown" = "exec --no-startup-id brightnessctl set 5%-";

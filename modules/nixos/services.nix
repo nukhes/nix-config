@@ -1,4 +1,10 @@
-_: {
+{ secrets, config, ... }: {
+  age.secrets.tailscale-authkey = {
+    file = "${secrets}/tailscale-authkey.age";
+    owner = "root";
+    group = "root";
+  };
+
   services = {
     openssh.enable = true;
     fstrim.enable = true;
@@ -6,7 +12,10 @@ _: {
     gvfs.enable = true;
     tumbler.enable = true;
     displayManager.ly.enable = true;
-    tailscale.enable = true;
+    tailscale = {
+      enable = true;
+      authKeyFile = config.age.secrets.tailscale-authkey.path;
+    };
     usbmuxd.enable = true;
     pipewire = {
       enable = true;

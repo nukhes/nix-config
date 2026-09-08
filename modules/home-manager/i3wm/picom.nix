@@ -59,7 +59,7 @@ in
       "detect-client-leader"
       "mark-wmwin-focused"
       "mark-ovredir-focused"
-      "use-damage"
-    ] true;
+    ] true
+    // { use-damage = false; };
   };
 }
