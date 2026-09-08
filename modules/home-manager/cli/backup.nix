@@ -120,11 +120,6 @@ in
     mkdir -p "${homeDirectory}/drive"
   '';
 
-  services.syncthing = {
-    enable = true;
-    guiAddress = "127.0.0.1:8384";
-  };
-
   systemd.user.services.rclone-mount = {
     Unit = {
       Description = "mount google drive at ~/drive";

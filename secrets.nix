@@ -17,4 +17,9 @@ in
   "secrets/spotify-player.age".publicKeys = publicKeys;
   "secrets/borg.age".publicKeys = publicKeys;
   "secrets/tailscale-authkey.age".publicKeys = publicKeys;
+  "secrets/syncthing-x99-key.age".publicKeys = publicKeys;
+  "secrets/syncthing-x99-cert.age".publicKeys = publicKeys;
+
+  "secrets/syncthing-hackbook-key.age".publicKeys = publicKeys;
+  "secrets/syncthing-hackbook-cert.age".publicKeys = publicKeys;
 }
