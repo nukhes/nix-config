@@ -14,12 +14,6 @@
       min_fps_factor = 1;
       min_threads = 2;
     };
-    applications = [
-      {
-        name = "Desktop";
-        image-path = "desktop.png";
-      }
-    ];
   };
 
   hardware.uinput.enable = true;
