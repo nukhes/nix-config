@@ -22,7 +22,7 @@
     useGlobalPkgs = true;
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };
-    backupFileExtension = "backup";
+    backupFileExtension = "backup-" + pkgs.lib.substring 0 8 pkgs.nodetime;
     overwriteBackup = true;
     users.user = {
       imports = [
