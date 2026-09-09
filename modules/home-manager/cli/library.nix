@@ -197,6 +197,11 @@ in
       export GIT_SSH_COMMAND="${pkgs.openssh}/bin/ssh -o StrictHostKeyChecking=accept-new"
       $DRY_RUN_CMD ${pkgs.git}/bin/git clone git@github.com:nukhes/library.git "${libraryPath}"
     fi
+
+    # Download LFS objects
+    cd ~/library
+    git lfs install --local
+    git lfs pull
   '';
 
   home.shellAliases = {
