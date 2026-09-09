@@ -1,10 +1,5 @@
 {
-  config,
-  pkgs,
-  lib,
-  inputs,
   modules,
-  secrets,
   ...
 }:
 
@@ -28,6 +23,8 @@
     "fs.inotify.max_user_watches" = 524288;
     "vm.swappiness" = 10;
   };
+
+  boot.kernelParams = ["nvidia-drm.modeset=1"];
 
   security.pam.loginLimits = [
     {
