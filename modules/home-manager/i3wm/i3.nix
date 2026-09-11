@@ -158,9 +158,9 @@ in
           "${mod}+m" = "focus mode_toggle";
           "${mod}+a" = "focus parent";
 
-          "${mod}+Shift+q" = "exec i3lock && systemctl suspend";
+          "${mod}+Shift+q" = "exec i3-lock";
           "${mod}+Shift+r" = "restart";
-          "${mod}+Shift+e" = "exec \"i3-nagbar -t warning -m 'exit i3?' -B 'yes, exit i3' 'i3-msg exit'\"";
+          "${mod}+Shift+e" = "exec \"i3-nagbar -t warning -m 'exit i3?' -B 'yes, exit i3' 'loginctl terminate-session $XDG_SESSION_ID'\"";
           "${mod}+r" = "mode \"resize\"";
         }
       );

@@ -14,6 +14,7 @@ in
   ];
 
   home.file.".gemini/antigravity-cli/settings.json" = {
+    force = true;
     text = builtins.toJSON {
       agentMode = "accept-edits";
       artifactReviewPolicy = "always-proceed";
