@@ -1,7 +1,7 @@
 _: {
   boot.kernel.sysctl = {
+    "vm.max_map_count" = 2147483642;
     "fs.file-max" = 2097152;
-    "fs.inotify.max_user_watches" = 524288;
   };
 
   security.pam.loginLimits = [
