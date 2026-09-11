@@ -9,8 +9,8 @@ let
   hostname = config.networking.hostName;
 
   allDevices = {
-    x99.id = "6XKO7MN-7XE4EDE-BVNJZO4-JGN4TJG-CCLSEBJ-3JNVY2B-PD3ZX6B-MTTQCAC";
-    hackbook.id = "5MBTINO-KGSNPN4-RHH4CSA-7VNAOLF-RIIEYEF-5L3OFGP-AYBJVDF-EYNG2QX";
+    x99.id = "IEU2MPE-TFUEDDX-MEXDGKN-SDRFKUQ-LTHGOIM-TK5N7UF-N7QNTNJ-INJJCAY";
+    hackbook.id = "NUOKH6I-6LV6VLV-4KKWBAU-GXZHPAJ-JSXPG6W-ZC76LPN-NXCKHRO-6SWEZQT";
   };
 
   isValidDevice = lib.hasAttr hostname allDevices;

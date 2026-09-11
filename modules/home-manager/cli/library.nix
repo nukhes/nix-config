@@ -198,10 +198,11 @@ in
       $DRY_RUN_CMD ${pkgs.git}/bin/git clone git@github.com:nukhes/library.git "${libraryPath}"
     fi
 
-    # Download LFS objects
+    # Download LFS objects — git-lfs needs git in PATH, and git needs git-lfs in PATH
+    export PATH="${pkgs.git}/bin:${pkgs.git-lfs}/bin:$PATH"
     cd ~/library
-    git lfs install --local
-    git lfs pull
+    ${pkgs.git-lfs}/bin/git-lfs install --local
+    ${pkgs.git}/bin/git lfs pull
   '';
 
   home.shellAliases = {
