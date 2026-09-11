@@ -19,9 +19,8 @@
       gparted
       pavucontrol
       libappindicator
+      hicolor-icon-theme
       gnome-themes-extra
-      idevicerestore
-      libimobiledevice
       usbutils
     ];
   };
