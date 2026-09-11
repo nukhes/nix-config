@@ -10,6 +10,7 @@
     ./prism.nix
     ./proton.nix
     ./qgis.nix
+    ./vpn.nix
     ./vscode.nix
     ./xournalpp.nix
     ./zathura.nix
