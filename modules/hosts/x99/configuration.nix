@@ -24,7 +24,7 @@
     "vm.swappiness" = 10;
   };
 
-  boot.kernelParams = ["nvidia-drm.modeset=1"];
+  boot.kernelParams = [ "nvidia-drm.modeset=1" ];
 
   security.pam.loginLimits = [
     {

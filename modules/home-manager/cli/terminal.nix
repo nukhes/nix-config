@@ -118,6 +118,6 @@ in
         min_deci = 0;
         number_base = 10;
       };
-    }
+    };
   };
 }

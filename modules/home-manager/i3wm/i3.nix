@@ -160,7 +160,8 @@ in
 
           "${mod}+Shift+q" = "exec i3-lock";
           "${mod}+Shift+r" = "restart";
-          "${mod}+Shift+e" = "exec \"i3-nagbar -t warning -m 'exit i3?' -B 'yes, exit i3' 'loginctl terminate-session $XDG_SESSION_ID'\"";
+          "${mod}+Shift+e" =
+            "exec \"i3-nagbar -t warning -m 'exit i3?' -B 'yes, exit i3' 'loginctl terminate-session $XDG_SESSION_ID'\"";
           "${mod}+r" = "mode \"resize\"";
         }
       );
