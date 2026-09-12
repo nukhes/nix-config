@@ -158,6 +158,8 @@ in
           "${mod}+m" = "focus mode_toggle";
           "${mod}+a" = "focus parent";
 
+          "${mod}+d" = "floating toggle";
+
           "${mod}+Shift+q" = "exec i3-lock";
           "${mod}+Shift+r" = "restart";
           "${mod}+Shift+e" =
