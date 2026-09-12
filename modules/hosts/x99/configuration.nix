@@ -16,6 +16,21 @@
     networkmanager.enable = true;
   };
 
+  boot.kernelModules = [ 
+    "coretemp"
+    "nct6775"
+    
+  ];
+
+  boot.blacklistedKernelModules = [
+    "firewire-core"
+    "mei_me"
+    "mei"
+    "lpc_ich"
+    "ieee1394"
+    "sbp2"
+  ];
+
   powerManagement.cpuFreqGovernor = "performance";
   hardware.cpu.intel.updateMicrocode = false;
   boot.kernelParams = [ "nvidia-drm.modeset=1" ];
