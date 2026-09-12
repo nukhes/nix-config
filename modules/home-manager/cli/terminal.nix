@@ -49,6 +49,7 @@ let
     hl = "hledger";
     hln = "hledger balance assets --forecast=thismonth -e tomorrow";
     nv = "vim ~/.nix-config";
+    bye = "DISPLAY=:0 xset dpms force off";
   };
 in
 {
