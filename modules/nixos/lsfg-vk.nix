@@ -16,13 +16,12 @@ stdenv.mkDerivation rec {
 
   src = fetchurl {
     url = "https://github.com/PancakeTAS/lsfg-vk/releases/download/v${version}/lsfg-vk-${version}.x86_64.tar.zst";
-    hash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    hash = "sha256-fjHW852icfvFCuihsJLLh0vGZkdl1bc1nTiXAFf1/P8=";
   };
 
-  # Baixa a DLL original
   dllSrc = fetchurl {
     url = "https://files.catbox.moe/ppy9g5.dll";
-    hash = "sha256-2L3jnkj36hKtPnCTVNPDIdPkcOpNthfj/GS/C+yzrUM=";
+    hash = "sha256-2L3jnkj36hKtPnCTVNPDIdPkcOpNthfj/GS/C+yzzUM=";
   };
 
   nativeBuildInputs = [
