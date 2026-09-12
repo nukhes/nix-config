@@ -11,6 +11,16 @@
     "${modules}/nixos"
   ];
 
+  systemd.targets.sleep.enable = false;
+  systemd.targets.suspend.enable = false;
+  systemd.targets.hibernate.enable = false;
+  systemd.targets.hybrid-sleep.enable = false;
+  services.logind.settings = {
+    IdleAction = "ignore";
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+  };
+
   networking = {
     hostName = "x99";
     networkmanager.enable = true;
