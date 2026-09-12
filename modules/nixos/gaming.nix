@@ -1,5 +1,10 @@
 { pkgs, ... }:
+let
+  lsfg-vk = pkgs.callPackage ./lsfg-vk.nix {};
+in
 {
+  environment.systemPackages = [ lsfg-vk ];
+  
   programs = {
     steam = {
       enable = true;
