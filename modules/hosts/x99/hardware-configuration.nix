@@ -40,7 +40,7 @@
     ];
   };
 
-  fileSystems."/home/user/.cache" = {
+  fileSystems."/mnt/data" = {
     device = "/dev/disk/by-uuid/922ab3c3-8a3b-4b18-9e47-8d7e5c0b54a7";
     fsType = "ext4";
     options = [ "nofail" ];
@@ -53,7 +53,7 @@
   };
 
   systemd.tmpfiles.rules = [
-    "d /home/user/.cache 0700 user users - -"
+    "d /mnt/data 0700 user users - -"
     "d /mnt/games 0700 user users - -"
   ];
 
