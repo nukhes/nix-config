@@ -16,6 +16,7 @@
     ];
     packages = [
       "com.usebottles.bottles"
+      "dev.vencord.Vesktop"
       "org.ppsspp.PPSSPP"
     ];
     update.auto = {
