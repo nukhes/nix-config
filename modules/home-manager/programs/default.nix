@@ -4,7 +4,7 @@
   imports = [
     ./alacritty.nix
     ./anki.nix
-    ./balena.nix
+    ./balena-etcher.nix
     ./crypto.nix
     ./firefox.nix
     ./obsidian.nix
