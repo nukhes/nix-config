@@ -115,7 +115,7 @@ in
         inner = 10;
         outer = 5;
         smartGaps = true;
-        smartBorders = "on";
+        smartBorders = "off";
       };
       window = {
         border = 2;

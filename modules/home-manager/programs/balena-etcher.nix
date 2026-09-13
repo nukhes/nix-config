@@ -3,15 +3,15 @@
 let
   balena-etcher = pkgs.stdenv.mkDerivation rec {
     pname = "balena-etcher";
-    version = "2.1.6";
+    version = "1.18.11";
 
     src = pkgs.fetchurl {
-      url = "https://github.com/balena-io/etcher/releases/download/v${version}/balenaEtcher-linux-x64-${version}.zip";
-      sha256 = "sha256-MXVfx5kgWHOCl6tjO8YPdZmfNNuUaAzWykydoiK9T3U=";
+      url = "https://github.com/balena-io/etcher/releases/download/v${version}/balena-etcher_${version}_amd64.deb";
+      sha256 = "0bhpijhwi9dpx1fwx3d564agfgxa485d9j97hkk6fgb8svm3h249";
     };
 
     nativeBuildInputs = with pkgs; [
-      unzip
+      dpkg
       autoPatchelfHook
       makeWrapper
     ];
@@ -46,21 +46,24 @@ let
     ];
 
     unpackPhase = ''
-      unzip $src
+      dpkg -x $src .
     '';
 
     installPhase = ''
-      mkdir -p $out/bin $out/opt/balena-etcher
+      mkdir -p $out/bin $out/opt
+      cp -r opt/balenaEtcher $out/opt/
+      cp -r usr/share $out/share
 
-      # Copia todo o conteúdo extraído para a pasta opt
-      cp -r balenaEtcher-linux-x64/* $out/opt/balena-etcher/
+      # Fix exec path in desktop file
+      substituteInPlace $out/share/applications/balena-etcher.desktop \
+        --replace "/opt/balenaEtcher/balena-etcher" "$out/bin/balena-etcher" || true
 
-      # Cria o link simbólico corrigido na pasta bin do sistema
-      ln -s $out/opt/balena-etcher/balena-etcher $out/bin/balena-etcher
+      ln -s $out/opt/balenaEtcher/balena-etcher $out/bin/balena-etcher
     '';
 
     postFixup = ''
       wrapProgram $out/bin/balena-etcher \
+        --prefix LD_LIBRARY_PATH : "${pkgs.lib.makeLibraryPath [ pkgs.libGL ]}" \
         --add-flags "--no-sandbox"
     '';
   };
