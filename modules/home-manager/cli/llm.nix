@@ -48,6 +48,12 @@ in
     settings.theme = "dark";
   };
 
+  programs.opencode = {
+    enable = true;
+    enableMcpIntegration = true;
+    tui.theme = "dark";
+  };
+
   age.secrets.gemini-p052 = {
     file = "${homeDirectory}/.nix-config/secrets/gemini-p052.age";
     path = "${homeDirectory}/.secrets/gemini-p052";
