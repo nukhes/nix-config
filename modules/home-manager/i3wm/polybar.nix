@@ -14,6 +14,7 @@ in
     script = ''
       export POLYBAR_BATTERY=$(ls -1 /sys/class/power_supply | grep -E '^BAT' | head -n 1)
       export POLYBAR_ADAPTER=$(ls -1 /sys/class/power_supply | grep -E '^(AC|AD|ADP)' | head -n 1)
+      export POLYBAR_NET_IFACE=$(ip route show default 2>/dev/null | awk '/default/ {print $5; exit}')
       polybar main &
     '';
     config = {
@@ -30,7 +31,7 @@ in
         line-size = "2pt";
         border-size = "0pt";
         modules-left = "i3 xwindow";
-        modules-right = "tray pipewire memory cpu battery date";
+        modules-right = "tray network pipewire memory cpu battery date";
         cursor-click = "pointer";
         cursor-scroll = "ns-resize";
         enable-ipc = true;
@@ -107,6 +108,18 @@ in
         ramp-capacity-2 = "󰁽";
         ramp-capacity-3 = "󰁾";
         ramp-capacity-4 = "󰁿";
+      };
+
+      "module/network" = {
+        type = "internal/network";
+        interface = "\${env:POLYBAR_NET_IFACE:enp5s0}";
+        interval = 3;
+        format-connected = "<label-connected>";
+        format-disconnected = "<label-disconnected>";
+        label-connected = "󰈀 %local_ip%";
+        label-disconnected = "󰈂 offline";
+        label-connected-foreground = fg;
+        label-disconnected-foreground = fg;
       };
 
       "module/date" = {
