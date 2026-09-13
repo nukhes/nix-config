@@ -111,8 +111,14 @@ in
       };
       floating.modifier = mod;
       bars = [ ];
+      gaps = {
+        inner = 10;
+        outer = 5;
+        smartGaps = true;
+        smartBorders = "on";
+      };
       window = {
-        border = 0;
+        border = 2;
         titlebar = false;
       };
 
