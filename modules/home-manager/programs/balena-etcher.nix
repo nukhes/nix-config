@@ -6,8 +6,8 @@ let
     version = "2.1.6";
 
     src = pkgs.fetchurl {
-      url = "https://github.com${version}/balenaEtcher-linux-x64-${version}.zip";
-      sha256 = "sha256-4YtYwRzI7Y40GAs9XNqbyHw+6G7rN9e8v5Xw4Xw4Xw4=";
+      url = "https://github.com/balena-io/etcher/releases/download/v${version}/balenaEtcher-linux-x64-${version}.zip";
+      sha256 = "sha256-MXVfx5kgWHOCl6tjO8YPdZmfNNuUaAzWykydoiK9T3U=";
     };
 
     nativeBuildInputs = with pkgs; [
@@ -33,16 +33,16 @@ let
       libuuid
       at-spi2-core
       libxshmfence
-      xorg.libX11
-      xorg.libXcomposite
-      xorg.libXdamage
-      xorg.libXext
-      xorg.libXfixes
-      xorg.libXrandr
-      xorg.libXrender
-      xorg.libxcb
-      xorg.libXScrnSaver
-      xorg.libXtst
+      libx11
+      libxcomposite
+      libxdamage
+      libxext
+      libxfixes
+      libxrandr
+      libxrender
+      libxcb
+      libxscrnsaver
+      libxtst
     ];
 
     unpackPhase = ''
