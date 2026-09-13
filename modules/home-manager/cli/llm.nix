@@ -45,13 +45,11 @@ in
   programs.claude-code = {
     enable = true;
     configDir = "${configHome}/claude";
-    settings.theme = "dark";
   };
 
   programs.opencode = {
     enable = true;
     enableMcpIntegration = true;
-    tui.theme = "dark";
   };
 
   age.secrets.gemini-p052 = {
