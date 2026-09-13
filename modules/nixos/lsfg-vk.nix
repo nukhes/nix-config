@@ -40,7 +40,27 @@ stdenv.mkDerivation rec {
   ];
 
   unpackPhase = ''
-    tar --use-compress-program=unzstd -xf $src
+    # Diagnostic: show file type and header to help debug invalid archive
+    echo "-- unpackPhase diagnostics --"
+    echo "src=$src"
+    if command -v file >/dev/null 2>&1; then file "$src" || true; fi
+    if command -v hexdump >/dev/null 2>&1; then hexdump -C -n 128 "$src" || true; fi
+    if command -v zstd >/dev/null 2>&1; then zstd -l "$src" || true; fi
+
+    # Detect compression by magic bytes and extract accordingly
+    # gzip: 1F 8B 08 00, zstd: 28 B5 2F FD, xz: FD 37 7A 58, bzip2: 42 5A 68
+    magic=$(head -c4 "$src" | od -An -t x1 | tr -d ' \n') || true
+    echo "magic=$magic"
+    case "$magic" in
+      1f8b* ) echo "Detected gzip archive"; tar -xzf "$src" ;;
+      28b52ffd* ) echo "Detected zstd archive"; zstd -d < "$src" | tar -xf - ;;
+      fd377a58* ) echo "Detected xz archive"; xz -d < "$src" | tar -xf - ;;
+      425a68* ) echo "Detected bzip2 archive"; bzip2 -d < "$src" | tar -xf - ;;
+      * ) echo "Unknown compression; trying tar autodetect"; tar -xf "$src" || {
+            echo "tar autodetect failed, trying zstd then gzip";
+            zstd -d < "$src" | tar -xf - || gunzip -c "$src" | tar -xf -;
+          } ;;
+    esac
   '';
 
   installPhase = ''
@@ -67,14 +87,20 @@ stdenv.mkDerivation rec {
   '';
 
   postFixup = ''
-    wrapProgram $out/bin/lsfg-vk-ui \
-      --run 'mkdir -p ~/.config/lsfg-vk' \
-      --run 'if [ ! -f ~/.config/lsfg-vk/conf.toml ]; then
-        cat > ~/.config/lsfg-vk/conf.toml <<EOF
+    # Avoid passing complex multi-line --run arguments to makeWrapper
+    # Move original binary and create a small wrapper script that
+    # initializes a default config on first run and then execs the real binary.
+    if [ -x "$out/bin/lsfg-vk-ui" ]; then
+      mv "$out/bin/lsfg-vk-ui" "$out/bin/lsfg-vk-ui.real"
+      cat > "$out/bin/lsfg-vk-ui" <<'WRAPPER'
+#!/usr/bin/env sh
+mkdir -p "$HOME/.config/lsfg-vk"
+if [ ! -f "$HOME/.config/lsfg-vk/conf.toml" ]; then
+  cat > "$HOME/.config/lsfg-vk/conf.toml" <<'EOF_CONF'
 version = 1
 
 [global]
-dll = "'$out'/lib/lossless/Lossless.dll"
+dll = "@OUT@/lib/lossless/Lossless.dll"
 
 [[game]]
 exe = "games"
@@ -83,8 +109,13 @@ flow_scale = 1.0
 performance_mode = true
 hdr_mode = false
 experimental_present_mode = "fifo"
-EOF
-      fi'
+EOF_CONF
+fi
+exec "@OUT@/bin/lsfg-vk-ui.real" "$@"
+WRAPPER
+      sed -i "s|@OUT@|$out|g" "$out/bin/lsfg-vk-ui"
+      chmod +x "$out/bin/lsfg-vk-ui"
+    fi
   '';
 
   meta = with lib; {
