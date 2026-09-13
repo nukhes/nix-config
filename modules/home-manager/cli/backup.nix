@@ -131,7 +131,7 @@ in
     Service = {
       Type = "simple";
       ExecStart = ''
-        ${pkgs.rclone}/bin/rclone mount p052 %h/drive \
+        ${pkgs.rclone}/bin/rclone mount p052: %h/drive \
           --vfs-cache-mode writes \
           --vfs-cache-max-age 24h \
           --vfs-cache-max-size 50G \
