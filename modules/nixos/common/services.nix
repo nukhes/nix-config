@@ -5,6 +5,8 @@
     group = "root";
   };
 
+  virtualisation.docker.enable = true;
+
   services = {
     openssh.enable = true;
     fstrim.enable = true;
@@ -12,6 +14,7 @@
     gvfs.enable = true;
     tumbler.enable = true;
     displayManager.ly.enable = true;
+    polkit.enable = true;
     tailscale = {
       enable = true;
       authKeyFile = config.age.secrets.tailscale-authkey.path;
@@ -39,6 +42,20 @@
       enable = true;
       freeMemThreshold = 5;
       freeSwapThreshold = 5;
+    };
+  };
+  
+  systemd.user.services.polkit-gnome-authentication-agent-1 = {
+    description = "Polkit GNOME Authentication Agent";
+    wantedBy = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    after = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "simple";
+      ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+      Restart = "on-failure";
+      RestartSec = 1;
+      TimeoutStopSec = 10;
     };
   };
 }

@@ -6,6 +6,21 @@
   ...
 }:
 {
+  users = {
+    users.user = {
+      isNormalUser = true;
+      group = "user";
+      extraGroups = [
+        "networkmanager"
+        "wheel"
+        "video"
+        "audio"
+        "docker"
+      ];
+    };
+    groups.user = { };
+  };
+  
   age.identityPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 
   home-manager = {

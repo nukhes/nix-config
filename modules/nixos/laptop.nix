@@ -1,4 +1,9 @@
-{ pkgs, ... }:
+{
+  pkgs,
+  modules,
+  secrets,
+  ...
+}:
 {
   boot = {
     kernelModules = [ "msr" ];
@@ -61,5 +66,21 @@
       Type = "oneshot";
       RemainAfterExit = true;
     };
+  };
+
+  zramSwap = {
+    enable = true;
+    priority = 100;
+    algorithm = "zstd";
+    memoryPercent = 50;
+  };
+
+  age.secrets.eduroam = {
+    file = "${secrets}/eduroam.age";
+    path = "/etc/NetworkManager/system-connections/eduroam.nmconnection";
+    mode = "0600";
+    owner = "root";
+    group = "root";
+    symlink = false;
   };
 }

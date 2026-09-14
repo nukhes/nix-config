@@ -21,7 +21,11 @@
       libappindicator
       hicolor-icon-theme
       gnome-themes-extra
+      polkit_gnome
+      quickemu
       usbutils
     ];
   };
+
+  
 }

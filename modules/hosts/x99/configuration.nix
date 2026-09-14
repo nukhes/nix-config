@@ -8,9 +8,10 @@
     ./hardware-configuration.nix
     ./nvidia.nix
     ./sunshine.nix
-    "${modules}/nixos"
+    "${modules}/common/nixos"
   ];
 
+  # Disable sleep
   systemd.targets.sleep.enable = false;
   systemd.targets.suspend.enable = false;
   systemd.targets.hibernate.enable = false;
@@ -21,10 +22,19 @@
     networkmanager.enable = true;
   };
 
+  services.libinput = {
+    enable = true;
+    mouse = {
+      accelProfile = "flat";
+    };
+    touchpad = {
+      accelProfile = "flat";
+    };
+  };
+
   boot.kernelModules = [ 
     "coretemp"
     "nct6775"
-    
   ];
 
   boot.blacklistedKernelModules = [
@@ -36,7 +46,7 @@
     "sbp2"
   ];
 
-  powerManagement.cpuFreqGovernor = "performance";
+  powerManagement.cpuFreqGovernor = "ondemand";
   hardware.cpu.intel.updateMicrocode = false;
   boot.kernelParams = [ "nvidia-drm.modeset=1" ];
   system.stateVersion = "26.05";
