@@ -21,7 +21,7 @@
   };
 
   environment.systemPackages = [ pkgs.moonlight-qt ];
-  kernelPackages = pkgs.linuxPackages_;
+  kernelPackages = pkgs.linuxPackages_6_18;
 
   hardware.bluetooth = {
     enable = true;
