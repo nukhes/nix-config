@@ -50,6 +50,7 @@ let
     hln = "hledger balance assets --forecast=thismonth -e tomorrow";
     nv = "vim ~/.nix-config";
     bye = "DISPLAY=:0 xset dpms force off";
+    wttr = "curl -s \"wttr.in/Barao_Geraldo\"";
   };
 in
 {
@@ -84,8 +85,14 @@ in
       fping
     ];
 
-  programs.bash.enable = lib.mkIf isLinux true;
   programs.zsh.enable = lib.mkIf isDarwin true;
+
+  programs.bash = {
+    enable = lib.mkIf isLinux true;
+    initExtra = ''
+      fastfetch
+    '';
+  };
 
   home.shellAliases = aliases // gitAliases // (lib.optionalAttrs isLinux nixAliases);
 
@@ -121,4 +128,57 @@ in
       };
     };
   };
+
+  programs.fastfetch = {
+    enable = true;
+    settings = {
+      logo = {
+        padding = {
+          top = 1;
+          left = 2;
+        };
+      };
+      display = {
+        separator = " • ";
+        color = {
+          keys = "blue";
+          title = "magenta";
+        };
+      };
+      modules = [
+        "title"
+        {
+          type = "os";
+          key = "os  ";
+        }
+        {
+          type = "kernel";
+          key = "ker ";
+        }
+        {
+          type = "uptime";
+          key = "up  ";
+        }
+        {
+          type = "packages";
+          key = "pkgs";
+        }
+        {
+          type = "wm";
+          key = "wm  ";
+        }
+        {
+          type = "terminal";
+          key = "term";
+        }
+        {
+          type = "memory";
+          key = "mem ";
+        }
+        "break"
+        "colors"
+      ];
+    };
+  };
+
 }
