@@ -7,7 +7,7 @@
       efi.canTouchEfiVariables = true;
     };
 
-    kernelPackages = pkgs.linuxPackages_zen;
+    kernelPackages = pkgs.linuxPackages_xanmod_stable;
 
     kernelParams = [
       "nowatchdog"

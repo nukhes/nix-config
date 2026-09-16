@@ -6,9 +6,10 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ./nvidia.nix
-    ./sunshine.nix
-    "${modules}/common/nixos"
+    
+    "${modules}/nixos/common"
+    "${modules}/nixos/maxwell.nix"
+    "${modules}/nixos/sunshine.nix"
   ];
 
   # Disable sleep

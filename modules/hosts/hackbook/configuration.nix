@@ -7,7 +7,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    "${modules}/common/nixos"
+    "${modules}/nixos/common/"
     "${modules}/nixos/laptop.nix"
     "${modules}/nixos/broadcom.nix"
   ];
@@ -21,6 +21,7 @@
   };
 
   environment.systemPackages = [ pkgs.moonlight-qt ];
+  kernelPackages = pkgs.linuxPackages_;
 
   hardware.bluetooth = {
     enable = true;
