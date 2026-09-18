@@ -114,11 +114,5 @@
     ForwardToWall=no
   '';
 
-  # Desativa coredumps
-  systemd.coredump.extraConfig = ''
-    Storage=none
-    ProcessSizeMax=0
-  '';
-
   system.stateVersion = "26.05";
 }
