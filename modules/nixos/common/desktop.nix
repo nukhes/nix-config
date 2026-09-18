@@ -15,6 +15,7 @@
   environment = {
     pathsToLink = [ "/share/icons" ];
     systemPackages = with pkgs; [
+      usbutils
       distrobox
       gparted
       pavucontrol
@@ -22,8 +23,10 @@
       hicolor-icon-theme
       gnome-themes-extra
       polkit_gnome
+
+      # Virtualization
       quickemu
-      usbutils
+      quickgui
     ];
   };
 
