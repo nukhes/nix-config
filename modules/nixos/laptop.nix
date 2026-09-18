@@ -1,18 +1,9 @@
 {
   pkgs,
-  modules,
   secrets,
   ...
 }:
 {
-  boot = {
-    kernelModules = [ "msr" ];
-    kernelParams = [
-      "acpi_osi=!Darwin"
-      "mem_sleep_default=deep"
-    ];
-  };
-
   environment.systemPackages = with pkgs; [
     brightnessctl
     powertop
@@ -34,45 +25,6 @@
         CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
       };
     };
-
-    mbpfan = {
-      enable = true;
-      settings = {
-        general.polling_interval = 5;
-        info = {
-          min_fan_speed = 2000;
-          max_fan_speed = 6200;
-          low_temp = 55;
-          high_temp = 65;
-          max_temp = 75;
-        };
-      };
-    };
-  };
-
-  systemd.services.disable-prochot = {
-    description = "Disable BD_PROCHOT and apply PowerTop auto-tune";
-    after = [ "systemd-modules-load.service" ];
-    wantedBy = [ "multi-user.target" ];
-    path = with pkgs; [
-      msr-tools
-      powertop
-    ];
-    script = ''
-      powertop --auto-tune
-      wrmsr -a 0x1FC 0x4005a
-    '';
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-  };
-
-  zramSwap = {
-    enable = true;
-    priority = 100;
-    algorithm = "zstd";
-    memoryPercent = 50;
   };
 
   age.secrets.eduroam = {
