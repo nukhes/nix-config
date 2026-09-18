@@ -1,7 +1,8 @@
 {
   pkgs,
+  lib,
+  config,
   modules,
-  secrets,
   ...
 }:
 {
@@ -20,18 +21,63 @@
     };
   };
 
-  environment.systemPackages = [ pkgs.moonlight-qt ];
-  kernelPackages = pkgs.linuxPackages_6_18;
+  boot = {
+    extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
+    kernelPackages = lib.mkForce pkgs.linuxPackages_6_18;
+    kernelModules = [ "msr" ];
+    kernelParams = [
+      "pci=noaer"
+      "pcie_aspm=off"
+      "acpi_osi=!Darwin"
+      "mem_sleep_default=deep"
+    ];
+    extraModprobeConfig = ''
+      options wl use_msi=0
+    '';
+  };
 
-  hardware.bluetooth = {
+  hardware.enableRedistributableFirmware = true;
+
+  environment.systemPackages = [ pkgs.moonlight-qt ];
+
+  services.mbpfan = {
     enable = true;
-    powerOnBoot = true;
-    settings.General = {
-      Experimental = true;
-      FastConnectable = true;
+    settings = {
+      general.polling_interval = 5;
+      info = {
+        min_fan_speed = 2000;
+        max_fan_speed = 6200;
+        low_temp = 55;
+        high_temp = 65;
+        max_temp = 75;
+      };
     };
   };
-  services.blueman.enable = true;
+
+  systemd.services.disable-prochot = {
+    description = "Disable BD_PROCHOT and apply PowerTop auto-tune";
+    after = [ "systemd-modules-load.service" ];
+    wantedBy = [ "multi-user.target" ];
+    path = with pkgs; [
+      msr-tools
+      powertop
+    ];
+    script = ''
+      powertop --auto-tune
+      wrmsr -a 0x1FC 0x4005a
+    '';
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+  };
+
+  zramSwap = {
+    enable = true;
+    priority = 100;
+    algorithm = "zstd";
+    memoryPercent = 80;
+  };
 
   nix.settings = {
     max-jobs = 1;
