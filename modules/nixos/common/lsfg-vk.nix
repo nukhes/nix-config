@@ -36,19 +36,16 @@ stdenv.mkDerivation rec {
     qt6.qtdeclarative
     vulkan-loader
     libGL
-    gcc-unwrapped.lib # Para libstdc++.so.6
+    gcc-unwrapped.lib
   ];
 
   unpackPhase = ''
-    # Diagnostic: show file type and header to help debug invalid archive
     echo "-- unpackPhase diagnostics --"
     echo "src=$src"
     if command -v file >/dev/null 2>&1; then file "$src" || true; fi
     if command -v hexdump >/dev/null 2>&1; then hexdump -C -n 128 "$src" || true; fi
     if command -v zstd >/dev/null 2>&1; then zstd -l "$src" || true; fi
 
-    # Detect compression by magic bytes and extract accordingly
-    # gzip: 1F 8B 08 00, zstd: 28 B5 2F FD, xz: FD 37 7A 58, bzip2: 42 5A 68
     magic=$(head -c4 "$src" | od -An -t x1 | tr -d ' \n') || true
     echo "magic=$magic"
     case "$magic" in
@@ -87,9 +84,6 @@ stdenv.mkDerivation rec {
   '';
 
   postFixup = ''
-    # Avoid passing complex multi-line --run arguments to makeWrapper
-    # Move original binary and create a small wrapper script that
-    # initializes a default config on first run and then execs the real binary.
     if [ -x "$out/bin/lsfg-vk-ui" ]; then
       mv "$out/bin/lsfg-vk-ui" "$out/bin/lsfg-vk-ui.real"
       cat > "$out/bin/lsfg-vk-ui" <<'WRAPPER'

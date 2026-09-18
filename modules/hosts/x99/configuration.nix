@@ -6,17 +6,17 @@
 {
   imports = [
     ./hardware-configuration.nix
-    
     "${modules}/nixos/common"
     "${modules}/nixos/maxwell.nix"
     "${modules}/nixos/sunshine.nix"
   ];
 
-  # Disable sleep
-  systemd.targets.sleep.enable = false;
-  systemd.targets.suspend.enable = false;
-  systemd.targets.hibernate.enable = false;
-  systemd.targets.hybrid-sleep.enable = false;
+  systemd.targets = {
+    sleep.enable = false;
+    suspend.enable = false;
+    hibernate.enable = false;
+    hybrid-sleep.enable = false;
+  };
 
   networking = {
     hostName = "x99";
@@ -25,30 +25,27 @@
 
   services.libinput = {
     enable = true;
-    mouse = {
-      accelProfile = "flat";
-    };
-    touchpad = {
-      accelProfile = "flat";
-    };
+    mouse.accelProfile = "flat";
+    touchpad.accelProfile = "flat";
   };
 
-  boot.kernelModules = [ 
-    "coretemp"
-    "nct6775"
-  ];
-
-  boot.blacklistedKernelModules = [
-    "firewire-core"
-    "mei_me"
-    "mei"
-    "lpc_ich"
-    "ieee1394"
-    "sbp2"
-  ];
+  boot = {
+    kernelModules = [
+      "coretemp"
+      "nct6775"
+    ];
+    blacklistedKernelModules = [
+      "firewire-core"
+      "mei_me"
+      "mei"
+      "lpc_ich"
+      "ieee1394"
+      "sbp2"
+    ];
+    kernelParams = [ "nvidia-drm.modeset=1" ];
+  };
 
   powerManagement.cpuFreqGovernor = "ondemand";
   hardware.cpu.intel.updateMicrocode = false;
-  boot.kernelParams = [ "nvidia-drm.modeset=1" ];
   system.stateVersion = "26.05";
 }

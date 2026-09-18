@@ -14,8 +14,10 @@
       homeDirectory = if pkgs.stdenv.isDarwin then "/Users/user" else "/home/user";
     };
 
-    stylix.targets.xresources.enable = true;
-    stylix.targets.feh.enable = false;
-    stylix.targets.firefox.profileNames = [ "default-profile" ];
+    stylix.targets = {
+      xresources.enable = true;
+      feh.enable = false;
+      firefox.profileNames = [ "default-profile" ];
+    };
   };
 }

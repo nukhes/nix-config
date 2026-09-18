@@ -30,7 +30,6 @@
       "pcie_aspm=off"
       "acpi_osi=!Darwin"
       "mem_sleep_default=deep"
-      # Cala a boca do kernel
       "quiet"
       "loglevel=0"
       "rd.systemd.show_status=false"
@@ -92,12 +91,9 @@
     cores = 1;
   };
 
-  # ── Cala a boca de tudo ──
-  # Desativa audit completamente
   security.audit.enable = false;
   security.auditd.enable = false;
 
-  # Journald: só volatile, mínimo possível, sem persistência
   services.journald.extraConfig = ''
     Storage=volatile
     RuntimeMaxUse=1M

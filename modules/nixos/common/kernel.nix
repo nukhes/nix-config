@@ -1,6 +1,5 @@
 { pkgs, ... }:
 {
-  # 1. Kernel Definitions
   boot = {
     loader = {
       systemd-boot.enable = true;
@@ -23,7 +22,6 @@
     };
   };
 
-  # 2. Security Hardening
   security.pam.loginLimits = [
     {
       domain = "*";
@@ -39,7 +37,6 @@
     }
   ];
 
-  # 3. Locale
   time.timeZone = "America/Sao_Paulo";
   i18n = {
     defaultLocale = "en_US.UTF-8";

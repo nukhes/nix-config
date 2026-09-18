@@ -10,7 +10,6 @@ lib.mkIf pkgs.stdenv.isLinux {
     gtk.enable = true;
   };
 
-
   home.sessionVariables = {
     XCURSOR_THEME = "Bibata-Modern-Ice";
     XCURSOR_SIZE = "24";

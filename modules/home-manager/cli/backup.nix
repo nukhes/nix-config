@@ -19,13 +19,11 @@ let
 
     HOSTNAME="$(hostname)"
 
-    # initialize repo if it doesn't exist
     if [ ! -d "$BORG_REPO/data" ]; then
       echo "[borg] initializing repository at $BORG_REPO"
       ${pkgs.borgbackup}/bin/borg init --encryption=repokey-blake2
     fi
 
-    # create archive with timestamp
     ARCHIVE="''${HOSTNAME}-$(date +%Y-%m-%dT%H:%M:%S)"
     echo "[borg] creating archive: $ARCHIVE"
 
@@ -65,7 +63,6 @@ let
       "${homeDirectory}/documents" \
       "${homeDirectory}/.config/mozilla"
 
-    # prune old archives (keep 7 daily, 4 weekly, 6 monthly, 1 yearly)
     echo "[borg] pruning old archives"
     ${pkgs.borgbackup}/bin/borg prune \
       --list \
@@ -75,7 +72,6 @@ let
       --keep-monthly 6 \
       --keep-yearly 1
 
-    # compact repository
     echo "[borg] compacting repository"
     ${pkgs.borgbackup}/bin/borg compact
 
@@ -88,7 +84,6 @@ let
     HOSTNAME="$(hostname)"
     REMOTE_PATH="p052:backups/''${HOSTNAME}"
 
-    # ensure the borg repo exists before syncing
     if [ ! -d "${borgRepo}/data" ]; then
       echo "[rclone] borg repository not found at ${borgRepo}, skipping sync"
       exit 0

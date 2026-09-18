@@ -94,28 +94,21 @@ in
     '';
     config = {
       startup = [
-
-        # Polybar
         {
           command = "systemctl --user restart polybar";
           always = true;
           notification = false;
         }
-
-        # Ensure tray icons support
         {
           command = "snixembed &";
           always = true;
           notification = false;
         }
-
-        # Solid wallpaper
         {
           command = "feh --bg-fill '${solid-bg}'";
           always = true;
           notification = false;
         }
-
       ];
       modifier = mod;
       fonts = {

@@ -23,8 +23,6 @@
       hicolor-icon-theme
       gnome-themes-extra
       polkit_gnome
-
-      # Virtualization
       quickemu
       quickgui
     ];

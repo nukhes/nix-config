@@ -7,7 +7,6 @@
 
   virtualisation.docker.enable = true;
 
-  # Bluetooth
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
@@ -16,10 +15,9 @@
       FastConnectable = true;
     };
   };
-  
-  services.blueman.enable = true;
 
   services = {
+    blueman.enable = true;
     openssh.enable = true;
     fstrim.enable = true;
     udisks2.enable = true;

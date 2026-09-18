@@ -6,7 +6,7 @@
 }:
 
 let
-  inherit (pkgs.stdenv) isLinux;
+  inherit (pkgs.stdenv) isLinux isDarwin;
   inherit (config.home) homeDirectory;
 
   commonAliases = {
@@ -38,7 +38,7 @@ in
       playerctl
     ];
 
-  home.shellAliases = commonAliases // (if isLinux then linuxAliases else darwinAliases);
+  home.shellAliases = commonAliases // lib.optionalAttrs isLinux linuxAliases // lib.optionalAttrs isDarwin darwinAliases;
 
   age.secrets = {
     spotify-player = {
@@ -48,5 +48,5 @@ in
     };
   };
 
-  services.playerctld.enable = lib.mkIf isLinux true;
+  services.playerctld.enable = isLinux;
 }

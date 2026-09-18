@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  lib,
   ...
 }:
 
@@ -9,7 +8,7 @@ let
   inherit (config.home) homeDirectory;
   libraryPath = "${homeDirectory}/library";
 
-  papis-scihub = pkgs.python3Packages.buildPythonPackage rec {
+  papis-scihub = pkgs.python3Packages.buildPythonPackage {
     pname = "papis-scihub";
     version = "0.1.3";
     pyproject = true;
@@ -31,9 +30,6 @@ let
       python-doi
     ];
 
-    # Fix: the plugin's Downloader.__init__ uses self.logger and self.session
-    # before calling the parent __init__ that creates them. Reorder so the
-    # parent is initialised first.
     postPatch = ''
       sed -i '/def __init__(self, uri: str)/,/self\.expected_document_extension/ {
         /self\.logger\.warning(WARNING_NOTICE)/{
@@ -43,8 +39,6 @@ let
       }' papis_scihub/plugin.py
     '';
 
-    # Avoid duplicate papis in closure: papis-scihub already depends on papis,
-    # so we don't need to check for conflicts when composing with papis itself.
     catchConflicts = false;
     doCheck = false;
   };
@@ -198,7 +192,6 @@ in
       $DRY_RUN_CMD ${pkgs.git}/bin/git clone git@github.com:nukhes/library.git "${libraryPath}"
     fi
 
-    # Download LFS objects — git-lfs needs git in PATH, and git needs git-lfs in PATH
     export PATH="${pkgs.git}/bin:${pkgs.git-lfs}/bin:$PATH"
     cd ~/library
     ${pkgs.git-lfs}/bin/git-lfs install --local
