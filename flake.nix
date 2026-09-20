@@ -32,62 +32,45 @@
   };
 
   outputs =
-    inputs@{
-      flake-parts,
-      nixpkgs,
-      nix-darwin,
-      ...
-    }:
+    inputs@{ flake-parts, ... }:
+    let
+      # Auto-import: recursively find all .nix files under ./modules,
+      # excluding *.pkg.nix files (callPackage exceptions).
+      importModules =
+        dir:
+        let
+          listRecursive =
+            prefix:
+            let
+              entries = builtins.readDir prefix;
+              names = builtins.attrNames entries;
+              process =
+                name:
+                let
+                  path = prefix + "/${name}";
+                  type = entries.${name};
+                in
+                if type == "directory" then
+                  listRecursive path
+                else if
+                  type == "regular"
+                  && builtins.match ".*\\.nix" name != null
+                  && builtins.match ".*\\.pkg\\.nix" name == null
+                then
+                  [ path ]
+                else
+                  [ ];
+            in
+            builtins.concatLists (builtins.map process names);
+        in
+        listRecursive dir;
+    in
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
         "aarch64-darwin"
       ];
 
-      flake =
-        let
-          specialArgs = {
-            inherit inputs;
-            modules = ./modules;
-            secrets = ./secrets;
-          };
-
-          nixosBaseModules = [
-            inputs.stylix.nixosModules.stylix
-            inputs.agenix.nixosModules.default
-            inputs.nix-flatpak.nixosModules.nix-flatpak
-            inputs.home-manager.nixosModules.home-manager
-          ];
-        in
-        {
-          nixosConfigurations.hackbook = nixpkgs.lib.nixosSystem {
-            inherit specialArgs;
-            modules = [
-              { nixpkgs.hostPlatform = "x86_64-linux"; }
-              ./modules/hosts/hackbook/configuration.nix
-              inputs.nixos-hardware.nixosModules.apple-macbook-air-7
-            ]
-            ++ nixosBaseModules;
-          };
-
-          nixosConfigurations.x99 = nixpkgs.lib.nixosSystem {
-            inherit specialArgs;
-            modules = [
-              { nixpkgs.hostPlatform = "x86_64-linux"; }
-              ./modules/hosts/x99/configuration.nix
-            ]
-            ++ nixosBaseModules;
-          };
-
-          darwinConfigurations.darwin = nix-darwin.lib.darwinSystem {
-            inherit specialArgs;
-            modules = [
-              { nixpkgs.hostPlatform = "aarch64-darwin"; }
-              ./modules/hosts/darwin/configuration.nix
-              inputs.agenix.darwinModules.default
-              inputs.home-manager.darwinModules.home-manager
-            ];
-          };
-        };
+      imports = importModules ./modules;
     };
 }
