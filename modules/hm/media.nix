@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   hm.modules.common =
@@ -42,7 +42,8 @@
           playerctl
         ];
 
-      home.shellAliases = commonAliases // lib.optionalAttrs isLinux linuxAliases // lib.optionalAttrs isDarwin darwinAliases;
+      home.shellAliases =
+        commonAliases // lib.optionalAttrs isLinux linuxAliases // lib.optionalAttrs isDarwin darwinAliases;
 
       age.secrets = {
         spotify-player = {

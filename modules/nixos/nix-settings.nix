@@ -1,7 +1,7 @@
 { inputs, ... }:
 
 {
-  nixos.modules.common = { ... }: {
+  nixos.modules.common = _: {
     nixpkgs = {
       config.allowUnfree = true;
       overlays = [ inputs.nur.overlays.default ];

@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   hm.modules.common =
@@ -152,13 +152,34 @@
           };
           modules = [
             "title"
-            { type = "os"; key = "os  "; }
-            { type = "kernel"; key = "ker "; }
-            { type = "uptime"; key = "up  "; }
-            { type = "packages"; key = "pkgs"; }
-            { type = "wm"; key = "wm  "; }
-            { type = "terminal"; key = "term"; }
-            { type = "memory"; key = "mem "; }
+            {
+              type = "os";
+              key = "os  ";
+            }
+            {
+              type = "kernel";
+              key = "ker ";
+            }
+            {
+              type = "uptime";
+              key = "up  ";
+            }
+            {
+              type = "packages";
+              key = "pkgs";
+            }
+            {
+              type = "wm";
+              key = "wm  ";
+            }
+            {
+              type = "terminal";
+              key = "term";
+            }
+            {
+              type = "memory";
+              key = "mem ";
+            }
             "break"
             "colors"
           ];

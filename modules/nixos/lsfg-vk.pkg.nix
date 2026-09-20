@@ -1,13 +1,14 @@
-{ lib
-, stdenv
-, fetchurl
-, zstd
-, autoPatchelfHook
-, makeWrapper
-, qt6
-, vulkan-loader
-, libGL
-, gcc-unwrapped
+{
+  lib,
+  stdenv,
+  fetchurl,
+  zstd,
+  autoPatchelfHook,
+  makeWrapper,
+  qt6,
+  vulkan-loader,
+  libGL,
+  gcc-unwrapped,
 }:
 
 stdenv.mkDerivation rec {
@@ -84,32 +85,32 @@ stdenv.mkDerivation rec {
   '';
 
   postFixup = ''
-    if [ -x "$out/bin/lsfg-vk-ui" ]; then
-      mv "$out/bin/lsfg-vk-ui" "$out/bin/lsfg-vk-ui.real"
-      cat > "$out/bin/lsfg-vk-ui" <<'WRAPPER'
-#!/usr/bin/env sh
-mkdir -p "$HOME/.config/lsfg-vk"
-if [ ! -f "$HOME/.config/lsfg-vk/conf.toml" ]; then
-  cat > "$HOME/.config/lsfg-vk/conf.toml" <<'EOF_CONF'
-version = 1
+        if [ -x "$out/bin/lsfg-vk-ui" ]; then
+          mv "$out/bin/lsfg-vk-ui" "$out/bin/lsfg-vk-ui.real"
+          cat > "$out/bin/lsfg-vk-ui" <<'WRAPPER'
+    #!/usr/bin/env sh
+    mkdir -p "$HOME/.config/lsfg-vk"
+    if [ ! -f "$HOME/.config/lsfg-vk/conf.toml" ]; then
+      cat > "$HOME/.config/lsfg-vk/conf.toml" <<'EOF_CONF'
+    version = 1
 
-[global]
-dll = "@OUT@/lib/lossless/Lossless.dll"
+    [global]
+    dll = "@OUT@/lib/lossless/Lossless.dll"
 
-[[game]]
-exe = "games"
-multiplier = 3
-flow_scale = 1.0
-performance_mode = true
-hdr_mode = false
-experimental_present_mode = "fifo"
-EOF_CONF
-fi
-exec "@OUT@/bin/lsfg-vk-ui.real" "$@"
-WRAPPER
-      sed -i "s|@OUT@|$out|g" "$out/bin/lsfg-vk-ui"
-      chmod +x "$out/bin/lsfg-vk-ui"
+    [[game]]
+    exe = "games"
+    multiplier = 3
+    flow_scale = 1.0
+    performance_mode = true
+    hdr_mode = false
+    experimental_present_mode = "fifo"
+    EOF_CONF
     fi
+    exec "@OUT@/bin/lsfg-vk-ui.real" "$@"
+    WRAPPER
+          sed -i "s|@OUT@|$out|g" "$out/bin/lsfg-vk-ui"
+          chmod +x "$out/bin/lsfg-vk-ui"
+        fi
   '';
 
   meta = with lib; {

@@ -1,6 +1,6 @@
-{ ... }:
+_:
 let
-  secrets = ../secrets;
+  secrets = ../../secrets;
 in
 {
   nixos.modules.hackbook = { pkgs, ... }: {

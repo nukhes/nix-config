@@ -1,7 +1,7 @@
 { config, inputs, ... }:
 
 {
-  nixos.modules.common = { ... }: {
+  nixos.modules.common = _: {
     users = {
       users.user = {
         isNormalUser = true;

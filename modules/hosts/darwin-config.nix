@@ -1,7 +1,7 @@
 { config, inputs, ... }:
 
 {
-  darwin.modules.common = { ... }: {
+  darwin.modules.common = _: {
     nix = {
       enable = true;
       settings.experimental-features = "nix-command flakes";

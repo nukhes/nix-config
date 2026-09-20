@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   nixos.modules.hackbook = { config, lib, ... }: {

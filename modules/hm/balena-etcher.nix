@@ -1,4 +1,4 @@
-{ ... }:
+_:
 
 {
   hm.modules.common =
