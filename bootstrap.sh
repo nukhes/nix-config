@@ -29,7 +29,7 @@ if ! ls "$HOME"/.ssh/id_* >/dev/null 2>&1; then
     read -p "Press enter to continue anyway, or Ctrl+C to abort..."
 fi
 
-# Check for system SSH keys (often used for agenix secrets)
+# Check for system SSH keys
 if ! ls /etc/ssh/ssh_host_* >/dev/null 2>&1; then
     warn "No SSH host keys found in /etc/ssh/. Agenix decryption might fail."
     read -p "Press enter to continue anyway, or Ctrl+C to abort..."
