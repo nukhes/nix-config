@@ -51,6 +51,7 @@ let
     nv = "vim ~/.nix-config";
     bye = "DISPLAY=:0 xset dpms force off";
     wttr = "curl -s \"wttr.in/Barao_Geraldo\"";
+    library-organize = "nix-shell -p 'python3.withPackages (ps: [ ps.pyyaml ])' --run 'python3 ${homeDirectory}/library/organize_books.py books'";
   };
 in
 {
