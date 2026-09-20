@@ -6,12 +6,14 @@ _:
 
     let
       balena-etcher = pkgs.stdenv.mkDerivation rec {
+        # Last working version
         pname = "balena-etcher";
         version = "1.18.11";
+        hash = "0bhpijhwi9dpx1fwx3d564agfgxa485d9j97hkk6fgb8svm3h249";
 
         src = pkgs.fetchurl {
           url = "https://github.com/balena-io/etcher/releases/download/v${version}/balena-etcher_${version}_amd64.deb";
-          sha256 = "0bhpijhwi9dpx1fwx3d564agfgxa485d9j97hkk6fgb8svm3h249";
+          sha256 = "${hash}";
         };
 
         nativeBuildInputs = with pkgs; [
