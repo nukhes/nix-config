@@ -115,13 +115,9 @@
         borgbackup
       ];
 
-      home.activation.createDriveDir = config.lib.dag.entryBefore [ "linkGeneration" ] ''
-        mkdir -p "${homeDirectory}/drive"
-      '';
-
       systemd.user.services.rclone-mount = {
         Unit = {
-          Description = "mount google drive at ~/drive";
+          Description = "mount google drive at ~/drive/*";
           After = [ "network-online.target" ];
           Wants = [ "network-online.target" ];
           Before = [ "sleep.target" ];
@@ -130,7 +126,9 @@
         Service = {
           Type = "simple";
           ExecStart = ''
-            ${pkgs.rclone}/bin/rclone mount p052: %h/drive \
+          for remote in p052 p322814; do
+            mkdir -p "%h/drive/$remote"
+            ${pkgs.rclone}/bin/rclone mount "$remote:" "%h/drive/$remote" \
               --vfs-cache-mode writes \
               --vfs-cache-max-age 24h \
               --vfs-cache-max-size 50G \
@@ -142,7 +140,9 @@
               --contimeout 30s \
               --low-level-retries 10 \
               --no-modtime \
-              --allow-non-empty
+              --allow-non-empty &
+          done
+          wait
           '';
           ExecStop = "/run/current-system/sw/bin/umount -l %h/drive";
           Restart = "on-failure";
