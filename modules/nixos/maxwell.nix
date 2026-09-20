@@ -22,6 +22,15 @@ _:
       };
     };
 
+    boot.kernelParams = [ 
+      "pcie_aspm=off" 
+      "nvidia.NVreg_EnableGpuFirmware=0" 
+    ];
+
+    boot.extraModprobeConfig = ''
+      options nvidia NVreg_RegistryDwords="PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerLevel=0x1; PowerMizerDefault=0x1; PowerMizerDefaultAC=0x1"
+    '';
+
     environment = {
       variables = {
         __GLX_VENDOR_LIBRARY_NAME = "nvidia";
