@@ -20,8 +20,8 @@ in
 
       isValidDevice = lib.hasAttr hostname allDevices;
       hasSecrets =
-        builtins.pathExists "${secrets}/syncthing-${hostname}-key.age"
-        && builtins.pathExists "${secrets}/syncthing-${hostname}-cert.age";
+        builtins.pathExists "${secrets}/syncthing/${hostname}/key.age"
+        && builtins.pathExists "${secrets}/syncthing/${hostname}/cert.age";
       enableSyncthing = isValidDevice && hasSecrets;
 
       remoteDevices = lib.filterAttrs (name: _: name != hostname) allDevices;
@@ -53,12 +53,12 @@ in
 
       age.secrets = {
         "syncthing-${hostname}-key" = {
-          file = "${secrets}/syncthing-${hostname}-key.age";
+          file = "${secrets}/syncthing/${hostname}/key.age";
           path = "/home/user/.local/state/syncthing/key.pem";
           mode = "0600";
         };
         "syncthing-${hostname}-cert" = {
-          file = "${secrets}/syncthing-${hostname}-cert.age";
+          file = "${secrets}/syncthing/${hostname}/cert.age";
           path = "/home/user/.local/state/syncthing/cert.pem";
           mode = "0600";
         };
