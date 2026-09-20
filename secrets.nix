@@ -10,8 +10,8 @@ let
 in
 builtins.listToAttrs (
   map
-    (name: {
-      name = "secrets/${name}.age";
+    (path: {
+      path = "secrets/${path}.age";
       value.publicKeys = publicKeys;
     })
     [
@@ -23,9 +23,9 @@ builtins.listToAttrs (
       "spotify-player"
       "borg"
       "tailscale-authkey"
-      "syncthing-x99-key"
-      "syncthing-x99-cert"
-      "syncthing-hackbook-key"
-      "syncthing-hackbook-cert"
+      "syncthing/x99/key"
+      "syncthing/x99/cert"
+      "syncthing/hackbook/key"
+      "syncthing/hackbook/cert"
     ]
 )
