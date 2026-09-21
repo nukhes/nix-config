@@ -40,7 +40,7 @@
     ];
   };
 
-  fileSystems."/mnt/data" = {
+  fileSystems."/mnt/vbox" = {
     device = "/dev/disk/by-uuid/922ab3c3-8a3b-4b18-9e47-8d7e5c0b54a7";
     fsType = "ext4";
     options = [ "nofail" ];
