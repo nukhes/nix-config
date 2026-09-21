@@ -1,5 +1,4 @@
-_:
-
+{ pkgs, ... }
 {
   nixos.modules.x99 = { ... }: {
     imports = [
