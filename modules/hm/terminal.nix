@@ -95,7 +95,6 @@ _:
       programs.bash = {
         enable = lib.mkIf isLinux true;
         initExtra = ''
-          fastfetch
         '';
       };
 
