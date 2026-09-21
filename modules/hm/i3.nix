@@ -127,15 +127,16 @@ _:
             smartGaps = true;
             smartBorders = "off";
           };
+
           window = {
-            border = 2;
+            border = 1;
             titlebar = false;
           };
 
           colors = lib.mkForce {
-            focused = mkColorSet colors.primary colors.fg colors.indicator colors.primary;
-            focusedInactive = mkColorSet colors.disabled colors.fg colors.indicator colors.disabled;
-            unfocused = mkColorSet colors.disabled colors.fg colors.indicator colors.disabled;
+            focused = mkColorSet "#3a3a3a" colors.fg colors.indicator "#3a3a3a";
+            focusedInactive = mkColorSet "#1c1c1c" colors.fg colors.indicator "#1c1c1c";
+            unfocused = mkColorSet "#1c1c1c" colors.fg colors.indicator "#1c1c1c";
             urgent = mkColorSet colors.alert colors.alert colors.disabled colors.alert;
             placeholder = mkColorSet colors.disabled colors.fg colors.disabled colors.disabled;
             background = colors.bg;

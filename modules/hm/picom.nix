@@ -1,5 +1,3 @@
-_:
-
 {
   hm.modules.common =
     { lib, ... }:
@@ -14,26 +12,25 @@ _:
         enable = true;
         backend = "glx";
         vSync = true;
+        
         shadow = true;
-        shadowOpacity = 0.4;
-        shadowExclude = [
-          (wt "menu")
-          (wt "dropdown_menu")
-          (wt "popup_menu")
-          (wt "tooltip")
-          (wt "dnd")
-          (cg "i3-frame")
-          "_GTK_FRAME_EXTENTS@:c"
-        ];
-
-        fade = true;
-        fadeDelta = 5;
-        fadeSteps = [
-          0.03
-          0.03
-        ];
-
+        shadowOpacity = 0.45;
+        
         settings = {
+          shadow-radius = 24;
+          shadow-offset-x = -22;
+          shadow-offset-y = -22;
+
+          shadow-exclude = [
+            (wt "menu")
+            (wt "dropdown_menu")
+            (wt "popup_menu")
+            (wt "tooltip")
+            (wt "dnd")
+            (cg "Polybar")
+            "_GTK_FRAME_EXTENTS@:c"
+          ];
+
           corner-radius = 12;
           rounded-corners-exclude = [
             (wt "dock")
@@ -67,6 +64,13 @@ _:
         // {
           use-damage = false;
         };
+
+        fade = true;
+        fadeDelta = 5;
+        fadeSteps = [
+          0.03
+          0.03
+        ];
       };
     };
 }
