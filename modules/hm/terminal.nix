@@ -138,7 +138,7 @@ _:
         enable = true;
         settings = {
           display = {
-            separator = "";
+            separator = " ";
             color = {
               keys = "blue";
               title = "magenta";
