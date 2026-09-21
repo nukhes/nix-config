@@ -108,6 +108,29 @@ _:
 
         echo "[rclone] sync completed successfully"
       '';
+
+      rcloneMountScript = pkgs.writeShellScript "rclone-mount" ''
+        set -euo pipefail
+
+        for remote in p052 p322814; do
+          mkdir -p "${homeDirectory}/drive/$remote"
+          ${pkgs.rclone}/bin/rclone mount "$remote:" "${homeDirectory}/drive/$remote" \
+            --vfs-cache-mode writes \
+            --vfs-cache-max-age 24h \
+            --vfs-cache-max-size 50G \
+            --vfs-read-chunk-size 32M \
+            --vfs-read-chunk-size-limit 1G \
+            --dir-cache-time 72h \
+            --buffer-size 8M \
+            --timeout 5m \
+            --contimeout 30s \
+            --low-level-retries 10 \
+            --no-modtime \
+            --allow-non-empty &
+        done
+
+        wait
+      '';
     in
     {
       home.packages = with pkgs; [
@@ -125,26 +148,12 @@ _:
 
         Service = {
           Type = "simple";
-          ExecStart = ''
+          ExecStart = "${rcloneMountScript}";
+          ExecStop = ''
             for remote in p052 p322814; do
-              mkdir -p "%h/drive/$remote"
-              ${pkgs.rclone}/bin/rclone mount "$remote:" "%h/drive/$remote" \
-                --vfs-cache-mode writes \
-                --vfs-cache-max-age 24h \
-                --vfs-cache-max-size 50G \
-                --vfs-read-chunk-size 32M \
-                --vfs-read-chunk-size-limit 1G \
-                --dir-cache-time 72h \
-                --buffer-size 8M \
-                --timeout 5m \
-                --contimeout 30s \
-                --low-level-retries 10 \
-                --no-modtime \
-                --allow-non-empty &
+              ${pkgs.util-linux}/bin/umount -l "${homeDirectory}/drive/$remote" || true
             done
-            wait
           '';
-          ExecStop = "/run/current-system/sw/bin/umount -l %h/drive";
           Restart = "on-failure";
           RestartSec = "10s";
         };
