@@ -11,7 +11,7 @@ _:
         primary = "$color4";
         alert = "$color1";
         disabled = "$color8";
-        indicator = "$color5";
+        indicator = "#3a3a3a";
       };
 
       screenshot = pkgs.writeShellScript "screenshot" ''
