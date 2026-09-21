@@ -117,7 +117,6 @@ _:
           modifier = mod;
           fonts = {
             names = [ "Iosevka Nerd Font" ];
-            size = 11.0;
           };
           floating.modifier = mod;
           bars = [ ];
