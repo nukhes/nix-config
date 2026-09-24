@@ -1,7 +1,7 @@
 _:
 
 {
-  nixos.modules.desktop =
+  nixos.modules.x99 =
     { pkgs, ... }:
     let
       lsfg-vk = pkgs.callPackage ./lsfg-vk.nix { };

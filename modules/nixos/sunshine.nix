@@ -1,7 +1,7 @@
 _:
 
 {
-  nixos.modules.desktop =
+  nixos.modules.x99 =
     {
       config,
       pkgs,

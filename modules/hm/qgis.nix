@@ -1,7 +1,7 @@
 _:
 
 {
-  hm.modules.common =
+  hm.modules.x99 =
     { lib, pkgs, ... }:
     lib.mkIf pkgs.stdenv.isLinux {
       home.packages = with pkgs; [

@@ -1,7 +1,7 @@
 _:
 
 {
-  hm.modules.common = { pkgs, ... }: {
+  hm.modules.gaming = { pkgs, ... }: {
     programs.prismlauncher.enable = true;
 
     programs.java = {
