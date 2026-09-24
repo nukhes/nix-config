@@ -1,7 +1,7 @@
 _:
 
 {
-  nixos.modules.common = { pkgs, ... }: {
+  nixos.modules.x99 = { pkgs, ... }: {
     boot = {
       loader = {
         systemd-boot.enable = true;
@@ -9,6 +9,20 @@ _:
       };
 
       kernelPackages = pkgs.linuxPackages_xanmod_stable;
+      
+      kernelModules = [
+        "coretemp"
+        "nct6775"
+      ];
+      
+      blacklistedKernelModules = [
+        "firewire-core"
+        "mei_me"
+        "mei"
+        "lpc_ich"
+        "ieee1394"
+        "sbp2"
+      ];
 
       kernelParams = [
         "nowatchdog"
@@ -16,6 +30,7 @@ _:
         "audit=0"
         "transparent_hugepage=always"
         "mitigations=off"
+        "nvidia-drm.modeset=1"
       ];
 
       kernel.sysctl = {

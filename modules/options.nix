@@ -10,14 +10,27 @@ in
         type = lib.types.deferredModule;
         default = { };
       };
+
+      laptop = lib.mkOption {
+        type = lib.types.deferredModule;
+        default = { };
+      };
+
+      desktop = lib.mkOption {
+        type = lib.types.deferredModule;
+        default = { };
+      };
+
       hackbook = lib.mkOption {
         type = lib.types.deferredModule;
         default = { };
       };
+      
       x99 = lib.mkOption {
         type = lib.types.deferredModule;
         default = { };
       };
+
     };
 
     hm.modules.common = lib.mkOption {

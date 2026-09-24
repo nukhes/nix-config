@@ -21,28 +21,6 @@ _:
         };
       };
 
-      boot = {
-        extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
-        kernelPackages = lib.mkForce pkgs.linuxPackages_6_18;
-        kernelModules = [ "msr" ];
-        kernelParams = [
-          "pci=noaer"
-          "pcie_aspm=off"
-          "acpi_osi=!Darwin"
-          "mem_sleep_default=deep"
-          "quiet"
-          "loglevel=0"
-          "rd.systemd.show_status=false"
-          "rd.udev.log_level=0"
-          "udev.log_priority=0"
-          "vt.global_cursor_default=0"
-        ];
-        consoleLogLevel = 0;
-        extraModprobeConfig = ''
-          options wl use_msi=0
-        '';
-      };
-
       hardware.enableRedistributableFirmware = true;
 
       environment.systemPackages = [ pkgs.moonlight-qt ];

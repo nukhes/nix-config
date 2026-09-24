@@ -1,9 +1,6 @@
 _:
-let
-  secrets = ../../secrets;
-in
 {
-  nixos.modules.hackbook = { pkgs, ... }: {
+  nixos.modules.laptop = { pkgs, ... }: {
     environment.systemPackages = with pkgs; [
       brightnessctl
       powertop
@@ -25,15 +22,6 @@ in
           CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
         };
       };
-    };
-
-    age.secrets.eduroam = {
-      file = "${secrets}/eduroam.age";
-      path = "/etc/NetworkManager/system-connections/eduroam.nmconnection";
-      mode = "0600";
-      owner = "root";
-      group = "root";
-      symlink = false;
     };
   };
 }

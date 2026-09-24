@@ -12,17 +12,7 @@ in
 
     virtualisation.docker.enable = true;
 
-    hardware.bluetooth = {
-      enable = true;
-      powerOnBoot = true;
-      settings.General = {
-        Experimental = true;
-        FastConnectable = true;
-      };
-    };
-
     services = {
-      blueman.enable = true;
       openssh.enable = true;
       fstrim.enable = true;
       udisks2.enable = true;

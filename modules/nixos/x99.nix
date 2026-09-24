@@ -23,22 +23,6 @@
       touchpad.accelProfile = "flat";
     };
 
-    boot = {
-      kernelModules = [
-        "coretemp"
-        "nct6775"
-      ];
-      blacklistedKernelModules = [
-        "firewire-core"
-        "mei_me"
-        "mei"
-        "lpc_ich"
-        "ieee1394"
-        "sbp2"
-      ];
-      kernelParams = [ "nvidia-drm.modeset=1" ];
-    };
-
     # Fix Arzopa monitor crash
     services.xserver.displayManager.setupCommands = let
       xrandr = "${pkgs.xorg.xrandr}/bin/xrandr";

@@ -1,10 +1,10 @@
 _:
 
 {
-  nixos.modules.common =
+  nixos.modules.desktop =
     { pkgs, ... }:
     let
-      lsfg-vk = pkgs.callPackage ./lsfg-vk.pkg.nix { };
+      lsfg-vk = pkgs.callPackage ./lsfg-vk.nix { };
     in
     {
       environment.systemPackages = [ lsfg-vk ];
