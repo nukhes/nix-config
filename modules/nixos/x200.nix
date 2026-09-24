@@ -24,11 +24,10 @@ _:
       hardware.enableRedistributableFirmware = true;
       hardware.cpu.intel.updateMicrocode = true;
 
-      # -- Intel GMA 4500MHD (GM45) graphics --
       hardware.graphics = {
         enable = true;
         extraPackages = with pkgs; [
-          intel-vaapi-driver # VA-API hw video decode
+          intel-vaapi-driver
           libvdpau-va-gl
         ];
       };
@@ -37,10 +36,8 @@ _:
         LIBVA_DRIVER_NAME = "i965"; # legacy driver for pre-HD Intel GPUs
       };
 
-      # -- ThinkPad thermal management --
       services.thermald.enable = true;
 
-      # -- ThinkPad fan control via thinkfan --
       services.thinkfan = {
         enable = true;
         levels = [
@@ -55,7 +52,6 @@ _:
         ];
       };
 
-      # -- zram swap: essential on a low-RAM machine --
       zramSwap = {
         enable = true;
         priority = 100;
@@ -63,17 +59,14 @@ _:
         memoryPercent = 75;
       };
 
-      # -- Limit nix build concurrency to avoid OOM --
       nix.settings = {
         max-jobs = 1;
         cores = 2;
       };
 
-      # -- Disable unnecessary overhead --
       security.audit.enable = false;
       security.auditd.enable = false;
 
-      # -- Lightweight journald to save disk I/O --
       services.journald.extraConfig = ''
         Storage=volatile
         RuntimeMaxUse=4M
@@ -90,26 +83,9 @@ _:
         ForwardToWall=no
       '';
 
-      # -- PowerTop auto-tune on boot --
-      systemd.services.powertop-autotune = {
-        description = "PowerTop auto-tune for maximum power savings";
-        after = [ "multi-user.target" ];
-        wantedBy = [ "multi-user.target" ];
-        path = [ pkgs.powertop ];
-        script = ''
-          powertop --auto-tune
-        '';
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-        };
-      };
-
-      # -- Disable suspend/hibernate targets (optional, enable if you want them) --
-      # ThinkPad X200 has known quirks with S3 sleep; leave enabled but deep mode
-      services.logind = {
-        lidSwitch = "suspend";
-        lidSwitchExternalPower = "lock";
+      services.logind.settings.Login = {
+        HandleLidSwitch = "suspend";
+        HandleLidSwitchExternalPower = "lock";
       };
 
       system.stateVersion = "26.05";

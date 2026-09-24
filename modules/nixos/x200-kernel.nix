@@ -8,12 +8,12 @@ _:
         efi.canTouchEfiVariables = true;
       };
 
-      # Latest stable kernel — good Core 2 Duo support without xanmod overhead
+
       kernelPackages = pkgs.linuxPackages_latest;
 
       kernelModules = [
         "kvm-intel"
-        "coretemp"     # CPU temperature monitoring
+        "coretemp"      # CPU temperature monitoring
         "thinkpad_acpi" # ThinkPad hotkeys, LEDs, fan control
         "tp_smapi"      # Extended battery/charging control
       ];
@@ -23,34 +23,28 @@ _:
       ];
 
       blacklistedKernelModules = [
-        "firewire-core"  # No FireWire on X200
+        "firewire-core"
         "firewire-ohci"
-        "pcspkr"         # Kill the PC speaker beep
+        "pcspkr"
         "snd_pcsp"
       ];
 
       kernelParams = [
-        # -- Security mitigations off for raw performance --
         "mitigations=off"
-
-        # -- Disable watchdogs --
         "nowatchdog"
         "nmi_watchdog=0"
 
-        # -- Intel GPU --
         "i915.modeset=1"
         "i915.enable_fbc=1"       # Framebuffer compression (saves power + bandwidth)
         "i915.enable_psr=0"       # PSR is broken on GM45, disable it
         "i915.fastboot=1"         # Skip unnecessary mode-sets on boot
         "i915.semaphores=1"       # Hardware semaphores for better GPU scheduling
 
-        # -- Power/ACPI --
         "intel_pstate=disable"    # C2D doesn't support pstate; use acpi-cpufreq
         "acpi_osi=Linux"
         "pcie_aspm=force"         # Force ASPM for PCIe power savings
         "mem_sleep_default=deep"  # Deep S3 sleep
 
-        # -- Quiet boot --
         "quiet"
         "loglevel=3"
         "rd.systemd.show_status=false"
@@ -58,7 +52,6 @@ _:
         "udev.log_priority=3"
         "vt.global_cursor_default=0"
 
-        # -- Misc perf --
         "audit=0"
         "transparent_hugepage=madvise"
       ];
@@ -66,7 +59,6 @@ _:
       consoleLogLevel = 0;
 
       kernel.sysctl = {
-        # -- Memory management for low-RAM system --
         "vm.swappiness" = 80;                  # Aggressively use zram swap
         "vm.dirty_ratio" = 10;                  # Flush writes sooner (less RAM pressure)
         "vm.dirty_background_ratio" = 3;        # Start background writeback early
@@ -75,23 +67,19 @@ _:
         "vm.page-cluster" = 0;                  # Read single pages from swap (zram is fast)
         "vm.watermark_boost_factor" = 0;        # Disable watermark boosting
 
-        # -- Kernel --
         "kernel.nmi_watchdog" = 0;
         "kernel.sched_autogroup_enabled" = 1;   # Better interactive responsiveness
         "kernel.printk" = "3 3 3 3";
 
-        # -- Network --
         "net.core.default_qdisc" = "fq_codel";
         "net.ipv4.tcp_congestion_control" = "bbr";  # Better TCP throughput
       };
 
-      # -- Load BBR TCP congestion control --
       extraModprobeConfig = ''
         options tcp_bbr
       '';
     };
 
-    # -- File descriptor limits --
     security.pam.loginLimits = [
       {
         domain = "*";

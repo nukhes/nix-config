@@ -31,9 +31,29 @@ in
         default = { };
       };
 
+      x200 = lib.mkOption {
+        type = lib.types.deferredModule;
+        default = { };
+      };
+
+      gaming = lib.mkOption {
+        type = lib.types.deferredModule;
+        default = { };
+      };
+
     };
 
     hm.modules.common = lib.mkOption {
+      type = lib.types.deferredModule;
+      default = { };
+    };
+
+    hm.modules.gaming = lib.mkOption {
+      type = lib.types.deferredModule;
+      default = { };
+    };
+
+    hm.modules.x99 = lib.mkOption {
       type = lib.types.deferredModule;
       default = { };
     };

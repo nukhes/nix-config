@@ -23,5 +23,19 @@ _:
         };
       };
     };
+    
+    systemd.services.powertop-autotune = {
+        description = "PowerTop auto-tune for maximum power savings";
+        after = [ "multi-user.target" ];
+        wantedBy = [ "multi-user.target" ];
+        path = [ pkgs.powertop ];
+        script = ''
+          powertop --auto-tune
+        '';
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+      };
   };
 }
