@@ -4,7 +4,7 @@ _:
   hm.modules.common = _: {
     programs.rofi = {
       enable = true;
-      extraConfig = {
+      settings = {
         modi = "drun,run,window";
         show-icons = true;
         drun-display-format = "{name}";

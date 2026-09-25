@@ -39,8 +39,20 @@ in
         settings = {
           devices = remoteDevices;
           folders = {
-            documents = {
-              path = "/home/user/documents";
+            projects = {
+              path = "/home/user/projects";
+              devices = remoteDeviceNames;
+            };
+            archive = {
+              path = "/home/user/archive";
+              devices = remoteDeviceNames;
+            };
+            resources = {
+              path = "/home/user/resources";
+              devices = remoteDeviceNames;
+            };
+            areas = {
+              path = "/home/user/areas";
               devices = remoteDeviceNames;
             };
             ics = {

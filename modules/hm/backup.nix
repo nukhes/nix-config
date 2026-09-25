@@ -64,7 +64,11 @@ _:
           --exclude '**/mozilla/firefox/Crash Reports' \
           --exclude '**/mozilla/firefox/Pending Pings' \
           "::$ARCHIVE" \
-          "${homeDirectory}/documents" \
+
+          "${homeDirectory}/projects" \
+          "${homeDirectory}/archive" \
+          "${homeDirectory}/resources" \
+          "${homeDirectory}/areas" \
           "${homeDirectory}/.config/mozilla"
 
         echo "[borg] pruning old archives"
@@ -113,8 +117,9 @@ _:
         set -euo pipefail
 
         for remote in p052 p322814; do
-          mkdir -p "${homeDirectory}/drive/$remote"
-          ${pkgs.rclone}/bin/rclone mount "$remote:" "${homeDirectory}/drive/$remote" \
+          MOUNT="${homeDirectory}/.gdrive/$remote"
+          mkdir -p "$MOUNT"
+          ${pkgs.rclone}/bin/rclone mount "$remote:" "$MOUNT" \
             --vfs-cache-mode writes \
             --vfs-cache-max-age 24h \
             --vfs-cache-max-size 50G \
@@ -140,7 +145,7 @@ _:
 
       systemd.user.services.rclone-mount = {
         Unit = {
-          Description = "mount google drive at ~/drive/*";
+          Description = "mount google drive at ~/.gdrive/*";
           After = [ "network-online.target" ];
           Wants = [ "network-online.target" ];
           Before = [ "sleep.target" ];
@@ -151,7 +156,7 @@ _:
           ExecStart = "${rcloneMountScript}";
           ExecStop = ''
             for remote in p052 p322814; do
-              ${pkgs.util-linux}/bin/umount -l "${homeDirectory}/drive/$remote" || true
+              ${pkgs.util-linux}/bin/umount -l "${homeDirectory}/.gdrive/$remote" || true
             done
           '';
           Restart = "on-failure";
@@ -165,7 +170,7 @@ _:
 
       systemd.user.services.borg-backup = {
         Unit = {
-          Description = "borgbackup – create archive for documents, library, projects";
+          Description = "borgbackup";
           Wants = [ "network-online.target" ];
           After = [ "network-online.target" ];
         };

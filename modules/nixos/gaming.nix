@@ -4,7 +4,7 @@ _:
   nixos.modules.x99 =
     { pkgs, ... }:
     let
-      lsfg-vk = pkgs.callPackage ./lsfg-vk.nix { };
+      lsfg-vk = pkgs.callPackage ./lsfg-vk.pkg.nix { };
     in
     {
       environment.systemPackages = [ lsfg-vk ];
