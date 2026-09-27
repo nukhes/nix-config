@@ -36,7 +36,7 @@ in
       };
 
       environment.variables = {
-        LIBVA_DRIVER_NAME = "i965"; # legacy driver for pre-HD Intel GPUs
+        LIBVA_DRIVER_NAME = "i965";
       };
 
       services.thermald.enable = true;
@@ -58,7 +58,7 @@ in
       zramSwap = {
         enable = true;
         priority = 100;
-        algorithm = "lz4"; # lighter than zstd for Core 2 Duo
+        algorithm = "lz4";
         memoryPercent = 75;
       };
 
