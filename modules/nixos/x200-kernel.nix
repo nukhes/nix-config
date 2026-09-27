@@ -1,5 +1,4 @@
-_:
-
+{ config, ... }:
 {
   nixos.modules.x200 = { pkgs, lib, ... }: {
     boot = {
@@ -13,11 +12,12 @@ _:
 
       kernelModules = [
         "kvm-intel"
-        "coretemp"      # CPU temperature monitoring
-        "thinkpad_acpi" # ThinkPad hotkeys, LEDs, fan control
+        "coretemp"
+        "tp_smapi"
+        "thinkpad_acpi"
       ];
 
-      extraModulePackages = [ ];
+      extraModulePackages = with config.boot.kernelPackages; [ tp_smapi ];
 
       blacklistedKernelModules = [
         "firewire-core"
