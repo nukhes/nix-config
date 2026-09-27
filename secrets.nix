@@ -29,5 +29,7 @@ builtins.listToAttrs (
       "syncthing/x99/cert"
       "syncthing/hackbook/key"
       "syncthing/hackbook/cert"
+      "syncthing/x200/key"
+      "syncthing/x200/cert"
     ]
 )
