@@ -91,6 +91,8 @@ in
         HandleLidSwitchExternalPower = "lock";
       };
 
+      services.xserver.videoDrivers = [ "modesetting" ];
+
       system.stateVersion = "26.05";
 
       home-manager.users.user.imports = [
