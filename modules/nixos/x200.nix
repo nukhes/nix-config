@@ -1,5 +1,8 @@
-_:
+{ config, ... }:
 
+let
+  flakeConfig = config;
+in
 {
   nixos.modules.x200 =
     {
@@ -89,5 +92,9 @@ _:
       };
 
       system.stateVersion = "26.05";
+
+      home-manager.users.user.imports = [
+        flakeConfig.hm.modules.x200
+      ];
     };
 }

@@ -58,6 +58,11 @@ in
       default = { };
     };
 
+    hm.modules.x200 = lib.mkOption {
+      type = lib.types.deferredModule;
+      default = { };
+    };
+
     darwin.modules.common = lib.mkOption {
       type = lib.types.deferredModule;
       default = { };

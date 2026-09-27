@@ -36,6 +36,7 @@ _:
         "i915.enable_psr=0"       # PSR is broken on GM45, disable it
         "i915.fastboot=1"         # Skip unnecessary mode-sets on boot
         "i915.semaphores=1"       # Hardware semaphores for better GPU scheduling
+        "i915.lvds_downclock=0"   # Prevent LVDS panel downclocking (causes black bar flicker)
 
         "intel_pstate=disable"    # C2D doesn't support pstate; use acpi-cpufreq
         "acpi_osi=Linux"
