@@ -32,7 +32,7 @@ _:
         "nmi_watchdog=0"
 
         "i915.modeset=1"
-        "i915.enable_fbc=1"       # Framebuffer compression (saves power + bandwidth)
+        "i915.enable_fbc=0"       # Framebuffer compression causes flickering on GM45
         "i915.enable_psr=0"       # PSR is broken on GM45, disable it
         "i915.fastboot=1"         # Skip unnecessary mode-sets on boot
         "i915.semaphores=1"       # Hardware semaphores for better GPU scheduling
