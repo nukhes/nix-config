@@ -16,6 +16,7 @@ _:
 
       cfgDir = "${configHome}/vdirsyncer";
       cfgFile = "${cfgDir}/config";
+      tokenFile = "${cfgDir}/google_token.json";
       calDir = "${homeDirectory}/.ics/unicamp";
 
       initScript = pkgs.writeShellScript "vdirsyncer-init-script" ''
@@ -26,12 +27,20 @@ _:
         done
 
         if [ ! -f "${cfgFile}" ]; then
+          echo "vdirsyncer config not found at ${cfgFile}, aborting"
           exit 1
         fi
 
         mkdir -p "${calDir}"
 
+        if [ ! -f "${tokenFile}" ]; then
+          echo "Google OAuth token not found at ${tokenFile}"
+          echo "Run 'vdirsyncer discover unicamp_sync' manually in a terminal to authenticate."
+          exit 0
+        fi
+
         yes | ${pkgs.vdirsyncer}/bin/vdirsyncer discover unicamp_sync || true
+        ${pkgs.vdirsyncer}/bin/vdirsyncer sync || true
       '';
     in
     {
@@ -71,6 +80,13 @@ _:
       services.vdirsyncer = lib.mkIf isLinux {
         enable = true;
         frequency = "*:0/30";
+      };
+
+      systemd.user.services.vdirsyncer = lib.mkIf isLinux {
+        Unit = {
+          After = [ "vdirsyncer-init.service" ];
+          Requires = [ "vdirsyncer-init.service" ];
+        };
       };
 
       systemd.user.services."vdirsyncer-init" = lib.mkIf isLinux {
