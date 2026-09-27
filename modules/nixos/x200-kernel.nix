@@ -15,12 +15,9 @@ _:
         "kvm-intel"
         "coretemp"      # CPU temperature monitoring
         "thinkpad_acpi" # ThinkPad hotkeys, LEDs, fan control
-        "tp_smapi"      # Extended battery/charging control
       ];
 
-      extraModulePackages = with pkgs.linuxPackages_latest; [
-        tp_smapi  # ThinkPad SMAPI for battery thresholds
-      ];
+      extraModulePackages = [ ];
 
       blacklistedKernelModules = [
         "firewire-core"
