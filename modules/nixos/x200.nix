@@ -67,21 +67,21 @@ _:
       security.audit.enable = false;
       security.auditd.enable = false;
 
-      services.journald.extraConfig = ''
-        Storage=volatile
-        RuntimeMaxUse=4M
-        RuntimeMaxFileSize=256K
-        MaxLevelStore=warning
-        MaxLevelSyslog=warning
-        MaxLevelKMsg=warning
-        MaxLevelConsole=warning
-        MaxLevelWall=crit
-        Compress=yes
-        ForwardToSyslog=no
-        ForwardToKMsg=no
-        ForwardToConsole=no
-        ForwardToWall=no
-      '';
+      services.journald.settings.Journal = {
+        Storage = "volatile";
+        RuntimeMaxUse = "4M";
+        RuntimeMaxFileSize = "256K";
+        MaxLevelStore = "warning";
+        MaxLevelSyslog = "warning";
+        MaxLevelKMsg = "warning";
+        MaxLevelConsole = "warning";
+        MaxLevelWall = "crit";
+        Compress = "yes";
+        ForwardToSyslog = "no";
+        ForwardToKMsg = "no";
+        ForwardToConsole = "no";
+        ForwardToWall = "no";
+      };
 
       services.logind.settings.Login = {
         HandleLidSwitch = "suspend";
