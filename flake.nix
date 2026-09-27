@@ -2,14 +2,14 @@
   description = "NixOS Configuration for Pedro Henrique";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     nur.url = "github:nix-community/NUR";
     agenix.url = "github:ryantm/agenix";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-26.05";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -23,71 +23,54 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    stylix.url = "github:nix-community/stylix/release-26.05";
+    stylix.url = "github:nix-community/stylix";
 
     nix-darwin = {
-      url = "github:nix-darwin/nix-darwin/nix-darwin-26.05";
+      url = "github:nix-darwin/nix-darwin";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
   outputs =
-    inputs@{
-      flake-parts,
-      nixpkgs,
-      nix-darwin,
-      ...
-    }:
+    inputs@{ flake-parts, ... }:
+    let
+      # Auto-import: recursively find all .nix files under ./modules,
+      # excluding *.pkg.nix files (callPackage exceptions).
+      importModules =
+        dir:
+        let
+          listRecursive =
+            prefix:
+            let
+              entries = builtins.readDir prefix;
+              names = builtins.attrNames entries;
+              process =
+                name:
+                let
+                  path = prefix + "/${name}";
+                  type = entries.${name};
+                in
+                if type == "directory" then
+                  listRecursive path
+                else if
+                  type == "regular"
+                  && builtins.match ".*\\.nix" name != null
+                  && builtins.match ".*\\.pkg\\.nix" name == null
+                then
+                  [ path ]
+                else
+                  [ ];
+            in
+            builtins.concatLists (builtins.map process names);
+        in
+        listRecursive dir;
+    in
     flake-parts.lib.mkFlake { inherit inputs; } {
       systems = [
         "x86_64-linux"
         "aarch64-darwin"
       ];
 
-      flake =
-        let
-          specialArgs = {
-            inherit inputs;
-            modules = ./modules;
-            secrets = ./secrets;
-          };
-
-          nixosBaseModules = [
-            inputs.stylix.nixosModules.stylix
-            inputs.agenix.nixosModules.default
-            inputs.nix-flatpak.nixosModules.nix-flatpak
-            inputs.home-manager.nixosModules.home-manager
-          ];
-        in
-        {
-          nixosConfigurations.hackbook = nixpkgs.lib.nixosSystem {
-            inherit specialArgs;
-            modules = [
-              { nixpkgs.hostPlatform = "x86_64-linux"; }
-              ./modules/hosts/hackbook/configuration.nix
-              inputs.nixos-hardware.nixosModules.apple-macbook-air-7
-            ]
-            ++ nixosBaseModules;
-          };
-
-          nixosConfigurations.x99 = nixpkgs.lib.nixosSystem {
-            inherit specialArgs;
-            modules = [
-              { nixpkgs.hostPlatform = "x86_64-linux"; }
-              ./modules/hosts/x99/configuration.nix
-            ]
-            ++ nixosBaseModules;
-          };
-
-          darwinConfigurations.darwin = nix-darwin.lib.darwinSystem {
-            inherit specialArgs;
-            modules = [
-              { nixpkgs.hostPlatform = "aarch64-darwin"; }
-              ./modules/hosts/darwin/configuration.nix
-              inputs.agenix.darwinModules.default
-              inputs.home-manager.darwinModules.home-manager
-            ];
-          };
-        };
+      imports = importModules ./modules;
     };
 }
