@@ -4,17 +4,17 @@
   nixos.modules.common = _: {
     nixpkgs = {
       config.allowUnfree = true;
-      overlays = [ inputs.nur.overlays.default ];
+      overlays = [
+        inputs.nur.overlays.default
+
+        # Disable voice bullshit
+        (final: prev: {
+          espeak-ng = prev.espeak-ng.override {
+            mbrolaSupport = false;
+          };
+        })
+      ];
     };
-
-    nixpkgs.overlays = [
-      (final: prev: {
-        espeak-ng = prev.espeak-ng.override {
-          mbrolaSupport = false;
-        };
-      })
-    ];
-
 
     nix = {
       settings = {
