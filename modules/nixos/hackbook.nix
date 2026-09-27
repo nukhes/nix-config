@@ -72,21 +72,21 @@ _:
       security.audit.enable = false;
       security.auditd.enable = false;
 
-      services.journald.extraConfig = ''
-        Storage=volatile
-        RuntimeMaxUse=1M
-        RuntimeMaxFileSize=128K
-        MaxLevelStore=crit
-        MaxLevelSyslog=crit
-        MaxLevelKMsg=crit
-        MaxLevelConsole=crit
-        MaxLevelWall=crit
-        Compress=no
-        ForwardToSyslog=no
-        ForwardToKMsg=no
-        ForwardToConsole=no
-        ForwardToWall=no
-      '';
+      services.journald.settings.Journal = {
+        Storage = "volatile";
+        RuntimeMaxUse = "1M";
+        RuntimeMaxFileSize = "128K";
+        MaxLevelStore = "crit";
+        MaxLevelSyslog = "crit";
+        MaxLevelKMsg = "crit";
+        MaxLevelConsole = "crit";
+        MaxLevelWall = "crit";
+        Compress = "no";
+        ForwardToSyslog = "no";
+        ForwardToKMsg = "no";
+        ForwardToConsole = "no";
+        ForwardToWall = "no";
+      };
 
       system.stateVersion = "26.05";
     };
