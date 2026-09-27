@@ -7,6 +7,15 @@
       overlays = [ inputs.nur.overlays.default ];
     };
 
+    nixpkgs.overlays = [
+      (final: prev: {
+        espeak-ng = prev.espeak-ng.override {
+          mbrolaSupport = false;
+        };
+      })
+    ];
+
+
     nix = {
       settings = {
         substituters = [

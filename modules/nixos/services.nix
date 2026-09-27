@@ -19,6 +19,7 @@ in
       gvfs.enable = true;
       tumbler.enable = true;
       displayManager.ly.enable = true;
+      speechd.enable = false;
       tailscale = {
         enable = true;
         authKeyFile = config.age.secrets.tailscale-authkey.path;
