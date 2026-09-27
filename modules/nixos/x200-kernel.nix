@@ -3,9 +3,9 @@ _:
 {
   nixos.modules.x200 = { pkgs, lib, ... }: {
     boot = {
-      loader = {
-        systemd-boot.enable = true;
-        efi.canTouchEfiVariables = true;
+      loader.grub = {
+        enable = true;
+        device = "/dev/sda";  # BIOS/MBR — no EFI on x200
       };
 
 
