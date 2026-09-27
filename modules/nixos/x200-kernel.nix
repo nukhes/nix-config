@@ -1,6 +1,6 @@
-{ config, ... }:
+_:
 {
-  nixos.modules.x200 = { pkgs, lib, ... }: {
+  nixos.modules.x200 = { config, pkgs, lib, ... }: {
     boot = {
       loader.grub = {
         enable = true;
@@ -17,7 +17,16 @@
         "thinkpad_acpi"
       ];
 
-      extraModulePackages = with config.boot.kernelPackages; [ tp_smapi ];
+      extraModulePackages =
+        let
+          tp_smapi_patched = config.boot.kernelPackages.tp_smapi.overrideAttrs (old: {
+            postPatch = (old.postPatch or "") + ''
+              sed -i '/#include <asm\/uaccess.h>/a #include <linux\/string.h>' tp_smapi.c
+              sed -i 's/strncpy/strscpy/g' tp_smapi.c
+            '';
+          });
+        in
+        [ tp_smapi_patched ];
 
       blacklistedKernelModules = [
         "firewire-core"
