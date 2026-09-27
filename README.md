@@ -125,7 +125,7 @@ cd ~/.nix-config
 nixos-rebuild switch \
   --flake .#<target-hostname> \
   --target-host user@<target-ip> \
-  --use-remote-sudo
+  --elevate=sudo
 ```
 
 concrete example — build `x200` on `x99`, deploy to `192.168.1.110`:
@@ -134,7 +134,7 @@ concrete example — build `x200` on `x99`, deploy to `192.168.1.110`:
 nixos-rebuild switch \
   --flake .#x200 \
   --target-host user@192.168.1.110 \
-  --use-remote-sudo
+  --elevate=sudo
 ```
 
 what happens under the hood:
@@ -154,7 +154,7 @@ what happens under the hood:
 | `--target-host user@<ip>` | deploy to this machine over ssh (copy closure + activate) |
 | `--build-host localhost` | build on the local machine (this is the default) |
 | `--build-host user@<ip>` | build on the remote machine instead of locally |
-| `--use-remote-sudo` | run activation commands on the target with `sudo` |
+| `--elevate=sudo` | run activation commands on the target with `sudo` |
 
 ### testing without activating
 
@@ -164,7 +164,7 @@ to build and copy without switching (useful to verify the build succeeds):
 nixos-rebuild build \
   --flake .#x200 \
   --target-host user@192.168.1.110 \
-  --use-remote-sudo
+  --elevate=sudo
 ```
 
 to build, copy, and create a boot entry without switching the running system:
@@ -173,7 +173,7 @@ to build, copy, and create a boot entry without switching the running system:
 nixos-rebuild boot \
   --flake .#x200 \
   --target-host user@192.168.1.110 \
-  --use-remote-sudo
+  --elevate=sudo
 ```
 
 ### troubleshooting
