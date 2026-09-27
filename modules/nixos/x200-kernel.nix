@@ -4,9 +4,8 @@ _:
     boot = {
       loader.grub = {
         enable = true;
-        device = "/dev/sda";  # BIOS/MBR — no EFI on x200
+        device = "/dev/sda";
       };
-
 
       kernelPackages = pkgs.linuxPackages_latest;
 
@@ -39,26 +38,19 @@ _:
         "mitigations=off"
         "nowatchdog"
         "nmi_watchdog=0"
-
-        "i915.modeset=1"
-        "i915.enable_fbc=0"       # Framebuffer compression causes flickering on GM45
-        "i915.enable_psr=0"       # PSR is broken on GM45, disable it
-        "i915.fastboot=1"         # Skip unnecessary mode-sets on boot
-        "i915.semaphores=1"       # Hardware semaphores for better GPU scheduling
-        "i915.lvds_downclock=0"   # Prevent LVDS panel downclocking (causes black bar flicker)
-
-        "intel_pstate=disable"    # C2D doesn't support pstate; use acpi-cpufreq
+        "i915.enable_fbc=0"
+        "i915.enable_psr=0"
+        "i915.enable_dc=0"
+        "acpi_backlight=native"
+        "intel_pstate=disable"
         "acpi_osi=Linux"
-        "pcie_aspm=force"         # Force ASPM for PCIe power savings
-        "mem_sleep_default=deep"  # Deep S3 sleep
-
+        "mem_sleep_default=deep"
         "quiet"
         "loglevel=3"
         "rd.systemd.show_status=false"
         "rd.udev.log_level=3"
         "udev.log_priority=3"
         "vt.global_cursor_default=0"
-
         "audit=0"
         "transparent_hugepage=madvise"
       ];
@@ -66,20 +58,18 @@ _:
       consoleLogLevel = 0;
 
       kernel.sysctl = {
-        "vm.swappiness" = 80;                  # Aggressively use zram swap
-        "vm.dirty_ratio" = 10;                  # Flush writes sooner (less RAM pressure)
-        "vm.dirty_background_ratio" = 3;        # Start background writeback early
-        "vm.vfs_cache_pressure" = 150;          # Reclaim dentries/inodes aggressively
-        "vm.min_free_kbytes" = 16384;           # Keep 16MB free to avoid OOM stalls
-        "vm.page-cluster" = 0;                  # Read single pages from swap (zram is fast)
-        "vm.watermark_boost_factor" = 0;        # Disable watermark boosting
-
+        "vm.swappiness" = 80;
+        "vm.dirty_ratio" = 10;
+        "vm.dirty_background_ratio" = 3;
+        "vm.vfs_cache_pressure" = 150;
+        "vm.min_free_kbytes" = 16384;
+        "vm.page-cluster" = 0;
+        "vm.watermark_boost_factor" = 0;
         "kernel.nmi_watchdog" = 0;
-        "kernel.sched_autogroup_enabled" = 1;   # Better interactive responsiveness
+        "kernel.sched_autogroup_enabled" = 1;
         "kernel.printk" = "3 3 3 3";
-
         "net.core.default_qdisc" = "fq_codel";
-        "net.ipv4.tcp_congestion_control" = "bbr";  # Better TCP throughput
+        "net.ipv4.tcp_congestion_control" = "bbr";
       };
 
       extraModprobeConfig = ''
