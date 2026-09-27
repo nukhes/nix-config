@@ -22,6 +22,7 @@
         fallback = false;
         allow-import-from-derivation = false;
         auto-optimise-store = true;
+        trusted-users = [ "root" "user" ];
 
         experimental-features = [
           "nix-command"
