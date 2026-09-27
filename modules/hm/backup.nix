@@ -154,11 +154,11 @@ _:
         Service = {
           Type = "simple";
           ExecStart = "${rcloneMountScript}";
-          ExecStop = ''
+          ExecStop = toString (pkgs.writeShellScript "rclone-umount" ''
             for remote in p052 p322814; do
               ${pkgs.util-linux}/bin/umount -l "${homeDirectory}/.gdrive/$remote" || true
             done
-          '';
+          '');
           Restart = "on-failure";
           RestartSec = "10s";
         };

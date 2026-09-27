@@ -192,9 +192,33 @@ sudo iptables -I INPUT -p tcp --dport 22 -j ACCEPT
 ensure `nix.settings.trusted-users` includes the user performing the deploy on the
 target machine. this is set in `modules/nixos/nix-settings.nix`.
 
-**slow transfer:**
-large closures over wifi can be slow. prefer a wired connection when deploying
-full system rebuilds. alternatively, use tailscale for a direct wireguard tunnel.
+**slow transfer or broken pipe:**
+large closures over wifi can be slow and prone to disconnects. prefer a wired
+connection when deploying full system rebuilds. if the connection drops (`broken pipe`),
+add ssh keepalive settings to `~/.ssh/config`:
+```ssh-config
+Host <target-ip>
+  ServerAliveInterval 15
+  ServerAliveCountMax 10
+```
+
+**"ca hash mismatch importing path ...":**
+a store path on the local build host may be corrupted. verify and repair it locally
+before retrying the deploy:
+```bash
+sudo nix store verify --repair /nix/store/<hash>-<name>
+```
+
+**home-manager-user.service fails with exit-code 128:**
+this usually happens if home-manager is trying to clone a git repository (e.g. via ssh)
+but the target user's private ssh key (`~/.ssh/id_ed25519`) has permissions that are too open
+(like `0755`). ssh ignores the key for security, git fails to clone, and the activation aborts.
+fix the permissions on the target machine:
+```bash
+# on the target
+sudo chmod 700 /home/user/.ssh
+sudo chmod 600 /home/user/.ssh/id_ed25519
+```
 
 ## secrets management
 
@@ -209,8 +233,25 @@ cd ~/.nix-config
 agenix -e secrets/<name>.age
 ```
 
-to re-key all secrets after adding a new host key to `secrets.nix`:
+### provisioning secrets for a new host
 
-```bash
-agenix -r
-```
+when deploying to a new machine (like the `x200`) for the first time, its auto-generated
+ssh host key must be added to agenix so it can decrypt secrets (e.g. tailscale auth keys).
+
+1. do the initial deploy. services depending on secrets will fail (e.g. `exit status 4`).
+2. retrieve the new host's public key:
+   ```bash
+   ssh root@<new-host-ip> 'cat /etc/ssh/ssh_host_ed25519_key.pub'
+   ```
+3. add the key to `secrets.nix` and include it in the `publicKeys` list.
+4. re-key all secrets using the agenix cli:
+   ```bash
+   cd ~/.nix-config
+   nix run github:ryantm/agenix -- -r
+   ```
+5. run the deploy command again to start the failing services.
+
+> **security warning**: do not copy `/etc/ssh/ssh_host_*` files from an existing machine
+> to the new one just to bypass this process. doing so will break ssh identity caching
+> (`WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED`) because multiple machines on your
+> network will share the same cryptographic identity. always re-key instead.
