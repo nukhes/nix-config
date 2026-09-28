@@ -16,17 +16,6 @@ _:
         "thinkpad_acpi"
       ];
 
-      extraModulePackages =
-        let
-          tp_smapi_patched = config.boot.kernelPackages.tp_smapi.overrideAttrs (old: {
-            postPatch = (old.postPatch or "") + ''
-              sed -i '/#include <asm\/uaccess.h>/a #include <linux\/string.h>' tp_smapi.c
-              sed -i 's/strncpy/strscpy/g' tp_smapi.c
-            '';
-          });
-        in
-        [ tp_smapi_patched ];
-
       blacklistedKernelModules = [
         "firewire-core"
         "firewire-ohci"
