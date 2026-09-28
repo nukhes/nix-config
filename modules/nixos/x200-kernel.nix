@@ -7,7 +7,7 @@ _:
         device = "/dev/sda";
       };
 
-      kernelPackages = pkgs.linuxPackages_latest;
+      kernelPackages = pkgs.linuxKernel.packages.linux_6_1;
 
       kernelModules = [
         "kvm-intel"
