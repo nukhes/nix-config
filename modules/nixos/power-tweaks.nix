@@ -1,6 +1,6 @@
 _:
 {
-  nixos.modules.laptop = { pkgs, ... }: {
+  nixos.modules.hackbook = { pkgs, ... }: {
     environment.systemPackages = with pkgs; [
       brightnessctl
       powertop
