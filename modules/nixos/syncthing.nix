@@ -16,7 +16,7 @@ in
       allDevices = {
         x99.id = "IEU2MPE-TFUEDDX-MEXDGKN-SDRFKUQ-LTHGOIM-TK5N7UF-N7QNTNJ-INJJCAY";
         hackbook.id = "NUOKH6I-6LV6VLV-4KKWBAU-GXZHPAJ-JSXPG6W-ZC76LPN-NXCKHRO-6SWEZQT";
-        x200.id = "VEAB4XA-YDBDHEL-QPG2YBJ-2V63DVX-HJXYGQ4-JPLUWG6-7JSFMLF-SWKCPA5";
+        x200.id = "GNYGHFA-UN7D6NJ-M7QHP2P-J727PSP-QF4DY3D-UQ7INRH-XODZDXQ-QFO2OQN";
         tab-s10-lite.id = "DFYNYPB-2AYM7ZA-PWVE3MQ-WR7AZDR-ZQB4OYE-L4WORQJ-VV3ZCLZ-L6KU3Q6";
       };
 
@@ -43,10 +43,6 @@ in
           folders = {
             projects = {
               path = "/home/user/projects";
-              devices = remoteDeviceNames;
-            };
-            archive = {
-              path = "/home/user/archive";
               devices = remoteDeviceNames;
             };
             resources = {
