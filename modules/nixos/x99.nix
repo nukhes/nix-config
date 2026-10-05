@@ -34,7 +34,14 @@
       ${xrandr} --output HDMI-0 --mode "1920x1080_rb"
     '';
 
-    powerManagement.cpuFreqGovernor = "ondemand";
+    powerManagement.cpuFreqGovernor = "performance";
+
+    # Prevent audio device power saving (fixes crackling/popping)
+    boot.extraModprobeConfig = ''
+      options snd_hda_intel power_save=0 power_save_controller=N
+      options snd_usb_audio nrpacks=1
+    '';
+
     hardware.cpu.intel.updateMicrocode = false;
     system.stateVersion = "26.05";
   };

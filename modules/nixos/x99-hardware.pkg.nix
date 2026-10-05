@@ -40,7 +40,7 @@
     ];
   };
 
-  fileSystems."/mnt/kootion512/" = {
+  fileSystems."/mnt/kootion512" = {
     device = "/dev/disk/by-uuid/c4095e1b-f404-4007-bdf6-90b739f09d8e";
     fsType = "ext4";
     options = [ "nofail" ];
@@ -53,8 +53,8 @@
   };
 
   systemd.tmpfiles.rules = [
-    "d /mnt/kootion512 0700 user users - -"
-    "d /mnt/toshiba300 0700 user users - -"
+    "d '/mnt/kootion512' 0700 user users - -"
+    "d '/mnt/toshiba300' 0700 user users - -"
   ];
 
   swapDevices = [ ];
