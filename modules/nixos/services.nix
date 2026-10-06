@@ -5,7 +5,7 @@ in
 {
   nixos.modules.common = { pkgs, config, ... }: {
     age.secrets.tailscale-authkey = {
-      file = "${secrets}/tailscale-authkey.age";
+      file = "${secrets}/tailscale/nukhes/key.age";
       owner = "root";
       group = "root";
     };

@@ -56,8 +56,8 @@
       };
 
       age.secrets.gemini-p052 = {
-        file = "${homeDirectory}/.nix-config/secrets/gemini-p052.age";
-        path = "${homeDirectory}/.secrets/gemini-p052";
+        file = "${homeDirectory}/.nix-config/secrets/google/henriquealvesp052/gemini-api.age";
+        path = "${homeDirectory}/.secrets/google/henriquealvesp052/gemini-api";
         mode = "0600";
       };
     };

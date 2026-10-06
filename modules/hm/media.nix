@@ -45,14 +45,6 @@ _:
       home.shellAliases =
         commonAliases // lib.optionalAttrs isLinux linuxAliases // lib.optionalAttrs isDarwin darwinAliases;
 
-      age.secrets = {
-        spotify-player = {
-          file = "${homeDirectory}/.nix-config/secrets/spotify-player.age";
-          path = "${homeDirectory}/.config/spotify-player/app.toml";
-          mode = "0600";
-        };
-      };
-
       services.playerctld.enable = isLinux;
     };
 }

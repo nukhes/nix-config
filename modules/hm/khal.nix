@@ -72,7 +72,7 @@ _:
       '';
 
       age.secrets.vdirsyncer = {
-        file = "${homeDirectory}/.nix-config/secrets/vdirsyncer.age";
+        file = "${homeDirectory}/.nix-config/secrets/google/common/vdirsyncer.age";
         path = cfgFile;
         mode = "0600";
       };

@@ -17,19 +17,23 @@ builtins.listToAttrs (
       value.publicKeys = publicKeys;
     })
     [
-      "eduroam"
-      "rclone"
-      "vdirsyncer"
-      "gemini-p052"
-      "openrouter-p052"
-      "spotify-player"
-      "borg"
-      "tailscale-authkey"
+      "wifi/eduroam"
+
       "syncthing/x99/key"
       "syncthing/x99/cert"
-      "syncthing/hackbook/key"
-      "syncthing/hackbook/cert"
       "syncthing/x200/key"
       "syncthing/x200/cert"
+      "syncthing/hackbook/key"
+      "syncthing/hackbook/cert"
+
+      "google/common/borg"
+      "google/common/rclone"
+      "google/common/vdirsyncer"
+
+      "google/henriquealvesp052/app-password"
+      "google/henriquealvesp052/gemini-api"
+      "google/henriquealvesp052/openrouter-api"
+
+      "vpn/tailscale/nukhes/key"
     ]
 )

@@ -238,7 +238,7 @@ _:
 
       age.secrets = {
         rclone = {
-          file = "${homeDirectory}/.nix-config/secrets/rclone.age";
+          file = "${homeDirectory}/.nix-config/secrets/google/common/rclone.age";
           path = "${homeDirectory}/.config/rclone/rclone.conf";
           mode = "0600";
         };

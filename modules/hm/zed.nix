@@ -3,7 +3,7 @@ _:
 {
   hm.modules.common = _: {
     home.sessionVariablesExtra = ''
-      [ -f "$HOME/.secrets/gemini-p052" ] && export GEMINI_API_KEY="$(cat "$HOME/.secrets/gemini-p052")"
+      [ -f "$HOME/.secrets/google/henriquealvesp052/gemini-api" ] && export GEMINI_API_KEY="$(cat "$HOME/.secrets/google/henriquealvesp052/gemini-api")"
     '';
 
     programs.zed-editor = {
