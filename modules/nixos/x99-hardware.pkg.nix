@@ -40,21 +40,21 @@
     ];
   };
 
-  fileSystems."/mnt/vbox" = {
-    device = "/dev/disk/by-uuid/922ab3c3-8a3b-4b18-9e47-8d7e5c0b54a7";
+  fileSystems."/mnt/kootion512" = {
+    device = "/dev/disk/by-uuid/c4095e1b-f404-4007-bdf6-90b739f09d8e";
     fsType = "ext4";
     options = [ "nofail" ];
   };
 
-  fileSystems."/mnt/games" = {
+  fileSystems."/mnt/toshiba300" = {
     device = "/dev/disk/by-uuid/850f918f-0e1e-4a21-b0a3-da64a2728943";
     fsType = "ext4";
     options = [ "nofail" ];
   };
 
   systemd.tmpfiles.rules = [
-    "d /mnt/data 0700 user users - -"
-    "d /mnt/games 0700 user users - -"
+    "d '/mnt/kootion512' 0700 user users - -"
+    "d '/mnt/toshiba300' 0700 user users - -"
   ];
 
   swapDevices = [ ];
