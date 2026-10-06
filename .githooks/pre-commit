@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Ensure we are in the repo root
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+cd "$REPO_ROOT"
+
+# Get list of staged files
+staged_files=$(git diff --cached --name-only --diff-filter=ACM)
+if [ -z "$staged_files" ]; then
+    exit 0
+fi
+
+# Only run formatter if there are staged Nix files
+staged_nix_files=$(echo "$staged_files" | grep '\.nix$' || true)
+if [ -z "$staged_nix_files" ]; then
+    exit 0
+fi
+
+# Track any staged Nix files that had unstaged changes before formatting
+declare -A had_unstaged_changes
+while IFS= read -r file; do
+    [ -n "$file" ] || continue
+    if [ -f "$file" ]; then
+        if ! git diff --quiet -- "$file"; then
+            had_unstaged_changes["$file"]=1
+        fi
+    fi
+done <<< "$staged_nix_files"
+
+# Run statix and nixfmt-tree silently (equivalent to nixfmt-run)
+statix_output=""
+if ! statix_output=$(nix run nixpkgs#statix -- fix . 2>&1); then
+    echo "Error running statix fix:" >&2
+    echo "$statix_output" >&2
+    exit 1
+fi
+
+nixfmt_output=""
+if ! nixfmt_output=$(nix run nixpkgs#nixfmt-tree -- --quiet . 2>&1); then
+    echo "Error running nixfmt-tree:" >&2
+    echo "$nixfmt_output" >&2
+    exit 1
+fi
+
+# Re-stage formatted files that were clean in working tree before formatting
+while IFS= read -r file; do
+    [ -n "$file" ] || continue
+    if [ -f "$file" ]; then
+        if [ -z "${had_unstaged_changes["$file"]:-}" ]; then
+            if ! git diff --quiet -- "$file"; then
+                git add "$file"
+            fi
+        fi
+    fi
+done <<< "$staged_nix_files"
+
+exit 0

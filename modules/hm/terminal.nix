@@ -109,6 +109,16 @@ _:
           pull.rebase = false;
           rebase.autoStash = true;
         };
+        includes = [
+          {
+            condition = "gitdir:${homeDirectory}/.nix-config/";
+            contents = {
+              core = {
+                hooksPath = ".githooks";
+              };
+            };
+          }
+        ];
       };
 
       programs.gh.enable = true;
