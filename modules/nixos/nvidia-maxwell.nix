@@ -22,9 +22,9 @@ _:
       };
     };
 
-    boot.kernelParams = [ 
-      "pcie_aspm=off" 
-      "nvidia.NVreg_EnableGpuFirmware=0" 
+    boot.kernelParams = [
+      "pcie_aspm=off"
+      "nvidia.NVreg_EnableGpuFirmware=0"
     ];
 
     boot.extraModprobeConfig = ''

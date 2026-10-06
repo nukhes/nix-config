@@ -94,8 +94,7 @@ _:
 
       programs.bash = {
         enable = lib.mkIf isLinux true;
-        initExtra = ''
-        '';
+        initExtra = "";
       };
 
       home.shellAliases = aliases // gitAliases // (lib.optionalAttrs isLinux nixAliases);

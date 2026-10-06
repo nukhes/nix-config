@@ -9,12 +9,12 @@ _:
       };
 
       kernelPackages = pkgs.linuxPackages_xanmod_stable;
-      
+
       kernelModules = [
         "coretemp"
         "nct6775"
       ];
-      
+
       blacklistedKernelModules = [
         "firewire-core"
         "mei_me"

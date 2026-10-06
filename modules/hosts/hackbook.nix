@@ -7,7 +7,7 @@
       config.nixos.modules.common
       config.nixos.modules.laptop
       config.nixos.modules.hackbook
-      
+
       inputs.nixos-hardware.nixosModules.apple-macbook-air-7
       inputs.stylix.nixosModules.stylix
       inputs.agenix.nixosModules.default

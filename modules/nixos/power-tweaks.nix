@@ -1,5 +1,4 @@
-_:
-{
+_: {
   nixos.modules.hackbook = { pkgs, ... }: {
     environment.systemPackages = with pkgs; [
       brightnessctl
@@ -23,19 +22,19 @@ _:
         };
       };
     };
-    
+
     systemd.services.powertop-autotune = {
-        description = "PowerTop auto-tune for maximum power savings";
-        after = [ "multi-user.target" ];
-        wantedBy = [ "multi-user.target" ];
-        path = [ pkgs.powertop ];
-        script = ''
-          powertop --auto-tune
-        '';
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-        };
+      description = "PowerTop auto-tune for maximum power savings";
+      after = [ "multi-user.target" ];
+      wantedBy = [ "multi-user.target" ];
+      path = [ pkgs.powertop ];
+      script = ''
+        powertop --auto-tune
+      '';
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
       };
+    };
   };
 }

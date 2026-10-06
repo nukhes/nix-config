@@ -25,7 +25,7 @@ in
         type = lib.types.deferredModule;
         default = { };
       };
-      
+
       x99 = lib.mkOption {
         type = lib.types.deferredModule;
         default = { };

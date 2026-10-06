@@ -12,10 +12,10 @@
         enable = true;
         backend = "glx";
         vSync = true;
-        
+
         shadow = true;
         shadowOpacity = 0.45;
-        
+
         settings = {
           shadow-radius = 24;
           shadow-offset-x = -22;
