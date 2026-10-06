@@ -24,16 +24,13 @@ _:
       ];
 
       kernelParams = [
+        "iomem=relaxed"
+        "devmem.allowed=1"
+        "lockdown=integrity"
         "mitigations=off"
         "nowatchdog"
         "nmi_watchdog=0"
-        "i915.enable_fbc=0"
-        "i915.enable_psr=0"
-        "i915.enable_dc=0"
-        "i915.semaphores=0"
-        "i915.powersave=0"
         "acpi_backlight=native"
-        "intel_pstate=disable"
         "acpi_osi=Linux"
         "mem_sleep_default=deep"
         "quiet"
