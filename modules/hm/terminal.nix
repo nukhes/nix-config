@@ -14,7 +14,7 @@ _:
       inherit (pkgs.stdenv.hostPlatform) isLinux isDarwin;
 
       nixAliases = {
-        remote_rebuild_x200 = "cd ~/.nix-config nixos-rebuild switch --flake .#x200 --target-host root@100.121.63.42";
+        remote_rebuild_x200 = "cd ~/.nix-config && nixos-rebuild switch --flake .#x200 --target-host root@100.121.63.42";
         noise = "play -n synth brownnoise mix synth sine amod 0.1";
         rebuild = "sudo nixos-rebuild switch --flake ${homeDirectory}/.nix-config#$(hostname)";
         cleanup = "sudo nix-collect-garbage -d && sudo nix-store --optimise -v";
