@@ -13,7 +13,7 @@ _:
       home = config.home.homeDirectory;
       gen = mimes: app: lib.genAttrs mimes (_: [ "${app}.desktop" ]);
     in
-    lib.mkIf pkgs.stdenv.isLinux {
+    lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
       xdg.userDirs = {
         enable = true;
         download = home;

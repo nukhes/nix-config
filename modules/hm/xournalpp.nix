@@ -3,7 +3,7 @@ _:
 {
   hm.modules.common =
     { lib, pkgs, ... }:
-    lib.mkIf pkgs.stdenv.isLinux {
+    lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
       home.packages = with pkgs; [ xournalpp ];
 
       xdg.configFile."xournalpp/toolbar.ini".text = ''

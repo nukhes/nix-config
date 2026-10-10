@@ -10,7 +10,7 @@ _:
     }:
 
     let
-      inherit (pkgs.stdenv) isDarwin isLinux;
+      inherit (pkgs.stdenv.hostPlatform) isDarwin isLinux;
       inherit (config.home) homeDirectory;
       inherit (config.xdg) configHome;
 

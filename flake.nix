@@ -7,6 +7,7 @@
     nur.url = "github:nix-community/NUR";
     agenix.url = "github:ryantm/agenix";
     nix-flatpak.url = "github:gmodena/nix-flatpak";
+    artcraft.url = "github:ipeglin/artcraft-nix";
 
     home-manager = {
       url = "github:nix-community/home-manager";

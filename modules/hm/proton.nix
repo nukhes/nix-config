@@ -3,7 +3,7 @@ _:
 {
   hm.modules.gaming =
     { lib, pkgs, ... }:
-    lib.mkIf pkgs.stdenv.isLinux {
+    lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
       home.packages = with pkgs; [
         umu-launcher
         protonup-qt

@@ -28,7 +28,7 @@ _:
           "browser.discovery.enabled" = false;
           "browser.download.autohideButton" = false;
           "browser.download.deletePrivate.chosen" = true;
-          "browser.download.dir" = "/home/user";
+          "browser.download.dir" = "/mnt/kootion512/downloads";
           "browser.download.folderList" = 0;
           "browser.download.manager.addToRecentDocs" = false;
           "browser.download.open_pdf_attachments_inline" = true;

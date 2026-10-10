@@ -11,7 +11,7 @@ _:
 
     let
       inherit (config.home) homeDirectory;
-      inherit (pkgs.stdenv) isLinux isDarwin;
+      inherit (pkgs.stdenv.hostPlatform) isLinux isDarwin;
 
       nixAliases = {
         noise = "play -n synth brownnoise mix synth sine amod 0.1";
@@ -88,6 +88,8 @@ _:
           android-tools
           nmap
           fping
+          mosh
+          xpra
         ];
 
       programs.zsh.enable = lib.mkIf isDarwin true;

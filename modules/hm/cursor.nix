@@ -4,7 +4,7 @@ _:
   hm.modules.common =
     { lib, pkgs, ... }:
 
-    lib.mkIf pkgs.stdenv.isLinux {
+    lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
       home.pointerCursor = {
         enable = true;
         package = pkgs.bibata-cursors;
