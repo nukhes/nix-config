@@ -8,7 +8,11 @@ _:
         tigervnc
       ];
 
-      networking.firewall.trustedInterfaces = [ "tailscale0" ];
+      networking.firewall = {
+        trustedInterfaces = [ "tailscale0" ];
+        checkReversePath = "loose";
+        allowedUDPPorts = [ 41641 ];
+      };
     };
 
   nixos.modules.x99 =
@@ -38,6 +42,12 @@ _:
           ${xrandr} --output "$OUTPUT" --mode 1280x800 >/dev/null 2>&1 || true
         fi
 
+        # Temporarily stop picom compositor to eliminate fade transitions,
+        # blur calculations, and multiple redraw frames over VNC
+        if systemctl --user is-active --quiet picom 2>/dev/null; then
+          systemctl --user stop picom 2>/dev/null || true
+        fi
+
         if command -v polybar-msg >/dev/null 2>&1; then
           polybar-msg cmd restart >/dev/null 2>&1 || true
         fi
@@ -45,7 +55,7 @@ _:
           i3-msg restart >/dev/null 2>&1 || true
         fi
 
-        echo "Resolução do x99 ajustada para 1280x800 (ThinkPad X200) na saída $OUTPUT."
+        echo "Resolução do x99 ajustada para 1280x800 (ThinkPad X200) na saída $OUTPUT (picom pausado)."
       '';
 
       restoreResolution = pkgs.writeShellScriptBin "x99-res-restore" ''
@@ -69,6 +79,9 @@ _:
           ${xrandr} --output "$OUTPUT" --preferred >/dev/null 2>&1 || true
         fi
 
+        # Restore picom compositor for local desktop use
+        systemctl --user start picom 2>/dev/null || true
+
         if command -v polybar-msg >/dev/null 2>&1; then
           polybar-msg cmd restart >/dev/null 2>&1 || true
         fi
@@ -76,7 +89,7 @@ _:
           i3-msg restart >/dev/null 2>&1 || true
         fi
 
-        echo "Resolução do x99 restaurada para 1920x1080 na saída $OUTPUT."
+        echo "Resolução do x99 restaurada para 1920x1080 na saída $OUTPUT (picom restaurado)."
       '';
 
       x0vncserverRunner = pkgs.writeShellScript "x0vncserver-run" ''
@@ -96,13 +109,18 @@ _:
           SECURITY_ARGS+=("-SecurityTypes" "None")
         fi
 
+        # Optimized for responsive remote navigation and low bandwidth:
+        # - FrameRate 30: Prevents network bufferbloat on limited connections
+        # - PollingCycle 30: 30ms cycle reduces CPU scraping load and coalesces redraws
+        # - CompareFB 1: Always check for real pixel changes to avoid redundant transfers
+        # - MaxProcessorUsage 50: Bounds CPU consumption
         exec ${pkgs.tigervnc}/bin/x0vncserver \
           -display "$DISPLAY" \
           -rfbport 5900 \
-          -FrameRate 60 \
-          -PollingCycle 16 \
-          -CompareFB 2 \
-          -MaxProcessorUsage 60 \
+          -FrameRate 30 \
+          -PollingCycle 30 \
+          -CompareFB 1 \
+          -MaxProcessorUsage 50 \
           -AcceptCutText=1 \
           -SendCutText=1 \
           -SendPrimary=1 \
@@ -140,6 +158,45 @@ _:
         SERVER_PORT="5900"
         SERVER_USER="user"
 
+        MODE="balanced"
+        EXTRA_ARGS=()
+
+        while [ $# -gt 0 ]; do
+          case "$1" in
+            --low-bw|--turbo|-l)
+              MODE="low-bw"
+              shift
+              ;;
+            --lan|--hq)
+              MODE="lan"
+              shift
+              ;;
+            --auto)
+              MODE="auto"
+              shift
+              ;;
+            --help|-h)
+              echo "Uso: x99-vnc [MODO] [OPÇÕES]"
+              echo ""
+              echo "Modos de conexão otimizados para ThinkPad X200:"
+              echo "  (padrão)           Otimizado para conexões limitadas (Tight + JPEG q6, compressão zlib 6)"
+              echo "  --low-bw, --turbo  Modo ultra-econômico (256 cores, JPEG q3, compressão zlib 8, ideal para 3G/hotspot)"
+              echo "  --lan, --hq        Modo alta fidelidade para rede local (JPEG q8, compressão zlib 3)"
+              echo "  --auto             Modo com seleção automática de velocidade pelo TigerVNC"
+              echo ""
+              echo "Teclas de atalho no TigerVNC:"
+              echo "  F8                 Menu de opções do TigerVNC"
+              echo "  Ctrl+Alt           Libera a captura do teclado para o sistema local"
+              echo "  Ctrl+Alt+F         Alterna tela cheia"
+              exit 0
+              ;;
+            *)
+              EXTRA_ARGS+=("$1")
+              shift
+              ;;
+          esac
+        done
+
         TARGET="$SERVER_HOST"
         if ! ping -c 1 -W 1 "$SERVER_HOST" >/dev/null 2>&1; then
           if ping -c 1 -W 1 "$SERVER_IP" >/dev/null 2>&1; then
@@ -150,40 +207,92 @@ _:
           fi
         fi
 
-        echo "==> Conectando ao host x99 ($TARGET) via Tailscale..."
-        echo "==> Ajustando resolução no x99 para 1280x800 (ThinkPad X200)..."
+        echo "==> Conectando ao host x99 ($TARGET) via Tailscale (Modo: $MODE)..."
+        echo "==> Ajustando resolução no x99 para 1280x800 e pausando compositor picom..."
 
         ssh -o ConnectTimeout=4 -o BatchMode=yes "$SERVER_USER@$TARGET" "
           x99-res-x200 2>/dev/null || DISPLAY=:0 nvidia-settings --assign CurrentMetaMode=\"HDMI-0: 1920x1080 {ViewPortIn=1280x800, ViewPortOut=1920x1080+0+0}\" 2>/dev/null || true
+          systemctl --user stop picom 2>/dev/null || true
           systemctl --user start x0vncserver 2>/dev/null || true
         " || echo "Aviso: Pré-configuração via SSH falhou ou timeout, tentando conectar mesmo assim..."
 
         cleanup() {
           echo ""
-          echo "==> Conexão encerrada. Restaurando resolução original no x99 (1920x1080)..."
+          echo "==> Conexão encerrada. Restaurando resolução original no x99 (1920x1080) e compositor..."
           ssh -o ConnectTimeout=4 -o BatchMode=yes "$SERVER_USER@$TARGET" "
             x99-res-restore 2>/dev/null || DISPLAY=:0 nvidia-settings --assign CurrentMetaMode=\"HDMI-0: 1920x1080 {ViewPortIn=1920x1080, ViewPortOut=1920x1080+0+0}\" 2>/dev/null || true
+            systemctl --user start picom 2>/dev/null || true
           " 2>/dev/null || true
           echo "==> Finalizado."
         }
         trap cleanup EXIT INT TERM
 
-        echo "==> Abrindo TigerVNC otimizado em tela cheia para o ThinkPad X200..."
+        VNC_PARAMS=(
+          "-FullScreen=1"
+          "-FullscreenSystemKeys=1"
+          "-RemoteResize=0"
+          "-SendClipboard=1"
+          "-AcceptClipboard=1"
+          "-SendPrimary=1"
+          "-SetPrimary=1"
+        )
+
+        case "$MODE" in
+          low-bw)
+            echo "==> Ativando modo ultra-econômico (JPEG q3, Compress 8, 256 cores)..."
+            VNC_PARAMS+=(
+              "-PreferredEncoding=Tight"
+              "-NoJPEG=0"
+              "-QualityLevel=3"
+              "-CustomCompressLevel=1"
+              "-CompressLevel=8"
+              "-AutoSelect=0"
+              "-LowColorLevel=2"
+              "-PointerEventInterval=30"
+            )
+            ;;
+          lan)
+            echo "==> Ativando modo rede local / alta fidelidade (JPEG q8, Compress 3)..."
+            VNC_PARAMS+=(
+              "-PreferredEncoding=Tight"
+              "-NoJPEG=0"
+              "-QualityLevel=8"
+              "-CustomCompressLevel=1"
+              "-CompressLevel=3"
+              "-AutoSelect=0"
+              "-PointerEventInterval=17"
+            )
+            ;;
+          auto)
+            echo "==> Ativando seleção automática de velocidade pelo TigerVNC..."
+            VNC_PARAMS+=(
+              "-AutoSelect=1"
+              "-PointerEventInterval=20"
+            )
+            ;;
+          balanced|*)
+            echo "==> Ativando modo otimizado para navegação fluida em conexões limitadas (Tight + JPEG q6, Compress 6)..."
+            VNC_PARAMS+=(
+              "-PreferredEncoding=Tight"
+              "-NoJPEG=0"
+              "-QualityLevel=6"
+              "-CustomCompressLevel=1"
+              "-CompressLevel=6"
+              "-AutoSelect=0"
+              "-PointerEventInterval=20"
+            )
+            ;;
+        esac
+
+        if [ -f "$HOME/.vnc/passwd" ]; then
+          VNC_PARAMS+=("-PasswordFile" "$HOME/.vnc/passwd")
+        fi
+
+        echo "==> Abrindo TigerVNC no ThinkPad X200..."
         ${pkgs.tigervnc}/bin/vncviewer \
-          -FullScreen=1 \
-          -FullscreenSystemKeys=1 \
-          -PreferredEncoding=Tight \
-          -NoJPEG=1 \
-          -CustomCompressLevel=1 \
-          -CompressLevel=1 \
-          -AutoSelect=0 \
-          -RemoteResize=0 \
-          -PointerEventInterval=10 \
-          -SendClipboard=1 \
-          -AcceptClipboard=1 \
-          -SendPrimary=1 \
-          -SetPrimary=1 \
-          "$TARGET::$SERVER_PORT" "$@"
+          "''${VNC_PARAMS[@]}" \
+          "''${EXTRA_ARGS[@]}" \
+          "$TARGET::$SERVER_PORT"
       '';
 
       vncX99 = pkgs.writeShellScriptBin "vnc-x99" ''
@@ -199,6 +308,10 @@ _:
       home.shellAliases = {
         vnc-x99 = "x99-vnc";
         x99-vnc = "x99-vnc";
+        vnc-x99-low = "x99-vnc --low-bw";
+        x99-vnc-low = "x99-vnc --low-bw";
+        vnc-x99-lan = "x99-vnc --lan";
+        x99-vnc-lan = "x99-vnc --lan";
         vnc-start = "systemctl --user start x0vncserver";
         vnc-stop = "systemctl --user stop x0vncserver";
         vnc-restart = "systemctl --user restart x0vncserver";
