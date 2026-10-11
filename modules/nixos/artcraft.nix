@@ -1,8 +1,8 @@
 _:
 
 {
-  hm.modules.x99 =
-    { lib, pkgs, ... }:
+  nixos.modules.x99 =
+    { ... }:
     {
       programs.artcraft = {
         enable = true;

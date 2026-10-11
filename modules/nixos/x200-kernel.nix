@@ -30,6 +30,8 @@ _: {
         ];
 
         kernelParams = [
+          "processor.max_cstate=1"
+          "intel_idle.max_cstate=0"
           "iomem=relaxed"
           "devmem.allowed=1"
           "lockdown=integrity"

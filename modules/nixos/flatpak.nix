@@ -17,6 +17,7 @@ _:
         }
       ];
       packages = [
+        "com.google.EarthPro"
         "com.usebottles.bottles"
         "dev.vencord.Vesktop"
         "org.ppsspp.PPSSPP"

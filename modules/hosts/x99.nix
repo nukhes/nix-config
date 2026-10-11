@@ -13,6 +13,7 @@
       inputs.agenix.nixosModules.default
       inputs.nix-flatpak.nixosModules.nix-flatpak
       inputs.home-manager.nixosModules.home-manager
+      inputs.artcraft.nixosModules.default
     ];
   };
 }
