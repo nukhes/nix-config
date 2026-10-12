@@ -3,7 +3,7 @@ _:
 {
   nixos.modules.desktop = { pkgs, ... }: {
     virtualisation = {
-      host.enable = true;
+      virtualbox.host.enable = true;
       docker.enable = true;
       libvirtd = {
         enable = true;
