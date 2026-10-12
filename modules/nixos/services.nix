@@ -10,8 +10,6 @@ in
       group = "root";
     };
 
-    virtualisation.docker.enable = true;
-
     services = {
       openssh.enable = true;
       fstrim.enable = true;

@@ -29,7 +29,5 @@ _:
         quickgui
       ];
     };
-
-    virtualisation.virtualbox.host.enable = true;
   };
 }
