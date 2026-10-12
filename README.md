@@ -4,12 +4,12 @@ nixos configuration for pedro henrique.
 
 ## hosts
 
-| host | machine | arch | role |
-|------|---------|------|------|
-| `x99` | xeon x99 desktop | x86_64-linux | main workstation, build server |
-| `x200` | thinkpad x200 | x86_64-linux | lightweight laptop |
-| `hackbook` | macbook (hackintosh) | x86_64-linux | portable workstation |
-| `darwin` | macbook | aarch64-darwin | macos workstation |
+| host       | machine              | arch           | role                           |
+| ---------- | -------------------- | -------------- | ------------------------------ |
+| `x99`      | xeon x99 desktop     | x86_64-linux   | main workstation, build server |
+| `x200`     | thinkpad x200        | x86_64-linux   | lightweight laptop             |
+| `hackbook` | macbook (hackintosh) | x86_64-linux   | portable workstation           |
+| `darwin`   | macbook              | aarch64-darwin | macos workstation              |
 
 ## structure
 
@@ -68,6 +68,11 @@ this clones the repo to `~/.nix-config` and runs `nixos-rebuild switch --flake .
 cd ~/.nix-config
 sudo nixos-rebuild switch --flake .#$(hostname)
 ```
+
+## backup and recovery
+
+The daily Borg backup, Google Drive copy, and `borg-recover` restore helper are
+documented in [docs/backup.md](docs/backup.md).
 
 ## remote build and deploy
 
@@ -148,13 +153,13 @@ what happens under the hood:
 
 ### flag reference
 
-| flag | effect |
-|------|--------|
-| `--flake .#<host>` | evaluate the nixos configuration named `<host>` from the local flake |
-| `--target-host user@<ip>` | deploy to this machine over ssh (copy closure + activate) |
-| `--build-host localhost` | build on the local machine (this is the default) |
-| `--build-host user@<ip>` | build on the remote machine instead of locally |
-| `--elevate=sudo` | run activation commands on the target with `sudo` |
+| flag                      | effect                                                               |
+| ------------------------- | -------------------------------------------------------------------- |
+| `--flake .#<host>`        | evaluate the nixos configuration named `<host>` from the local flake |
+| `--target-host user@<ip>` | deploy to this machine over ssh (copy closure + activate)            |
+| `--build-host localhost`  | build on the local machine (this is the default)                     |
+| `--build-host user@<ip>`  | build on the remote machine instead of locally                       |
+| `--elevate=sudo`          | run activation commands on the target with `sudo`                    |
 
 ### testing without activating
 

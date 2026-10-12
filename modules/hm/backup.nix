@@ -113,6 +113,152 @@ _:
         echo "[rclone] sync completed successfully"
       '';
 
+      borgRecover = pkgs.writeShellApplication {
+        name = "borg-recover";
+        runtimeInputs = [
+          pkgs.borgbackup
+          pkgs.coreutils
+          pkgs.gnugrep
+          pkgs.inetutils
+          pkgs.rclone
+        ];
+        text = ''
+          set -euo pipefail
+
+          export BORG_REPO="${borgRepo}"
+          export BORG_PASSCOMMAND="cat ${borgPassphraseFile}"
+          export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+          usage() {
+            cat <<'HELP'
+          Usage:
+            borg-recover                         guided recovery
+            borg-recover archives                list available snapshots
+            borg-recover files ARCHIVE SEARCH    find paths in a snapshot
+            borg-recover restore ARCHIVE PATH [DEST]
+                                                restore a path into DEST
+            borg-recover fetch [HOSTNAME]        download a repo from Google Drive
+
+          Restore destinations default to a new directory in the current folder.
+          HELP
+          }
+
+          require_repo() {
+            if [[ ! -d "$BORG_REPO/data" ]]; then
+              printf 'No local Borg repository at %s. Run: borg-recover fetch [HOSTNAME]\n' "$BORG_REPO" >&2
+              exit 1
+            fi
+            if [[ ! -r "${borgPassphraseFile}" ]]; then
+              printf 'Borg passphrase file is missing or unreadable: %s\n' "${borgPassphraseFile}" >&2
+              exit 1
+            fi
+          }
+
+          list_archives() {
+            borg list --format '{archive}{NL}'
+          }
+
+          fetch_repository() {
+            local source_host="''${1:-$(hostname)}"
+            if [[ ! "$source_host" =~ ^[A-Za-z0-9._-]+$ ]]; then
+              printf 'Invalid hostname: %s\n' "$source_host" >&2
+              exit 2
+            fi
+            if [[ ! -r "${homeDirectory}/.config/rclone/rclone.conf" ]]; then
+              printf 'rclone config is missing: %s\n' "${homeDirectory}/.config/rclone/rclone.conf" >&2
+              exit 1
+            fi
+            mkdir -p "$BORG_REPO"
+            printf 'Copying p052:backups/%s into %s (existing local files are kept)\n' "$source_host" "$BORG_REPO"
+            rclone copy "p052:backups/$source_host" "$BORG_REPO" --verbose
+            printf 'Repository download finished. Available snapshots:\n'
+            borg list
+          }
+
+          search_files() {
+            local archive="$1"
+            local query="$2"
+            borg list --short "::$archive" | grep -F -- "$query" || true
+          }
+
+          restore_path() {
+            local archive="$1"
+            local path="$2"
+            local destination="''${3:-$PWD/borg-restore-$(date +%Y%m%d-%H%M%S)}"
+            if [[ -z "$path" ]]; then
+              printf 'A path inside the archive is required.\n' >&2
+              exit 2
+            fi
+            mkdir -p "$destination"
+            printf 'Restoring %s from %s into %s\n' "$path" "$archive" "$destination"
+            (cd "$destination" && borg extract --list "::$archive" "$path")
+            printf 'Restore finished. Check the files under: %s\n' "$destination"
+          }
+
+          if [[ "''${1:-}" == "-h" || "''${1:-}" == "--help" || "''${1:-}" == "help" ]]; then
+            usage
+            exit 0
+          fi
+
+          if [[ ! -r "${borgPassphraseFile}" ]]; then
+            printf 'Borg passphrase file is missing or unreadable: %s\n' "${borgPassphraseFile}" >&2
+            exit 1
+          fi
+
+          case "''${1:-}" in
+            -h|--help|help)
+              usage
+              ;;
+            fetch)
+              fetch_repository "''${2:-}"
+              ;;
+            archives)
+              require_repo
+              list_archives
+              ;;
+            files)
+              if [[ $# -lt 3 ]]; then usage >&2; exit 2; fi
+              require_repo
+              search_files "$2" "$3"
+              ;;
+            restore)
+              if [[ $# -lt 3 ]]; then usage >&2; exit 2; fi
+              require_repo
+              restore_path "$2" "$3" "''${4:-}"
+              ;;
+            "")
+              require_repo
+              archive_output="$(list_archives)"
+              if [[ -z "$archive_output" ]]; then
+                printf 'No snapshots found in %s\n' "$BORG_REPO"
+                exit 1
+              fi
+              mapfile -t archives <<< "$archive_output"
+              printf 'Available snapshots:\n'
+              select archive in "''${archives[@]}"; do
+                if [[ -n "''${archive:-}" ]]; then break; fi
+                printf 'Choose a snapshot number from the list.\n'
+              done
+              read -r -p 'Filename or folder name to search for: ' query
+              matches="$(search_files "$archive" "$query")"
+              if [[ -z "$matches" ]]; then
+                printf 'No paths matched %s in %s.\n' "$query" "$archive"
+                exit 1
+              fi
+              printf 'Matching paths (copy the exact path you want):\n%s\n' "$matches"
+              read -r -p 'Exact path to restore: ' path
+              default_destination="$PWD/borg-restore-$(date +%Y%m%d-%H%M%S)"
+              read -r -p "Restore destination [$default_destination]: " destination
+              restore_path "$archive" "$path" "''${destination:-$default_destination}"
+              ;;
+            *)
+              usage >&2
+              exit 2
+              ;;
+          esac
+        '';
+      };
+
       rcloneMountScript = pkgs.writeShellScript "rclone-mount" ''
         set -euo pipefail
 
@@ -138,10 +284,13 @@ _:
       '';
     in
     {
-      home.packages = with pkgs; [
-        rclone
-        borgbackup
-      ];
+      home.packages =
+        with pkgs;
+        [
+          rclone
+          borgbackup
+        ]
+        ++ [ borgRecover ];
 
       systemd.user.services.rclone-mount = {
         Unit = {
