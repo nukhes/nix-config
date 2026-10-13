@@ -34,6 +34,7 @@ nixos configuration for pedro henrique.
     │   ├── desktop.nix          # gui packages (thunar, dconf, virtualbox)
     │   ├── power-tweaks.nix     # laptop power management (tlp, powertop)
     │   ├── x99.nix              # x99-specific (xrandr, cpu governor)
+    │   ├── x99-vfio.nix         # single gpu passthrough & libvirt hooks (x99 only)
     │   ├── x200.nix             # x200-specific (thinkfan, zram, journald)
     │   ├── hackbook.nix         # hackbook-specific (mbpfan, prochot)
     │   ├── *-hardware.pkg.nix   # hardware-configuration (callPackage, excluded from auto-import)
@@ -73,6 +74,11 @@ sudo nixos-rebuild switch --flake .#$(hostname)
 
 The daily Borg backup, Google Drive copy, and `borg-recover` restore helper are
 documented in [docs/backup.md](docs/backup.md).
+
+## windows 11 vfio vm (arcgis pro)
+
+The single-GPU passthrough virtual machine on `x99` (including VBIOS, ISO placement,
+Libvirt hooks, and emergency recovery) is documented in [docs/vfio-vm.md](docs/vfio-vm.md).
 
 ## remote build and deploy
 
