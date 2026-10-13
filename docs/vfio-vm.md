@@ -8,10 +8,10 @@ The VM is optimized for high-performance GIS workloads in **ArcGIS Pro** with na
 
 ## Storage Layout & Asset Placement
 
-All VM assets, disk images, ISOs, and firmware files reside strictly under `/mnt/kootion512/winnt`:
+All VM assets, disk images, ISOs, and firmware files reside under the canonical path `/var/lib/win11`, which is declaratively linked by NixOS (`systemd.tmpfiles.rules`) to the physical storage path configured in [`modules/nixos/x99-vfio.nix`](file:///home/user/.nix-config/modules/nixos/x99-vfio.nix) (`modules.x99.vfio.storageDir`):
 
 ```text
-/mnt/kootion512/winnt/
+/var/lib/win11/ (-> symlink to physical storage configured in NixOS)
 ├── isos/
 │   ├── win11.iso          <-- Windows 11 installer ISO (unattended EFI boot)
 │   └── virtio-win.iso     <-- Red Hat / Fedora VirtIO Windows drivers ISO
@@ -30,17 +30,17 @@ A version-controlled copy of the Libvirt definition template is maintained in th
 
 ### Where to Place the ISOs & VBIOS
 
-The Libvirt template expects two ISO images and the clean VBIOS inside `/mnt/kootion512/winnt`:
+The Libvirt template expects two ISO images and the clean VBIOS inside `/var/lib/win11`:
 
 1. **Automatic Extraction via `x99-vfio-dump`**:
    The NixOS configuration equips the system with `x99-vfio-dump`. Run:
    ```bash
    x99-vfio-dump
    ```
-   This automatically copies the official `virtio-win.iso` directly from the Nix store cache to `/mnt/kootion512/winnt/isos/virtio-win.iso` and dumps an uncorrupted copy of the GTX 960 VBIOS to `/mnt/kootion512/winnt/vbios.rom`.
+   This automatically copies the official `virtio-win.iso` directly from the Nix store cache to `/var/lib/win11/isos/virtio-win.iso` and dumps an uncorrupted copy of the GTX 960 VBIOS to `/var/lib/win11/vbios.rom`.
 
 2. **Windows 11 Installer ISO**:
-   - Path: `/mnt/kootion512/winnt/isos/win11.iso`
+   - Path: `/var/lib/win11/isos/win11.iso`
    - Download directly from Microsoft or use your desired Windows 11 installation media.
    - **Important UEFI Boot Note**: To prevent the 4-second `"Press any key to boot from CD or DVD"` timeout in OVMF (which drops to `No bootable option found` before GPU displays sync), ensure the ISO boots via `efisys_noprompt.bin` / `cdboot_noprompt.efi`.
 
@@ -71,7 +71,7 @@ dmesg | grep -i -E "dmar|iommu"
 Create a RAW image for maximum I/O throughput:
 
 ```bash
-qemu-img create -f raw /mnt/kootion512/winnt/win11.raw 120G
+qemu-img create -f raw /var/lib/win11/win11.raw 120G
 ```
 
 ### 3. Define the Virtual Machine in Libvirt
@@ -79,7 +79,7 @@ qemu-img create -f raw /mnt/kootion512/winnt/win11.raw 120G
 Register the domain template with `virsh` in the system instance:
 
 ```bash
-virsh -c qemu:///system define /mnt/kootion512/winnt/win11-template.xml
+virsh -c qemu:///system define /var/lib/win11/win11-template.xml
 ```
 
 ---
@@ -108,7 +108,7 @@ NixOS provides dedicated, idempotent CLI commands and aliases on `x99`:
 | **Check Status** | `win11-status` | `win-status`, `vm-status` | Displays domain state, CPU/RAM usage, attached USB devices, and virtual disks. |
 | **Emergency Host Rescue** | `sudo x99-vfio-rescue` | — | Kills hung QEMU instances, rebinds PCI devices to `nvidia` & `snd_hda_intel`, re-enables `vtcon`, and restarts `display-manager.service`. |
 
-*(The helper shell scripts are also executable directly at `/mnt/kootion512/winnt/win11-*.sh` even prior to system rebuilds).*
+*(The helper shell scripts are also executable directly at `/var/lib/win11/win11-*.sh` even prior to system rebuilds).*
 
 ---
 
@@ -117,7 +117,7 @@ NixOS provides dedicated, idempotent CLI commands and aliases on `x99`:
 ### 1. Dedicated GPU Passthrough (NVIDIA GTX 960)
 - **PCI Video**: `0000:03:00.0` passed through to PCIe root port `0x01` (`multifunction=on`).
 - **PCI Audio**: `0000:03:00.1` passed through to `0x01.0x1`.
-- **VBIOS**: Clean ROM loaded via `<rom file='/mnt/kootion512/winnt/vbios.rom'/>` to bypass UEFI shadowing corruption.
+- **VBIOS**: Clean ROM loaded via `<rom file='/var/lib/win11/vbios.rom'/>` to bypass UEFI shadowing corruption.
 - **Hyper-V & KVM Spoofing**: Configured with `<kvm><hidden state='on'/></kvm>` and Hyper-V enlightened timers to prevent NVIDIA Error 43.
 
 ### 2. USB Input Passthrough (Keyboard & Mouse)
@@ -185,7 +185,7 @@ If a hook fails or the VM encounters an error during startup, connect via SSH fr
 ```bash
 sudo x99-vfio-rescue
 # or:
-sudo /mnt/kootion512/winnt/rescue-host.sh
+sudo /var/lib/win11/rescue-host.sh
 ```
 
 This immediately kills any frozen QEMU processes, rebinds the PCI devices to `nvidia` and `snd_hda_intel`, re-enables `vtcon`, and restarts `display-manager.service`.
@@ -211,7 +211,7 @@ dmesg | grep -i -E "vfio|nvidia|iommu"
 ### NVIDIA Code 43 in Windows Device Manager
 
 If Windows Device Manager shows a yellow triangle with Code 43 on the GTX 960:
-1. Ensure the VBIOS file exists at `/mnt/kootion512/winnt/vbios.rom` and matches subsystem ID `10de:116f`.
+1. Ensure the VBIOS file exists at `/var/lib/win11/vbios.rom` and matches subsystem ID `10de:116f`.
 2. Confirm the XML includes `<kvm><hidden state='on'/></kvm>` and the Hyper-V vendor ID spoofing.
 3. Verify that the HDMI audio device `0000:03:00.1` is passed through alongside the video device `0000:03:00.0`.
 
@@ -219,7 +219,7 @@ If Windows Device Manager shows a yellow triangle with Code 43 on the GTX 960:
 
 If the VM gets stuck at `Press any key to enter boot manager menu: No bootable option found`:
 - Windows installer ISOs prompt `Press any key to boot from CD or DVD.....` with a 4-second timeout. If monitor HDMI/DP sync takes a few seconds or input is delayed, OVMF aborts the boot.
-- The ISO at `/mnt/kootion512/winnt/isos/win11.iso` has been patched to point its El Torito EFI boot entry to Microsoft's unattended boot catalog (`efisys_noprompt.bin`), which enters Windows Setup immediately with zero prompt.
+- The ISO at `/var/lib/win11/isos/win11.iso` has been patched to point its El Torito EFI boot entry to Microsoft's unattended boot catalog (`efisys_noprompt.bin`), which enters Windows Setup immediately with zero prompt.
 
 ### Custom Lightweight ISOs: "Browse" Error & NVMe Bypass
 

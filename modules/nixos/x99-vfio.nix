@@ -9,6 +9,16 @@ _:
       ...
     }:
     let
+      cfg = config.modules.x99.vfio;
+
+      # Caminho físico configurado (ponto único de definição no repositório)
+      # e caminho canônico estável exposto ao Libvirt e à documentação.
+      vmStorageDir = cfg.storageDir;
+      vmCanonicalDir = "/var/lib/win11";
+
+      # Template XML da VM fornecido pelo repositório
+      win11Template = ../../docs/win11-template.xml;
+
       # Ferramentas do sistema com caminhos absolutos do Nix Store
       systemctl = "${pkgs.systemd}/bin/systemctl";
       modprobe = "${pkgs.kmod}/bin/modprobe";
@@ -38,13 +48,13 @@ _:
           }
         fi
 
-        if [ ! -f /mnt/kootion512/winnt/win11.raw ]; then
-          ${echo} "ERRO CRÍTICO: Disco /mnt/kootion512/winnt/win11.raw não encontrado. Abortando PREPARE." >&2
+        if [ ! -f "${vmCanonicalDir}/win11.raw" ]; then
+          ${echo} "ERRO CRÍTICO: Disco ${vmCanonicalDir}/win11.raw não encontrado. Abortando PREPARE." >&2
           exit 1
         fi
 
-        if [ ! -f /mnt/kootion512/winnt/vbios.rom ]; then
-          ${echo} "ERRO CRÍTICO: VBIOS /mnt/kootion512/winnt/vbios.rom não encontrado. Abortando PREPARE." >&2
+        if [ ! -f "${vmCanonicalDir}/vbios.rom" ]; then
+          ${echo} "ERRO CRÍTICO: VBIOS ${vmCanonicalDir}/vbios.rom não encontrado. Abortando PREPARE." >&2
           exit 1
         fi
 
@@ -152,7 +162,7 @@ _:
       dumpVbiosAndVirtioIso = pkgs.writeShellScriptBin "x99-vfio-dump" ''
         set -euo pipefail
 
-        output_dir="/mnt/kootion512/winnt"
+        output_dir="${vmCanonicalDir}"
         iso_dir="$output_dir/isos"
         rom_path="/sys/bus/pci/devices/0000:03:00.0/rom"
         rom_enabled=0
@@ -219,11 +229,14 @@ _:
 
         if [ -z "$STATE" ]; then
           ${echo} "VM 'win11' não está definida no Libvirt."
-          if [ -f "/mnt/kootion512/winnt/win11-template.xml" ]; then
-            ${echo} "Definindo 'win11' a partir de /mnt/kootion512/winnt/win11-template.xml..."
-            $VIRSH define /mnt/kootion512/winnt/win11-template.xml
+          if [ -f "${vmCanonicalDir}/win11-template.xml" ]; then
+            ${echo} "Definindo 'win11' a partir de ${vmCanonicalDir}/win11-template.xml..."
+            $VIRSH define "${vmCanonicalDir}/win11-template.xml"
+          elif [ -f "${win11Template}" ]; then
+            ${echo} "Definindo 'win11' a partir do template padrão do repositório..."
+            $VIRSH define "${win11Template}"
           else
-            ${echo} "ERRO CRÍTICO: Template /mnt/kootion512/winnt/win11-template.xml não encontrado!" >&2
+            ${echo} "ERRO CRÍTICO: Template de definição ${vmCanonicalDir}/win11-template.xml não encontrado!" >&2
             exit 1
           fi
         fi
@@ -348,70 +361,81 @@ _:
       '';
     in
     {
-      # 1. Parâmetros de Kernel para IOMMU
-      boot.kernelParams = [
-        "intel_iommu=on"
-        "iommu=pt"
-      ];
-
-      # 2. Carregamento dos módulos VFIO no kernel
-      boot.kernelModules = [
-        "vfio"
-        "vfio_iommu_type1"
-        "vfio_pci"
-      ];
-
-      # 3. Configuração do Libvirt e QEMU para executar como root
-      virtualisation.libvirtd = {
-        enable = true;
-        qemu = {
-          package = pkgs.qemu_kvm;
-          runAsRoot = true;
-          swtpm.enable = true;
+      options.modules.x99.vfio = {
+        storageDir = lib.mkOption {
+          type = lib.types.str;
+          default = "/mnt/kootion512/winnt";
+          description = "Caminho físico de armazenamento dos arquivos da VM Windows 11 VFIO.";
         };
       };
 
-      # 4. Estrutura de Diretórios da VM e Injeção Declarativa do Hook
-      systemd.tmpfiles.rules = [
-        # Diretório dedicado da VM no SSD Kootion 512
-        "d /mnt/kootion512/winnt 0775 user users - -"
-        "d /mnt/kootion512/winnt/isos 0775 user users - -"
-        # Hook mestre do Libvirt
-        "d /var/lib/libvirt/hooks 0755 root root - -"
-        "L+ /var/lib/libvirt/hooks/qemu 0755 root root - ${qemuHookDispatcher}"
-      ];
+      config = {
+        # 1. Parâmetros de Kernel para IOMMU
+        boot.kernelParams = [
+          "intel_iommu=on"
+          "iommu=pt"
+        ];
 
-      # 5. Pacotes essenciais para virtualização com GPU Passthrough e Windows 11
-      environment.systemPackages = with pkgs; [
-        virt-manager
-        virtio-win
-        swtpm
-        pciutils
-        usbutils
-        libguestfs
-        dumpVbiosAndVirtioIso
-        win11Start
-        win11Stop
-        win11Status
-        win11Restart
-        x99VfioRescue
-      ];
+        # 2. Carregamento dos módulos VFIO no kernel
+        boot.kernelModules = [
+          "vfio"
+          "vfio_iommu_type1"
+          "vfio_pci"
+        ];
 
-      # 6. Conexão padrão do Libvirt apontando para a instância do sistema (root)
-      environment.sessionVariables = {
-        LIBVIRT_DEFAULT_URI = "qemu:///system";
-      };
+        # 3. Configuração do Libvirt e QEMU para executar como root
+        virtualisation.libvirtd = {
+          enable = true;
+          qemu = {
+            package = pkgs.qemu_kvm;
+            runAsRoot = true;
+            swtpm.enable = true;
+          };
+        };
 
-      # 7. Aliases de terminal convenientes para gerenciar a VM no x99
-      environment.shellAliases = {
-        win-start = "win11-start";
-        win-stop = "win11-stop";
-        win-status = "win11-status";
-        win-restart = "win11-restart";
-        vm-start = "win11-start";
-        vm-stop = "win11-stop";
-        vm-status = "win11-status";
-        vm-restart = "win11-restart";
+        # 4. Estrutura de Diretórios da VM e Injeção Declarativa do Hook
+        systemd.tmpfiles.rules = [
+          # Diretório dedicado físico da VM e link canônico estável
+          "d ${vmStorageDir} 0775 user users - -"
+          "d ${vmStorageDir}/isos 0775 user users - -"
+          "L+ ${vmCanonicalDir} - - - - ${vmStorageDir}"
+          # Hook mestre do Libvirt
+          "d /var/lib/libvirt/hooks 0755 root root - -"
+          "L+ /var/lib/libvirt/hooks/qemu 0755 root root - ${qemuHookDispatcher}"
+        ];
+
+        # 5. Pacotes essenciais para virtualização com GPU Passthrough e Windows 11
+        environment.systemPackages = with pkgs; [
+          virt-manager
+          virtio-win
+          swtpm
+          pciutils
+          usbutils
+          libguestfs
+          dumpVbiosAndVirtioIso
+          win11Start
+          win11Stop
+          win11Status
+          win11Restart
+          x99VfioRescue
+        ];
+
+        # 6. Conexão padrão do Libvirt apontando para a instância do sistema (root)
+        environment.sessionVariables = {
+          LIBVIRT_DEFAULT_URI = "qemu:///system";
+        };
+
+        # 7. Aliases de terminal convenientes para gerenciar a VM no x99
+        environment.shellAliases = {
+          win-start = "win11-start";
+          win-stop = "win11-stop";
+          win-status = "win11-status";
+          win-restart = "win11-restart";
+          vm-start = "win11-start";
+          vm-stop = "win11-stop";
+          vm-status = "win11-status";
+          vm-restart = "win11-restart";
+        };
       };
     };
 }

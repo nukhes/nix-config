@@ -33,7 +33,7 @@
   </cputune>
   <os firmware='efi'>
     <type arch='x86_64' machine='q35'>hvm</type>
-    <nvram template='/run/libvirt/nix-ovmf/edk2-i386-vars.fd'>/mnt/kootion512/winnt/win11_VARS.fd</nvram>
+    <nvram template='/run/libvirt/nix-ovmf/edk2-i386-vars.fd'>/var/lib/win11/win11_VARS.fd</nvram>
   </os>
   <features>
     <acpi/>
@@ -79,7 +79,7 @@
     <!-- Disco Principal NVMe Nativo para Desempenho Máximo no ArcGIS Pro -->
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none' io='native' discard='unmap'/>
-      <source file='/mnt/kootion512/winnt/win11.raw'/>
+      <source file='/var/lib/win11/win11.raw'/>
       <target dev='nvme0n1' bus='nvme'/>
       <serial>win11nvme0</serial>
       <boot order='1'/>
@@ -88,7 +88,7 @@
     <!-- ISO do Windows 11 -->
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
-      <source file='/mnt/kootion512/winnt/isos/win11.iso'/>
+      <source file='/var/lib/win11/isos/win11.iso'/>
       <target dev='sdb' bus='sata'/>
       <readonly/>
       <boot order='2'/>
@@ -98,7 +98,7 @@
     <!-- ISO com Drivers VirtIO -->
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
-      <source file='/mnt/kootion512/winnt/isos/virtio-win.iso'/>
+      <source file='/var/lib/win11/isos/virtio-win.iso'/>
       <target dev='sdc' bus='sata'/>
       <readonly/>
       <address type='drive' controller='0' bus='0' target='0' unit='2'/>
@@ -138,7 +138,7 @@
       <source>
         <address domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
       </source>
-      <rom file='/mnt/kootion512/winnt/vbios.rom'/>
+      <rom file='/var/lib/win11/vbios.rom'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0' multifunction='on'/>
     </hostdev>
 
