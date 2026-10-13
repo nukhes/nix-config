@@ -134,7 +134,7 @@
     </tpm>
 
     <!-- GPU Passthrough: NVIDIA GeForce GTX 960 (Vídeo) -->
-    <hostdev mode='subsystem' type='pci' managed='yes'>
+    <hostdev mode='subsystem' type='pci' managed='no'>
       <source>
         <address domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
       </source>
@@ -143,7 +143,7 @@
     </hostdev>
 
     <!-- GPU Passthrough: Áudio HDMI GM206 -->
-    <hostdev mode='subsystem' type='pci' managed='yes'>
+    <hostdev mode='subsystem' type='pci' managed='no'>
       <source>
         <address domain='0x0000' bus='0x03' slot='0x00' function='0x1'/>
       </source>

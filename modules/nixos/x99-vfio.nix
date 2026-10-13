@@ -29,6 +29,8 @@ _:
       date = "${pkgs.coreutils}/bin/date";
       mkdir = "${pkgs.coreutils}/bin/mkdir";
       grep = "${pkgs.gnugrep}/bin/grep";
+      pkill = "${pkgs.procps}/bin/pkill";
+      sudo = "/run/wrappers/bin/sudo";
 
       # Script de início: Isola a GPU do host NixOS e transfere para o VFIO
       qemuHookPrepare = pkgs.writeShellScript "qemu-hook-prepare-win11" ''
@@ -40,14 +42,6 @@ _:
         ${echo} "=== [$(${date})] Iniciando gancho PREPARE (Single GPU Passthrough) ==="
 
         # 0. Verificações pré-voo (pre-flight checks) para não derrubar a sessão em vão
-        if ! ${virsh} net-info default 2>/dev/null | grep -q "Active:.*yes"; then
-          ${echo} "Rede default inativa. Tentando iniciar..."
-          ${virsh} net-start default 2>/dev/null || {
-            ${echo} "ERRO CRÍTICO: Não foi possível ativar a rede 'default' do Libvirt. Abortando PREPARE para proteger a sessão gráfica." >&2
-            exit 1
-          }
-        fi
-
         if [ ! -f "${vmCanonicalDir}/win11.raw" ]; then
           ${echo} "ERRO CRÍTICO: Disco ${vmCanonicalDir}/win11.raw não encontrado. Abortando PREPARE." >&2
           exit 1
@@ -99,11 +93,13 @@ _:
           ${echo} 0000:03:00.1 > /sys/bus/pci/drivers/snd_hda_intel/unbind 2>/dev/null || true
         fi
 
-        # 7. Carregar o driver VFIO e anexar os dispositivos da GPU
-        ${echo} "Carregando vfio-pci e isolando dispositivos..."
+        # 7. Carregar o driver VFIO e anexar os dispositivos da GPU via sysfs
+        ${echo} "Carregando vfio-pci e isolando dispositivos via sysfs..."
         ${modprobe} vfio-pci
-        ${virsh} nodedev-detach pci_0000_03_00_0 2>/dev/null || true
-        ${virsh} nodedev-detach pci_0000_03_00_1 2>/dev/null || true
+        ${echo} "vfio-pci" > /sys/bus/pci/devices/0000:03:00.0/driver_override
+        ${echo} "vfio-pci" > /sys/bus/pci/devices/0000:03:00.1/driver_override
+        ${echo} 0000:03:00.0 > /sys/bus/pci/drivers/vfio-pci/bind 2>/dev/null || true
+        ${echo} 0000:03:00.1 > /sys/bus/pci/drivers/vfio-pci/bind 2>/dev/null || true
 
         ${echo} "=== [$(${date})] GPU transferida com sucesso para o VFIO ==="
       '';
@@ -117,10 +113,16 @@ _:
 
         ${echo} "=== [$(${date})] Iniciando gancho RELEASE (Restauração do Host) ==="
 
-        # 1. Reanexar os dispositivos PCI ao host através do virsh
-        ${echo} "Reanexando dispositivos PCI ao host..."
-        ${virsh} nodedev-reattach pci_0000_03_00_0 2>/dev/null || true
-        ${virsh} nodedev-reattach pci_0000_03_00_1 2>/dev/null || true
+        # 1. Desvincular dispositivos do vfio-pci e limpar driver_override
+        ${echo} "Desvinculando dispositivos do vfio-pci..."
+        if [ -e /sys/bus/pci/drivers/vfio-pci/0000:03:00.0 ]; then
+          ${echo} 0000:03:00.0 > /sys/bus/pci/drivers/vfio-pci/unbind 2>/dev/null || true
+        fi
+        if [ -e /sys/bus/pci/drivers/vfio-pci/0000:03:00.1 ]; then
+          ${echo} 0000:03:00.1 > /sys/bus/pci/drivers/vfio-pci/unbind 2>/dev/null || true
+        fi
+        ${echo} "" > /sys/bus/pci/devices/0000:03:00.0/driver_override 2>/dev/null || true
+        ${echo} "" > /sys/bus/pci/devices/0000:03:00.1/driver_override 2>/dev/null || true
 
         # 2. Descarregar módulo vfio_pci
         ${echo} "Descarregando vfio_pci..."
@@ -132,6 +134,9 @@ _:
         ${modprobe} nvidia_modeset
         ${modprobe} nvidia_uvm
         ${modprobe} nvidia_drm
+        if [ ! -e /sys/bus/pci/devices/0000:03:00.0/driver ] && [ -e /sys/bus/pci/drivers/nvidia/bind ]; then
+          ${echo} 0000:03:00.0 > /sys/bus/pci/drivers/nvidia/bind 2>/dev/null || true
+        fi
 
         # 4. Reanexar o áudio HDMI ao driver snd_hda_intel
         ${echo} "Reanexando áudio HDMI ao snd_hda_intel..."
@@ -169,19 +174,19 @@ _:
 
         cleanup_rom() {
           if [ "$rom_enabled" -eq 1 ]; then
-            printf '0\n' | ${pkgs.sudo}/bin/sudo ${pkgs.coreutils}/bin/tee "$rom_path" >/dev/null || true
+            printf '0\n' | ${sudo} ${pkgs.coreutils}/bin/tee "$rom_path" >/dev/null || true
           fi
         }
         trap cleanup_rom EXIT
 
-        ${pkgs.sudo}/bin/sudo -v
+        ${sudo} -v
         ${pkgs.coreutils}/bin/mkdir -p "$iso_dir"
         ${pkgs.coreutils}/bin/cp ${pkgs.virtio-win.src} "$iso_dir/virtio-win.iso"
         printf 'ISO do VirtIO copiada para %s\n' "$iso_dir/virtio-win.iso"
 
-        printf '1\n' | ${pkgs.sudo}/bin/sudo ${pkgs.coreutils}/bin/tee "$rom_path" >/dev/null
+        printf '1\n' | ${sudo} ${pkgs.coreutils}/bin/tee "$rom_path" >/dev/null
         rom_enabled=1
-        ${pkgs.sudo}/bin/sudo ${pkgs.coreutils}/bin/cat "$rom_path" > "$output_dir/vbios.rom"
+        ${sudo} ${pkgs.coreutils}/bin/cat "$rom_path" > "$output_dir/vbios.rom"
         printf 'VBIOS salvo em %s/vbios.rom\n' "$output_dir"
 
         cleanup_rom
@@ -227,18 +232,29 @@ _:
           exit 0
         fi
 
-        if [ -z "$STATE" ]; then
-          ${echo} "VM 'win11' não está definida no Libvirt."
+        if [ -z "$STATE" ] || [ "$STATE" = "shut off" ]; then
           if [ -f "${vmCanonicalDir}/win11-template.xml" ]; then
-            ${echo} "Definindo 'win11' a partir de ${vmCanonicalDir}/win11-template.xml..."
+            ${echo} "Aplicando definição da VM 'win11' a partir de ${vmCanonicalDir}/win11-template.xml..."
             $VIRSH define "${vmCanonicalDir}/win11-template.xml"
           elif [ -f "${win11Template}" ]; then
-            ${echo} "Definindo 'win11' a partir do template padrão do repositório..."
+            ${echo} "Aplicando definição da VM 'win11' a partir do template padrão do repositório..."
             $VIRSH define "${win11Template}"
           else
-            ${echo} "ERRO CRÍTICO: Template de definição ${vmCanonicalDir}/win11-template.xml não encontrado!" >&2
-            exit 1
+            if [ -z "$STATE" ]; then
+              ${echo} "ERRO CRÍTICO: Template de definição ${vmCanonicalDir}/win11-template.xml não encontrado!" >&2
+              exit 1
+            fi
           fi
+        fi
+
+        if [ ! -f "${vmCanonicalDir}/win11.raw" ]; then
+          ${echo} "ERRO CRÍTICO: Disco '${vmCanonicalDir}/win11.raw' não encontrado!" >&2
+          exit 1
+        fi
+
+        if [ ! -f "${vmCanonicalDir}/vbios.rom" ]; then
+          ${echo} "ERRO CRÍTICO: VBIOS '${vmCanonicalDir}/vbios.rom' não encontrado!" >&2
+          exit 1
         fi
 
         if ! $VIRSH net-info default 2>/dev/null | ${grep} -q "Active:.*yes"; then
@@ -340,23 +356,39 @@ _:
       x99VfioRescue = pkgs.writeShellScriptBin "x99-vfio-rescue" ''
         set -euo pipefail
         ${echo} "=== Executando restauração de emergência da GPU / Host ==="
-        ${pkgs.sudo}/bin/sudo ${pkgs.psmisc}/bin/killall -9 qemu-system-x86_64 2>/dev/null || true
-        ${virsh} -c qemu:///system nodedev-reattach pci_0000_03_00_0 2>/dev/null || true
-        ${virsh} -c qemu:///system nodedev-reattach pci_0000_03_00_1 2>/dev/null || true
-        ${pkgs.sudo}/bin/sudo ${modprobe} -r vfio_pci 2>/dev/null || true
-        ${pkgs.sudo}/bin/sudo ${modprobe} nvidia
-        ${pkgs.sudo}/bin/sudo ${modprobe} nvidia_modeset
-        ${pkgs.sudo}/bin/sudo ${modprobe} nvidia_uvm
-        ${pkgs.sudo}/bin/sudo ${modprobe} nvidia_drm
+        ${sudo} ${pkill} -9 -f "qemu-system-x86_64" 2>/dev/null || true
+        ${sudo} ${pkill} -9 -f "hooks/qemu" 2>/dev/null || true
+        ${sudo} ${pkill} -9 -f "qemu-hook" 2>/dev/null || true
+        ${sudo} ${pkill} -9 -f "virsh" 2>/dev/null || true
+        ${sudo} ${systemctl} kill -s KILL libvirtd.service 2>/dev/null || true
+        ${sleep} 1
+        ${sudo} ${systemctl} restart libvirtd 2>/dev/null || true
+        ${sleep} 1
+        if [ -e /sys/bus/pci/drivers/vfio-pci/0000:03:00.0 ]; then
+          ${echo} 0000:03:00.0 | ${sudo} ${pkgs.coreutils}/bin/tee /sys/bus/pci/drivers/vfio-pci/unbind >/dev/null 2>&1 || true
+        fi
+        if [ -e /sys/bus/pci/drivers/vfio-pci/0000:03:00.1 ]; then
+          ${echo} 0000:03:00.1 | ${sudo} ${pkgs.coreutils}/bin/tee /sys/bus/pci/drivers/vfio-pci/unbind >/dev/null 2>&1 || true
+        fi
+        ${echo} "" | ${sudo} ${pkgs.coreutils}/bin/tee /sys/bus/pci/devices/0000:03:00.0/driver_override >/dev/null 2>&1 || true
+        ${echo} "" | ${sudo} ${pkgs.coreutils}/bin/tee /sys/bus/pci/devices/0000:03:00.1/driver_override >/dev/null 2>&1 || true
+        ${sudo} ${modprobe} -r vfio_pci 2>/dev/null || true
+        ${sudo} ${modprobe} nvidia
+        ${sudo} ${modprobe} nvidia_modeset
+        ${sudo} ${modprobe} nvidia_uvm
+        ${sudo} ${modprobe} nvidia_drm
+        if [ ! -e /sys/bus/pci/devices/0000:03:00.0/driver ] && [ -e /sys/bus/pci/drivers/nvidia/bind ]; then
+          ${echo} 0000:03:00.0 | ${sudo} ${pkgs.coreutils}/bin/tee /sys/bus/pci/drivers/nvidia/bind >/dev/null 2>&1 || true
+        fi
         if [ -e /sys/bus/pci/drivers/snd_hda_intel/bind ]; then
-          ${echo} 0000:03:00.1 | ${pkgs.sudo}/bin/sudo ${pkgs.coreutils}/bin/tee /sys/bus/pci/drivers/snd_hda_intel/bind >/dev/null 2>&1 || true
+          ${echo} 0000:03:00.1 | ${sudo} ${pkgs.coreutils}/bin/tee /sys/bus/pci/drivers/snd_hda_intel/bind >/dev/null 2>&1 || true
         fi
         for vt in /sys/class/vtconsole/vtcon*; do
           if [ -e "$vt/bind" ]; then
-            ${echo} 1 | ${pkgs.sudo}/bin/sudo ${pkgs.coreutils}/bin/tee "$vt/bind" >/dev/null 2>&1 || true
+            ${echo} 1 | ${sudo} ${pkgs.coreutils}/bin/tee "$vt/bind" >/dev/null 2>&1 || true
           fi
         done
-        ${pkgs.sudo}/bin/sudo ${systemctl} restart display-manager.service
+        ${sudo} ${systemctl} restart display-manager.service
         ${echo} "=== Host restaurado com sucesso ==="
       '';
     in
