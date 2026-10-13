@@ -55,6 +55,23 @@ in
       '';
 
       hardware.cpu.intel.updateMicrocode = false;
+
+      # Swap configuration: zram for fast compressed in-memory swap, backed by swapfile on NVMe
+      zramSwap = {
+        enable = true;
+        priority = 100;
+        algorithm = "zstd";
+        memoryPercent = 50;
+      };
+
+      swapDevices = [
+        {
+          device = "/var/lib/swapfile";
+          size = 16384;
+          priority = 10;
+        }
+      ];
+
       system.stateVersion = "26.05";
     };
 }

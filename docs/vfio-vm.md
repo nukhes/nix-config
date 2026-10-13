@@ -2,45 +2,47 @@
 
 This document covers how to set up, operate, and troubleshoot the Windows 11 virtual machine on the `x99` workstation with dedicated passthrough of the NVIDIA GeForce GTX 960 (GM206).
 
-The VM is optimized for high-performance GIS workloads in **ArcGIS Pro** with native GPU acceleration, 1:1 CPU pinning on the Intel Xeon E5-2676 v3, emulated TPM 2.0 (`swtpm`), and UEFI/OVMF.
+The VM is optimized for high-performance GIS workloads in **ArcGIS Pro** with native GPU acceleration, 1:1 CPU pinning on the Intel Xeon E5-2676 v3, emulated TPM 2.0 (`swtpm`), native emulated NVMe, USB input passthrough, and UEFI/OVMF.
 
 ---
 
-## Storage Layout & ISO Placement
+## Storage Layout & Asset Placement
 
 All VM assets, disk images, ISOs, and firmware files reside strictly under `/mnt/kootion512/winnt`:
 
-```
+```text
 /mnt/kootion512/winnt/
 ├── isos/
-│   ├── win11.iso          <-- Windows 11 official installer ISO
+│   ├── win11.iso          <-- Windows 11 installer ISO (unattended EFI boot)
 │   └── virtio-win.iso     <-- Red Hat / Fedora VirtIO Windows drivers ISO
-├── win11.raw              <-- Primary virtual disk (RAW format, 120GB+)
+├── win11.raw              <-- Primary virtual disk (RAW format, 120GB+, emulated NVMe)
 ├── vbios.rom              <-- Clean NVIDIA GTX 960 VBIOS dump
 ├── win11_VARS.fd          <-- UEFI NVRAM variables (managed by Libvirt)
 ├── win11-template.xml     <-- Libvirt domain definition template
+├── win11-start.sh         <-- Idempotent VM starter
+├── win11-stop.sh          <-- Graceful/forceful VM stopper (ACPI + timeout fallback)
+├── win11-status.sh        <-- Diagnostic script reporting VM state, block, & USB
+├── win11-restart.sh       <-- VM restart helper
 └── rescue-host.sh         <-- Emergency script to restore host display via SSH
 ```
 
-### Where to Place the ISOs
+A version-controlled copy of the Libvirt definition template is maintained in this repository at [`docs/win11-template.xml`](file:///home/user/.nix-config/docs/win11-template.xml).
 
-The Libvirt template expects two ISO images inside `/mnt/kootion512/winnt/isos/`:
+### Where to Place the ISOs & VBIOS
 
-1. **Windows 11 Installer ISO**:
+The Libvirt template expects two ISO images and the clean VBIOS inside `/mnt/kootion512/winnt`:
+
+1. **Automatic Extraction via `x99-vfio-dump`**:
+   The NixOS configuration equips the system with `x99-vfio-dump`. Run:
+   ```bash
+   x99-vfio-dump
+   ```
+   This automatically copies the official `virtio-win.iso` directly from the Nix store cache to `/mnt/kootion512/winnt/isos/virtio-win.iso` and dumps an uncorrupted copy of the GTX 960 VBIOS to `/mnt/kootion512/winnt/vbios.rom`.
+
+2. **Windows 11 Installer ISO**:
    - Path: `/mnt/kootion512/winnt/isos/win11.iso`
-   - Download directly from Microsoft: [Download Windows 11](https://www.microsoft.com/software-download/windows11) (Select "Windows 11 multi-edition ISO").
-   - Move or rename the downloaded file to `/mnt/kootion512/winnt/isos/win11.iso`.
-
-2. **VirtIO Windows Drivers ISO**:
-   - Path: `/mnt/kootion512/winnt/isos/virtio-win.iso`
-   - Since `virtio-win` is part of nixpkgs, you can copy the official ISO directly from the Nix store cache:
-     ```bash
-     cp $(nix-build '<nixpkgs>' -A virtio-win.src --no-out-link) /mnt/kootion512/winnt/isos/virtio-win.iso
-     ```
-   - Alternatively, download it from Fedora:
-     ```bash
-     curl -Lo /mnt/kootion512/winnt/isos/virtio-win.iso https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/stable-virtio/virtio-win.iso
-     ```
+   - Download directly from Microsoft or use your desired Windows 11 installation media.
+   - **Important UEFI Boot Note**: To prevent the 4-second `"Press any key to boot from CD or DVD"` timeout in OVMF (which drops to `No bootable option found` before GPU displays sync), ensure the ISO boots via `efisys_noprompt.bin` / `cdboot_noprompt.efi`.
 
 ---
 
@@ -50,7 +52,7 @@ Follow these steps once before launching the virtual machine:
 
 ### 1. Enable System Configuration & Reboot
 
-Rebuild the system to activate IOMMU (`intel_iommu=on`, `iommu=pt`) and deploy the Libvirt hooks:
+Rebuild the system to activate IOMMU (`intel_iommu=on`, `iommu=pt`), deploy the Libvirt hooks, and install the helper commands:
 
 ```bash
 cd ~/.nix-config
@@ -64,32 +66,20 @@ After rebooting, verify that IOMMU groups are active:
 dmesg | grep -i -E "dmar|iommu"
 ```
 
-### 2. Extract or Download Clean VBIOS
+### 2. Create the Virtual Disk Image
 
-Because this is a Single-GPU setup, the motherboard BIOS corrupts or shadows the GPU ROM during boot. An uncorrupted VBIOS image is required at `/mnt/kootion512/winnt/vbios.rom`:
-
-- **Option A (Recommended)**: Download the matching VBIOS for the GTX 960 (Subsystem `10de:116f`) from the [TechPowerUp Video BIOS Collection](https://www.techpowerup.com/vgabios/). Save it as `/mnt/kootion512/winnt/vbios.rom`.
-- **Option B (Local Dump)**:
-  ```bash
-  sudo sh -c 'echo 1 > /sys/bus/pci/devices/0000:03:00.0/rom'
-  sudo sh -c 'cat /sys/bus/pci/devices/0000:03:00.0/rom > /mnt/kootion512/winnt/vbios.rom'
-  sudo sh -c 'echo 0 > /sys/bus/pci/devices/0000:03:00.0/rom'
-  ```
-
-### 3. Create the Virtual Disk Image
-
-Create a RAW image for maximum I/O throughput (ArcGIS Pro benefits significantly from raw direct I/O compared to qcow2):
+Create a RAW image for maximum I/O throughput:
 
 ```bash
 qemu-img create -f raw /mnt/kootion512/winnt/win11.raw 120G
 ```
 
-### 4. Define the Virtual Machine in Libvirt
+### 3. Define the Virtual Machine in Libvirt
 
-Register the domain template with `virsh`:
+Register the domain template with `virsh` in the system instance:
 
 ```bash
-virsh define /mnt/kootion512/winnt/win11-template.xml
+virsh -c qemu:///system define /mnt/kootion512/winnt/win11-template.xml
 ```
 
 ---
@@ -97,64 +87,80 @@ virsh define /mnt/kootion512/winnt/win11-template.xml
 ## Running and Managing the VM
 
 ### Important Safety Rule: Keep SSH Open
-> **Warning**: Because this is a **Single GPU Passthrough** setup, starting the VM will detach the GPU from NixOS, stopping the display manager (`ly`) and turning the host screen black until the VM outputs video.
+> [!WARNING]
+> Because this is a **Single GPU Passthrough** setup, starting the VM detaches the GTX 960 from NixOS, stopping the display manager (`ly`) and taking over the physical monitor until the VM stops.
 >
-> Always maintain an active SSH session from another device (laptop, phone via Tailscale, or another machine on the LAN):
+> Always maintain an active SSH session from another device (laptop, phone via Tailscale, or LAN):
 > ```bash
 > ssh user@x99
 > ```
 
-### Starting the VM
+### Idiomatic VM Commands & Aliases
 
+NixOS provides dedicated, idempotent CLI commands and aliases on `x99`:
+
+| Action | Primary Command | Short Aliases | Behavior |
+| :--- | :--- | :--- | :--- |
+| **Start VM** | `win11-start` | `win-start`, `vm-start` | Idempotent: checks state, auto-defines from template if missing, starts virtual network, and claims GPU. No-op if already running. |
+| **Stop VM** | `win11-stop` | `win-stop`, `vm-stop` | Idempotent: initiates ACPI shutdown, waits up to 25s for clean guest shutdown, then auto-forces `destroy` if unresponsive. No-op if already shut off. |
+| **Force Stop** | `win11-stop -f` | `win-stop -f`, `vm-stop -f` | Immediately issues `virsh destroy win11` and triggers the host release hook. |
+| **Restart VM** | `win11-restart` | `win-restart`, `vm-restart` | Cleanly stops the VM, allows the host/VFIO transition to settle, and starts it again. |
+| **Check Status** | `win11-status` | `win-status`, `vm-status` | Displays domain state, CPU/RAM usage, attached USB devices, and virtual disks. |
+| **Emergency Host Rescue** | `sudo x99-vfio-rescue` | — | Kills hung QEMU instances, rebinds PCI devices to `nvidia` & `snd_hda_intel`, re-enables `vtcon`, and restarts `display-manager.service`. |
+
+*(The helper shell scripts are also executable directly at `/mnt/kootion512/winnt/win11-*.sh` even prior to system rebuilds).*
+
+---
+
+## Hardware Passthrough Architecture
+
+### 1. Dedicated GPU Passthrough (NVIDIA GTX 960)
+- **PCI Video**: `0000:03:00.0` passed through to PCIe root port `0x01` (`multifunction=on`).
+- **PCI Audio**: `0000:03:00.1` passed through to `0x01.0x1`.
+- **VBIOS**: Clean ROM loaded via `<rom file='/mnt/kootion512/winnt/vbios.rom'/>` to bypass UEFI shadowing corruption.
+- **Hyper-V & KVM Spoofing**: Configured with `<kvm><hidden state='on'/></kvm>` and Hyper-V enlightened timers to prevent NVIDIA Error 43.
+
+### 2. USB Input Passthrough (Keyboard & Mouse)
+The domain template forwards physical USB devices directly to the guest:
+- **Keyboard**: Sino Wealth USB Keyboard (`vendor=0x258a`, `product=0x013b`)
+- **Mouse / Wireless Receiver**: Xenta 2.4G Wireless Device (`vendor=0x1d57`, `product=0xfa60`)
+- **Safety Policy**: Defined with `startupPolicy='optional'`, ensuring the VM boots successfully even if a peripheral is temporarily unplugged.
+
+To inspect or pass through other USB devices (e.g. gamepads, DACs, flash drives):
 ```bash
-virsh start win11
+lsusb
 ```
+Locate the `ID <vendor>:<product>` and add them as `<hostdev mode='subsystem' type='usb'>` in the domain XML.
 
-When this command runs:
-1. The Libvirt `prepare` hook executes automatically.
-2. `display-manager.service` stops and releases the X11 session.
-3. Consoles (`vtcon`) and kernel framebuffers unbind.
-4. NVIDIA kernel modules (`nvidia_drm`, `nvidia_modeset`, `nvidia_uvm`, `nvidia`) and HDMI audio unbind.
-5. `vfio-pci` claims `0000:03:00.0` and `0000:03:00.1`.
-6. QEMU launches and takes control of the physical monitor output.
-
-### Stopping the VM
-
-- **Graceful Shutdown**: Shut down Windows normally from the Start Menu (`Start -> Power -> Shut down`).
-- **Command Line**:
-  ```bash
-  virsh shutdown win11
-  ```
-- **Force Off** (if Windows freezes):
-  ```bash
-  virsh destroy win11
-  ```
-
-Once QEMU terminates, the `release` hook runs automatically:
-1. Devices detach from `vfio-pci` and reattach to the host.
-2. NVIDIA modules reload in proper dependency order.
-3. Consoles and framebuffers rebind.
-4. `display-manager.service` restarts, presenting the `ly` login screen.
+### 3. Native Emulated NVMe Disk
+- Configured as `<target dev='nvme0n1' bus='nvme'/>` with `<serial>win11nvme0</serial>`.
+- Windows 11 includes native inbox drivers (`stornvme.sys`), eliminating the requirement to load third-party drivers during setup.
+- Provides native PCIe multi-queue storage I/O, matching the performance required by ArcGIS Pro.
 
 ---
 
 ## Windows 11 Installation Walkthrough
 
 1. **Booting the Installer**:
-   - Start the VM: `virsh start win11`.
-   - Press any key when prompted to boot from the Windows 11 CD/DVD.
-2. **Loading the VirtIO Storage Driver**:
-   - When the installer reaches "Where do you want to install Windows?", the list will be empty because the VirtIO disk controller requires a driver.
-   - Click **Load driver** -> **Browse**.
-   - Navigate to the VirtIO CD drive -> `viostor` -> `w11` -> `amd64`.
-   - Select the Red Hat VirtIO SCSI controller driver. The 120GB RAW disk will now appear.
-   - Proceed with standard Windows installation.
-3. **Installing Network and Guest Drivers**:
-   - Once at the Windows desktop, open the VirtIO CD drive in File Explorer.
-   - Run `virtio-win-gt-x64.msi` (or `virtio-win-guest-tools.exe`) to install Ethernet (`NetKVM`), Ballooning, and QEMU Guest Agent.
-4. **Installing NVIDIA Graphics Drivers**:
-   - Download and install the latest NVIDIA GeForce Game Ready / Studio driver for GTX 960 from [nvidia.com](https://www.nvidia.com/Download/index.aspx).
-   - Once installed, open Task Manager -> Performance -> GPU to verify full DirectX 12, Vulkan, and hardware acceleration.
+   - Start the VM: `win-start`.
+   - The installer boots directly into Windows Setup automatically (using the unattended EFI bootloader `efisys_noprompt.bin`, avoiding OVMF timeout drops).
+   - Your physical USB keyboard and mouse on x99 control the VM directly.
+
+2. **Selecting the Target Drive**:
+   - The 120GB RAW disk appears immediately in "Where do you want to install Windows?" as **Drive 0 Unallocated Space (120.0 GB)**.
+   - **No manual driver loading or browsing is needed** (bypassing WinPE file picker bugs common in custom lightweight ISOs).
+   - Select the drive and click **Next** to proceed with installation.
+
+3. **Reboots during Installation**:
+   - During setup reboots, QEMU performs a soft reset. The GPU remains attached to the VM, and the display will re-initialize in the guest automatically.
+
+4. **Post-Install: Guest & Network Drivers**:
+   - Once at the Windows desktop, open File Explorer and navigate to the VirtIO CD drive (`D:` or `E:`).
+   - Run `virtio-win-gt-x64.msi` (or `virtio-win-guest-tools.exe`) to install Ethernet (`NetKVM`), Memory Ballooning, and the QEMU Guest Agent.
+
+5. **Installing NVIDIA Graphics Drivers**:
+   - Download and install the latest NVIDIA GeForce Game Ready driver for the GTX 960 from [nvidia.com](https://www.nvidia.com/Download/index.aspx).
+   - Open Task Manager -> Performance -> GPU to verify full DirectX 12, Vulkan, and hardware acceleration.
 
 ---
 
@@ -172,15 +178,17 @@ Once QEMU terminates, the `release` hook runs automatically:
 
 ## Troubleshooting & Emergency Recovery
 
-### Monitor Stays Black & VM Does Not Boot
+### Monitor Stays Black or Host Session Lost
 
-If a hook fails or the VM encounters an error, connect via SSH and execute the emergency restore script:
+If a hook fails or the VM encounters an error during startup, connect via SSH from your other machine and run:
 
 ```bash
+sudo x99-vfio-rescue
+# or:
 sudo /mnt/kootion512/winnt/rescue-host.sh
 ```
 
-This immediately terminates any stuck QEMU processes, rebinds the GPU back to `nvidia` and `snd_hda_intel`, re-enables `vtcon`, and restarts `display-manager.service`.
+This immediately kills any frozen QEMU processes, rebinds the PCI devices to `nvidia` and `snd_hda_intel`, re-enables `vtcon`, and restarts `display-manager.service`.
 
 ### Checking Logs
 
@@ -203,6 +211,19 @@ dmesg | grep -i -E "vfio|nvidia|iommu"
 ### NVIDIA Code 43 in Windows Device Manager
 
 If Windows Device Manager shows a yellow triangle with Code 43 on the GTX 960:
-1. Ensure the VBIOS file exists at `/mnt/kootion512/winnt/vbios.rom` and matches the subsystem ID `10de:116f`.
+1. Ensure the VBIOS file exists at `/mnt/kootion512/winnt/vbios.rom` and matches subsystem ID `10de:116f`.
 2. Confirm the XML includes `<kvm><hidden state='on'/></kvm>` and the Hyper-V vendor ID spoofing.
 3. Verify that the HDMI audio device `0000:03:00.1` is passed through alongside the video device `0000:03:00.0`.
+
+### "No bootable option found" / UEFI Boot Menu Loop
+
+If the VM gets stuck at `Press any key to enter boot manager menu: No bootable option found`:
+- Windows installer ISOs prompt `Press any key to boot from CD or DVD.....` with a 4-second timeout. If monitor HDMI/DP sync takes a few seconds or input is delayed, OVMF aborts the boot.
+- The ISO at `/mnt/kootion512/winnt/isos/win11.iso` has been patched to point its El Torito EFI boot entry to Microsoft's unattended boot catalog (`efisys_noprompt.bin`), which enters Windows Setup immediately with zero prompt.
+
+### Custom Lightweight ISOs: "Browse" Error & NVMe Bypass
+
+If using a custom stripped Windows image (e.g., FBConan X-Lite, Tiny11):
+- Stripped WinPE (`boot.wim`) images often remove `comdlg32.dll` and shell folder picker libraries, causing an error when clicking **Browse** in the "Load driver" window.
+- **Bypass**: The virtual disk is attached as native emulated NVMe (`bus='nvme'`). Windows 11 includes built-in `stornvme.sys` drivers, allowing the installer to detect the 120GB disk directly without loading VirtIO storage drivers during setup.
+- If ArcGIS Pro later encounters missing OS runtime errors (e.g., .NET Desktop Runtime, Edge WebView2 Evergreen, WMI services), replace the ISO with the official Microsoft Windows 11 multi-edition ISO.

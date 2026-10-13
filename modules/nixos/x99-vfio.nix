@@ -18,6 +18,7 @@ _:
       echo = "${pkgs.coreutils}/bin/echo";
       date = "${pkgs.coreutils}/bin/date";
       mkdir = "${pkgs.coreutils}/bin/mkdir";
+      grep = "${pkgs.gnugrep}/bin/grep";
 
       # Script de início: Isola a GPU do host NixOS e transfere para o VFIO
       qemuHookPrepare = pkgs.writeShellScript "qemu-hook-prepare-win11" ''
@@ -27,6 +28,25 @@ _:
         exec >> "$LOGFILE" 2>&1
 
         ${echo} "=== [$(${date})] Iniciando gancho PREPARE (Single GPU Passthrough) ==="
+
+        # 0. Verificações pré-voo (pre-flight checks) para não derrubar a sessão em vão
+        if ! ${virsh} net-info default 2>/dev/null | grep -q "Active:.*yes"; then
+          ${echo} "Rede default inativa. Tentando iniciar..."
+          ${virsh} net-start default 2>/dev/null || {
+            ${echo} "ERRO CRÍTICO: Não foi possível ativar a rede 'default' do Libvirt. Abortando PREPARE para proteger a sessão gráfica." >&2
+            exit 1
+          }
+        fi
+
+        if [ ! -f /mnt/kootion512/winnt/win11.raw ]; then
+          ${echo} "ERRO CRÍTICO: Disco /mnt/kootion512/winnt/win11.raw não encontrado. Abortando PREPARE." >&2
+          exit 1
+        fi
+
+        if [ ! -f /mnt/kootion512/winnt/vbios.rom ]; then
+          ${echo} "ERRO CRÍTICO: VBIOS /mnt/kootion512/winnt/vbios.rom não encontrado. Abortando PREPARE." >&2
+          exit 1
+        fi
 
         # 1. Parar o gerenciador de exibição (ly / display-manager)
         ${echo} "Parando display-manager.service..."
@@ -165,6 +185,9 @@ _:
         OPERATION="''${2:-}"
         SUB_OPERATION="''${3:-}"
 
+        ${mkdir} -p /var/log/libvirt
+        ${echo} "=== [$(${date})] Gancho QEMU invocado: guest=$GUEST_NAME op=$OPERATION sub=$SUB_OPERATION ===" >> /var/log/libvirt/custom_hooks.log
+
         if [ "$GUEST_NAME" = "win11" ]; then
           if [ "$OPERATION" = "prepare" ] && [ "$SUB_OPERATION" = "begin" ]; then
             ${qemuHookPrepare}
@@ -172,6 +195,156 @@ _:
             ${qemuHookRelease}
           fi
         fi
+      '';
+
+      # Scripts utilitários e idempotentes de controle da VM
+      win11Start = pkgs.writeShellScriptBin "win11-start" ''
+        set -euo pipefail
+        VIRSH="${virsh} -c qemu:///system"
+
+        ${echo} "=== [win11-start] Verificando estado da VM win11 ==="
+        STATE=$($VIRSH domstate win11 2>/dev/null || true)
+
+        if [ "$STATE" = "running" ]; then
+          ${echo} "A VM 'win11' já está em execução (running). Nenhuma ação necessária."
+          exit 0
+        fi
+
+        if [ "$STATE" = "paused" ]; then
+          ${echo} "A VM 'win11' está pausada. Retomando..."
+          $VIRSH resume win11
+          ${echo} "VM 'win11' retomada com sucesso."
+          exit 0
+        fi
+
+        if [ -z "$STATE" ]; then
+          ${echo} "VM 'win11' não está definida no Libvirt."
+          if [ -f "/mnt/kootion512/winnt/win11-template.xml" ]; then
+            ${echo} "Definindo 'win11' a partir de /mnt/kootion512/winnt/win11-template.xml..."
+            $VIRSH define /mnt/kootion512/winnt/win11-template.xml
+          else
+            ${echo} "ERRO CRÍTICO: Template /mnt/kootion512/winnt/win11-template.xml não encontrado!" >&2
+            exit 1
+          fi
+        fi
+
+        if ! $VIRSH net-info default 2>/dev/null | ${grep} -q "Active:.*yes"; then
+          ${echo} "Ativando rede virtual 'default'..."
+          $VIRSH net-start default 2>/dev/null || true
+        fi
+
+        ${echo} "Iniciando a VM 'win11' (Single-GPU Passthrough)..."
+        $VIRSH start win11
+        ${echo} "VM 'win11' iniciada com sucesso! O display foi transferido para o Windows."
+      '';
+
+      win11Stop = pkgs.writeShellScriptBin "win11-stop" ''
+        set -euo pipefail
+        VIRSH="${virsh} -c qemu:///system"
+        FORCE=0
+
+        for arg in "$@"; do
+          case "$arg" in
+            -f|--force|force)
+              FORCE=1
+              ;;
+            -h|--help)
+              ${echo} "Uso: win11-stop [-f|--force]"
+              ${echo} "  Encerra a VM win11 de forma limpa via sinal ACPI."
+              ${echo} "  Use -f ou --force para forçar o desligamento imediato (virsh destroy)."
+              exit 0
+              ;;
+          esac
+        done
+
+        STATE=$($VIRSH domstate win11 2>/dev/null || true)
+
+        if [ "$STATE" = "shut off" ] || [ -z "$STATE" ]; then
+          ${echo} "A VM 'win11' já está desligada (shut off). Nenhuma ação necessária."
+          exit 0
+        fi
+
+        if [ "$FORCE" -eq 1 ]; then
+          ${echo} "Forçando desligamento imediato da VM 'win11' (virsh destroy)..."
+          $VIRSH destroy win11
+          ${echo} "VM 'win11' desligada forçadamente. O display do host está sendo restaurado."
+          exit 0
+        fi
+
+        ${echo} "Solicitando desligamento gracioso da VM 'win11' (ACPI shutdown)..."
+        $VIRSH shutdown win11 2>/dev/null || true
+
+        TIMEOUT=25
+        ${echo} -n "Aguardando encerramento da VM (até ''${TIMEOUT}s)"
+        while [ "$TIMEOUT" -gt 0 ]; do
+          CURRENT_STATE=$($VIRSH domstate win11 2>/dev/null || true)
+          if [ "$CURRENT_STATE" = "shut off" ] || [ -z "$CURRENT_STATE" ]; then
+            ${echo} ""
+            ${echo} "VM 'win11' desligada com sucesso! O display do host foi restaurado."
+            exit 0
+          fi
+          ${sleep} 1
+          ${echo} -n "."
+          TIMEOUT=$((TIMEOUT - 1))
+        done
+
+        ${echo} ""
+        ${echo} "Aviso: A VM não encerrou no tempo limite de 25s."
+        ${echo} "Forçando desligamento (virsh destroy) para liberar a GPU e restaurar o host..."
+        $VIRSH destroy win11
+        ${echo} "VM 'win11' encerrada. O display do host foi restaurado."
+      '';
+
+      win11Status = pkgs.writeShellScriptBin "win11-status" ''
+        set -euo pipefail
+        VIRSH="${virsh} -c qemu:///system"
+
+        ${echo} "=== Status da VM Windows 11 (ArcGIS Pro VFIO) ==="
+        STATE=$($VIRSH domstate win11 2>/dev/null || ${echo} "não definida")
+        ${echo} "Estado: $STATE"
+
+        if [ "$STATE" = "running" ]; then
+          ${echo} ""
+          ${echo} "--- Detalhes da VM ---"
+          $VIRSH dominfo win11 2>/dev/null | ${grep} -E "Id:|Nome:|CPU\(s\):|Memória|Estado:" || true
+          ${echo} ""
+          ${echo} "--- Dispositivos USB Conectados ---"
+          $VIRSH qemu-monitor-command win11 --hmp "info usb" 2>/dev/null || true
+          ${echo} ""
+          ${echo} "--- Discos Virtuais ---"
+          $VIRSH domblklist win11 2>/dev/null || true
+        fi
+      '';
+
+      win11Restart = pkgs.writeShellScriptBin "win11-restart" ''
+        set -euo pipefail
+        ${echo} "=== [win11-restart] Reiniciando VM win11 ==="
+        ${win11Stop}/bin/win11-stop "$@"
+        ${sleep} 2
+        ${win11Start}/bin/win11-start
+      '';
+
+      x99VfioRescue = pkgs.writeShellScriptBin "x99-vfio-rescue" ''
+        set -euo pipefail
+        ${echo} "=== Executando restauração de emergência da GPU / Host ==="
+        ${pkgs.sudo}/bin/sudo ${pkgs.psmisc}/bin/killall -9 qemu-system-x86_64 2>/dev/null || true
+        ${virsh} -c qemu:///system nodedev-reattach pci_0000_03_00_0 2>/dev/null || true
+        ${virsh} -c qemu:///system nodedev-reattach pci_0000_03_00_1 2>/dev/null || true
+        ${pkgs.sudo}/bin/sudo ${modprobe} -r vfio_pci 2>/dev/null || true
+        ${pkgs.sudo}/bin/sudo ${modprobe} nvidia
+        ${pkgs.sudo}/bin/sudo ${modprobe} nvidia_modeset
+        ${pkgs.sudo}/bin/sudo ${modprobe} nvidia_uvm
+        ${pkgs.sudo}/bin/sudo ${modprobe} nvidia_drm
+        if [ -e /sys/bus/pci/drivers/snd_hda_intel/bind ]; then
+          ${echo} 0000:03:00.1 | ${pkgs.sudo}/bin/sudo ${pkgs.coreutils}/bin/tee /sys/bus/pci/drivers/snd_hda_intel/bind >/dev/null 2>&1 || true
+        fi
+        for vt in /sys/class/vtconsole/vtcon*; do
+          if [ -e "$vt/bind" ]; then
+            ${echo} 1 | ${pkgs.sudo}/bin/sudo ${pkgs.coreutils}/bin/tee "$vt/bind" >/dev/null 2>&1 || true
+          fi
+        done
+        ${pkgs.sudo}/bin/sudo ${systemctl} restart display-manager.service
+        ${echo} "=== Host restaurado com sucesso ==="
       '';
     in
     {
@@ -217,6 +390,28 @@ _:
         usbutils
         libguestfs
         dumpVbiosAndVirtioIso
+        win11Start
+        win11Stop
+        win11Status
+        win11Restart
+        x99VfioRescue
       ];
+
+      # 6. Conexão padrão do Libvirt apontando para a instância do sistema (root)
+      environment.sessionVariables = {
+        LIBVIRT_DEFAULT_URI = "qemu:///system";
+      };
+
+      # 7. Aliases de terminal convenientes para gerenciar a VM no x99
+      environment.shellAliases = {
+        win-start = "win11-start";
+        win-stop = "win11-stop";
+        win-status = "win11-status";
+        win-restart = "win11-restart";
+        vm-start = "win11-start";
+        vm-stop = "win11-stop";
+        vm-status = "win11-status";
+        vm-restart = "win11-restart";
+      };
     };
 }
