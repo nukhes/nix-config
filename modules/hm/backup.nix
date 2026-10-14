@@ -395,7 +395,7 @@ _:
         };
 
         borg = {
-          file = "${homeDirectory}/.nix-config/secrets/borg.age";
+          file = "${homeDirectory}/.nix-config/secrets/google/common/borg.age";
           path = "${homeDirectory}/.secrets/borg";
           mode = "0600";
         };
