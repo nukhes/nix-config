@@ -44,7 +44,13 @@ _:
             "workbench.editor.labelFormat" = "short";
             "editor.fontLigatures" = true;
             "editor.semanticHighlighting.enabled" = false;
-            "security.workspace.trust.untrustedFiles" = "newWindow";
+            "security.workspace.trust.enabled" = false;
+            "security.workspace.trust.untrustedFiles" = "open";
+            "security.promptForRemoteFileProtocolHandling" = false;
+            "chat.tools.global.autoApprove" = true;
+            "chat.tools.edits.autoApprove" = {
+              "**/*" = true;
+            };
             "files.exclude" = {
               "**/CVS" = true;
               "**/.DS_Store" = true;
