@@ -1,4 +1,4 @@
-<domain type='kvm'>
+<domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
   <name>win11</name>
   <uuid>b3b64f43-85f2-4e92-911a-8217bbbb4321</uuid>
   <metadata>
@@ -34,6 +34,7 @@
   <os firmware='efi'>
     <type arch='x86_64' machine='q35'>hvm</type>
     <nvram template='/run/libvirt/nix-ovmf/edk2-i386-vars.fd'>/var/lib/win11/win11_VARS.fd</nvram>
+    <smbios mode='sysinfo'/>
   </os>
   <features>
     <acpi/>
@@ -48,7 +49,9 @@
       <stimer state='on'/>
       <reset state='on'/>
       <frequencies state='on'/>
-      <vendor_id state='on' value='1234567890ab'/>
+      <!-- 12 bytes exatos; 'GenuineIntel' é truncado para 'GenuineInte'
+          pelo QEMU. Casa com a CPU host (Xeon E5-2676 v3 Haswell). -->
+      <vendor_id state='on' value='GenuineIntel'/>
     </hyperv>
     <kvm>
       <hidden state='on'/>
@@ -57,8 +60,15 @@
     <smm state='on'/>
     <ioapic driver='kvm'/>
   </features>
-  <cpu mode='host-passthrough' check='none' migratable='on'>
+  <cpu mode='host-passthrough' check='none' migratable='off'>
     <topology sockets='1' dies='1' clusters='1' cores='8' threads='2'/>
+    <!-- Remove o bit hypervisor do CPUID.1:ECX[31]. Sem isto,
+        Anti-Cheat lê CPUID 1 e vê "estou em VM". -->
+    <feature policy='disable' name='hypervisor'/>
+    <!-- Remove suporte a virtualização aninhada do Guest.
+        Não estamos rodando Hyper-V/WSL2 dentro do Windows. -->
+    <feature policy='disable' name='vmx'/>
+    <feature policy='disable' name='svm'/>
   </cpu>
   <clock offset='localtime'>
     <timer name='rtc' tickpolicy='catchup'/>
@@ -74,6 +84,33 @@
     <suspend-to-mem enabled='no'/>
     <suspend-to-disk enabled='no'/>
   </pm>
+  <sysinfo type='smbios'>
+    <bios>
+      <entry name='vendor'>American Megatrends Inc.</entry>
+      <entry name='version'>4901</entry>
+      <entry name='date'>03/12/2024</entry>
+    </bios>
+    <system>
+      <entry name='manufacturer'>ASUSTeK COMPUTER INC.</entry>
+      <entry name='product'>X99-P3</entry>
+      <entry name='version'>Rev 1.xx</entry>
+      <entry name='serial'>MB-1234567890</entry>
+      <entry name='uuid'>b3b64f43-85f2-4e92-911a-8217bbbb4321</entry>
+      <entry name='sku'>To be filled by O.E.M.</entry>
+      <entry name='family'>X99</entry>
+    </system>
+    <baseBoard>
+      <entry name='manufacturer'>ASUSTeK COMPUTER INC.</entry>
+      <entry name='product'>X99-P3</entry>
+      <entry name='version'>Rev 1.xx</entry>
+      <entry name='serial'>MB-1234567890</entry>
+    </baseBoard>
+    <chassis>
+      <entry name='manufacturer'>ASUSTeK COMPUTER INC.</entry>
+      <entry name='version'>Rev 1.xx</entry>
+      <entry name='serial'>CH-1234567890</entry>
+    </chassis>
+  </sysinfo>
   <devices>
     <emulator>/run/libvirt/nix-emulators/qemu-system-x86_64</emulator>
 
@@ -82,7 +119,8 @@
       <driver name='qemu' type='raw' cache='none' io='native' discard='unmap'/>
       <source file='/var/lib/win11/win11.raw'/>
       <target dev='nvme0n1' bus='nvme'/>
-      <serial>win11nvme0</serial>
+      <!-- Serial no formato Samsung 980 Pro: S + 6 dígitos + 8 alfanum. -->
+      <serial>S6B0NL0T812345X</serial>
       <boot order='1'/>
     </disk>
 
@@ -164,6 +202,14 @@
       <source startupPolicy='optional'>
         <vendor id='0x1d57'/>
         <product id='0xfa60'/>
+      </source>
+    </hostdev>
+
+    <!-- USB Passthrough: Áudio Onboard da Placa-Mãe (CSCTEK / Zoran USB Audio) -->
+    <hostdev mode='subsystem' type='usb' managed='yes'>
+      <source startupPolicy='optional'>
+        <vendor id='0x0573'/>
+        <product id='0x1573'/>
       </source>
     </hostdev>
 

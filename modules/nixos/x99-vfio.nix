@@ -17,7 +17,7 @@ _:
       vmCanonicalDir = "/var/lib/win11";
 
       # Template XML da VM fornecido pelo repositório
-      win11Template = ../../docs/win11-template.xml;
+      win11Template = ../../docs/win11-x99-template.xml;
 
       # Ferramentas do sistema com caminhos absolutos do Nix Store
       systemctl = "${pkgs.systemd}/bin/systemctl";
@@ -88,7 +88,9 @@ _:
         ${modprobe} -r nvidia 2>/dev/null || true
 
         # 6. Desvincular o controlador de áudio HDMI da GPU do driver snd_hda_intel
-        ${echo} "Desvinculando áudio HDMI (0000:03:00.1)..."
+        # Nota: O áudio onboard da placa-mãe (X99-P3) é um codec USB integrado (0573:1573),
+        # gerenciado dinamicamente via USB passthrough no template da VM (win11-template.xml).
+        ${echo} "Desvinculando áudio HDMI da GPU (0000:03:00.1)..."
         if [ -d /sys/bus/pci/drivers/snd_hda_intel/0000:03:00.1 ]; then
           ${echo} 0000:03:00.1 > /sys/bus/pci/drivers/snd_hda_intel/unbind 2>/dev/null || true
         fi
@@ -402,10 +404,31 @@ _:
       };
 
       config = {
-        # 1. Parâmetros de Kernel para IOMMU
+        # 1. Parâmetros de Kernel
         boot.kernelParams = [
-          "intel_iommu=on"
-          "iommu=pt"
+          "nowatchdog"
+          "nmi_watchdog=0"
+          "audit=0"
+          "transparent_hugepage=always"
+          "mitigations=off"
+          "nvidia-drm.modeset=1"
+          "kvm_intel.nested=0"
+
+          # ─── VETOR 1: Supressão de MSRs (KVM) ───────────────────────────
+          # Sem isto, Anti-Cheat provocando leitura de MSR não implementado
+          # (ex: 0x4B564D00 Hyper-V TSC, 0x40000000 Hyper-V) → #GP → BSOD.
+          "kvm.ignore_msrs=1"
+          # Silencia dmesg. Sem isto, cada MSR ignorado vira linha no log,
+          # o que polui a observabilidade legítima do host.
+          "kvm.report_ignored_msrs=0"
+          # Permite passthrough de áudio HDMI em X99 sem ACS completo.
+          # X99 é notorious por grupos IOMMU mal isolados — sem isto,
+          # o bind de 0000:03:00.1 pode falhar silenciosamente.
+          "vfio_iommu_type1.allow_unsafe_interrupts=1"
+
+          # ─── Nota: mitigations=off já está otimizado. NÃO remover ──────
+          # XanMod + mitigations=off dá ~5-15% de performance no ArcGIS.
+          # Anti-Cheats NÃO verificam presença de mitigations (é hardware-side).
         ];
 
         # 2. Carregamento dos módulos VFIO no kernel
@@ -419,7 +442,7 @@ _:
         virtualisation.libvirtd = {
           enable = true;
           qemu = {
-            package = pkgs.qemu_kvm;
+            package = qemuGhosted;
             runAsRoot = true;
             swtpm.enable = true;
           };

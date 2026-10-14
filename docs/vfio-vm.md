@@ -120,10 +120,12 @@ NixOS provides dedicated, idempotent CLI commands and aliases on `x99`:
 - **VBIOS**: Clean ROM loaded via `<rom file='/var/lib/win11/vbios.rom'/>` to bypass UEFI shadowing corruption.
 - **Hyper-V & KVM Spoofing**: Configured with `<kvm><hidden state='on'/></kvm>` and Hyper-V enlightened timers to prevent NVIDIA Error 43.
 
-### 2. USB Input Passthrough (Keyboard & Mouse)
+### 2. USB Input & Audio Passthrough (Keyboard, Mouse & Onboard Sound)
 The domain template forwards physical USB devices directly to the guest:
 - **Keyboard**: Sino Wealth USB Keyboard (`vendor=0x258a`, `product=0x013b`)
 - **Mouse / Wireless Receiver**: Xenta 2.4G Wireless Device (`vendor=0x1d57`, `product=0xfa60`)
+- **Motherboard Audio (Onboard)**: CSCTEK / Zoran USB Audio and HID (`vendor=0x0573`, `product=0x1573`).
+  *Note*: The X99-P3 motherboard integrates an internal USB Audio DAC controller wired to the 3.5mm rear audio jacks (headphone/mic) rather than an Azalia/HDA PCI controller. Passing this USB device through routes all physical motherboard audio directly to Windows.
 - **Safety Policy**: Defined with `startupPolicy='optional'`, ensuring the VM boots successfully even if a peripheral is temporarily unplugged.
 
 To inspect or pass through other USB devices (e.g. gamepads, DACs, flash drives):
