@@ -14,9 +14,103 @@ _:
         indicator = "#3a3a3a";
       };
 
-      screenshot = pkgs.writeShellScript "screenshot" ''
-        maim -s | xclip -selection clipboard -t image/png
-      '';
+      screenshot = pkgs.writeShellApplication {
+        name = "screenshot";
+        runtimeInputs = with pkgs; [
+          maim
+          xclip
+          rofi
+          imagemagick
+          alacritty
+          coreutils
+        ];
+        text = ''
+          SHOT_DIR="$(mktemp -d /tmp/screenshots.XXXXXX)"
+          declare -a SHOTS=()
+
+          if ! maim -s "$SHOT_DIR/shot-1.png" 2>/dev/null; then
+            rm -rf "$SHOT_DIR"
+            exit 0
+          fi
+          SHOTS+=("$SHOT_DIR/shot-1.png")
+
+          while true; do
+            count="''${#SHOTS[@]}"
+            choice="$(
+              printf 'copiar\ncapturar mais\nenviar ao gemini\nenviar ao ollama (local)\n' \
+                | rofi -dmenu -i -p "print ($count):" -lines 4
+            )" || {
+              rm -rf "$SHOT_DIR"
+              exit 0
+            }
+
+            case "$choice" in
+              copiar)
+                if [ "$count" -eq 1 ]; then
+                  xclip -selection clipboard -t image/png < "''${SHOTS[0]}"
+                else
+                  magick "''${SHOTS[@]}" -append png:- | xclip -selection clipboard -t image/png
+                fi
+                rm -rf "$SHOT_DIR"
+                exit 0
+                ;;
+              "capturar mais")
+                next=$((count + 1))
+                next_file="$SHOT_DIR/shot-$next.png"
+                if maim -s "$next_file" 2>/dev/null; then
+                  SHOTS+=("$next_file")
+                else
+                  rm -f "$next_file"
+                fi
+                ;;
+              "enviar ao gemini")
+                if prompt="$(rofi -dmenu -p "gemini ($count img):" -lines 0)"; then
+                  declare -a args=(-d "$SHOT_DIR")
+                  for s in "''${SHOTS[@]}"; do
+                    args+=(-i "$s")
+                  done
+                  if [ -n "$prompt" ]; then
+                    args+=(-- "$prompt")
+                  fi
+                  exec alacritty --class gemini-repl -T "gemini" -e gemini-repl "''${args[@]}"
+                fi
+                ;;
+              "enviar ao ollama (local)")
+                if prompt="$(rofi -dmenu -p "ollama ($count img):" -lines 0)"; then
+                  declare -a args=(-m "ollama:gemma3:4b" -d "$SHOT_DIR")
+                  for s in "''${SHOTS[@]}"; do
+                    args+=(-i "$s")
+                  done
+                  if [ -n "$prompt" ]; then
+                    args+=(-- "$prompt")
+                  fi
+                  exec alacritty --class gemini-repl -T "gemini" -e gemini-repl "''${args[@]}"
+                fi
+                ;;
+              *)
+                rm -rf "$SHOT_DIR"
+                exit 0
+                ;;
+            esac
+          done
+        '';
+      };
+
+      gemini-rofi = pkgs.writeShellApplication {
+        name = "gemini-rofi";
+        runtimeInputs = with pkgs; [
+          rofi
+          alacritty
+        ];
+        text = ''
+          prompt="$(rofi -dmenu -p "gemini:" -lines 0)" || exit 0
+          if [ -n "$prompt" ]; then
+            exec alacritty --class gemini-repl -T "gemini" -e gemini-repl -- "$prompt"
+          else
+            exec alacritty --class gemini-repl -T "gemini" -e gemini-repl
+          fi
+        '';
+      };
 
       solid-bg = pkgs.runCommand "solid-bg.png" {
         nativeBuildInputs = [ pkgs.imagemagick ];
@@ -130,6 +224,14 @@ _:
           window = {
             border = 1;
             titlebar = false;
+            commands = [
+              {
+                criteria = {
+                  class = "^gemini-repl$";
+                };
+                command = "floating enable, resize set 960 640, move position center";
+              }
+            ];
           };
 
           colors = lib.mkForce {
@@ -151,7 +253,8 @@ _:
               "${mod}+Shift+o" = "exec obsidian";
               "${mod}+Shift+c" = "exec code";
               "${mod}+Shift+f" = "exec alacritty -e yazi";
-              "${mod}+Shift+s" = "exec --no-startup-id ${screenshot}";
+              "${mod}+Shift+s" = "exec --no-startup-id ${lib.getExe screenshot}";
+              "${mod}+Shift+g" = "exec --no-startup-id ${lib.getExe gemini-rofi}";
               "${mod}+space" = "exec rofi -show drun";
               "${mod}+Shift+space" =
                 "exec --no-startup-id xdg-open \"\$(rg --files --hidden --glob '!.*' ~ | rofi -dmenu -i -p 'files:')\"";
