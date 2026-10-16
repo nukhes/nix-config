@@ -24,11 +24,16 @@ _:
         "sbp2"
       ];
 
+      # Parâmetros genéricos do host. Os relativos a VFIO/KVM/anti-detecção
+      # ficam em x99-vfio.nix.
       kernelParams = [
         "nowatchdog"
         "nmi_watchdog=0"
         "audit=0"
         "transparent_hugepage=always"
+        # ─── Nota: mitigations=off já está otimizado. NÃO remover ──────
+        # XanMod + mitigations=off dá ~5-15% de performance no ArcGIS.
+        # Anti-Cheats NÃO verificam presença de mitigations (é hardware-side).
         "mitigations=off"
         "nvidia-drm.modeset=1"
       ];

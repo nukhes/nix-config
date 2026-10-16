@@ -18,9 +18,29 @@ in
 
       networking = {
         hostName = "x200";
+        firewall.allowedTCPPorts = [ 24800 ];
         networkmanager = {
           enable = true;
           wifi.powersave = true;
+        };
+      };
+
+      environment.systemPackages = [
+        pkgs.input-leap
+      ];
+
+      systemd.user.services.input-leap-client = {
+        description = "Input Leap Client";
+        after = [
+          "network.target"
+          "graphical-session.target"
+        ];
+        partOf = [ "graphical-session.target" ];
+        wantedBy = [ "graphical-session.target" ];
+        serviceConfig = {
+          ExecStart = "${pkgs.input-leap}/bin/input-leapc -f --no-tray --disable-crypto --name x200 x99";
+          Restart = "on-failure";
+          RestartSec = 2;
         };
       };
 

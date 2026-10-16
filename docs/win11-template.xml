@@ -49,8 +49,8 @@
       <stimer state='on'/>
       <reset state='on'/>
       <frequencies state='on'/>
-      <!-- 12 bytes exatos; 'GenuineIntel' é truncado para 'GenuineInte'
-          pelo QEMU. Casa com a CPU host (Xeon E5-2676 v3 Haswell). -->
+      <!-- VETOR CPUID 0x40000000 (Hyper-V vendor): 12 bytes exatos, sem truncamento.
+          'GenuineIntel' casa com a CPU host (Xeon E5-2676 v3 Haswell). -->
       <vendor_id state='on' value='GenuineIntel'/>
     </hyperv>
     <kvm>
@@ -84,31 +84,43 @@
     <suspend-to-mem enabled='no'/>
     <suspend-to-disk enabled='no'/>
   </pm>
+  <!-- VETOR SMBIOS types 0/1/2/3: sem isto o guest vê "QEMU", "Standard PC
+      (Q35 + ICH9, 2009)", "EFI Development Kit II / OVMF". Valores espelhados
+      do host real via `dmidecode -t 0,1,2,3` (placa X99-P3, BIOS AMI 5.11).
+      Exceção: UUID mantido igual ao <uuid> do domínio (exigência do libvirt e
+      chave do estado do swtpm/TPM). -->
   <sysinfo type='smbios'>
     <bios>
       <entry name='vendor'>American Megatrends Inc.</entry>
-      <entry name='version'>4901</entry>
-      <entry name='date'>03/12/2024</entry>
+      <entry name='version'>5.11</entry>
+      <entry name='date'>11/19/2025</entry>
+      <entry name='release'>5.11</entry>
     </bios>
     <system>
-      <entry name='manufacturer'>ASUSTeK COMPUTER INC.</entry>
-      <entry name='product'>X99-P3</entry>
-      <entry name='version'>Rev 1.xx</entry>
-      <entry name='serial'>MB-1234567890</entry>
+      <entry name='manufacturer'>INTEL</entry>
+      <!-- Host reporta Product Name como um único espaço; espelhado. Omitir
+          este campo faria o QEMU injetar "Standard PC (Q35 + ICH9, 2009)". -->
+      <entry name='product'> </entry>
+      <entry name='version'>Default string</entry>
+      <entry name='serial'>Default string</entry>
       <entry name='uuid'>b3b64f43-85f2-4e92-911a-8217bbbb4321</entry>
-      <entry name='sku'>To be filled by O.E.M.</entry>
-      <entry name='family'>X99</entry>
+      <entry name='sku'>Default string</entry>
+      <entry name='family'>Default string</entry>
     </system>
     <baseBoard>
-      <entry name='manufacturer'>ASUSTeK COMPUTER INC.</entry>
+      <entry name='manufacturer'>INTEL</entry>
       <entry name='product'>X99-P3</entry>
-      <entry name='version'>Rev 1.xx</entry>
-      <entry name='serial'>MB-1234567890</entry>
+      <entry name='version'>V9.01</entry>
+      <entry name='serial'>MB-202511192025</entry>
+      <entry name='asset'>Default string</entry>
+      <entry name='location'>Default string</entry>
     </baseBoard>
     <chassis>
-      <entry name='manufacturer'>ASUSTeK COMPUTER INC.</entry>
-      <entry name='version'>Rev 1.xx</entry>
-      <entry name='serial'>CH-1234567890</entry>
+      <entry name='manufacturer'>Default string</entry>
+      <entry name='version'>Default string</entry>
+      <entry name='serial'>Default string</entry>
+      <entry name='asset'>Default string</entry>
+      <entry name='sku'>Default string</entry>
     </chassis>
   </sysinfo>
   <devices>
@@ -160,10 +172,14 @@
       <address type='pci' domain='0x0000' bus='0x02' slot='0x00' function='0x0'/>
     </controller>
 
-    <!-- Rede VirtIO Bridge/NAT -->
+    <!-- Rede NAT emulando Intel 82574L (e1000e).
+        VETOR PCI VENDOR: virtio-net expõe vendor 0x1AF4 (Red Hat/QEMU).
+        VETOR MAC OUI: libvirt gera 52:54:00 (QEMU) por padrão; 00:1B:21 é Intel.
+        Windows 11 tem driver nativo para o 82574L. -->
     <interface type='network'>
+      <mac address='00:1B:21:4A:3B:2C'/>
       <source network='default'/>
-      <model type='virtio'/>
+      <model type='e1000e'/>
       <address type='pci' domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
     </interface>
 

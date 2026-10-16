@@ -17,7 +17,23 @@ _:
       vmCanonicalDir = "/var/lib/win11";
 
       # Template XML da VM fornecido pelo repositório
-      win11Template = ../../docs/win11-x99-template.xml;
+      win11Template = ../../docs/win11-template.xml;
+
+      # ─────────────────────────────────────────────────────────────────
+      # VETOR CPUID 0x40000000: assinatura KVMKVMKVM
+      # O XML com <kvm><hidden/></kvm> suprime o bit hypervisor do leaf 0x1,
+      # mas NÃO o vendor string do leaf 0x40000000. Sem este patch, Anti-Cheats
+      # Ring-0 leem "KVMKVMKVM" e confirmam virtualização.
+      # --replace-fail aborta o build se a string mudar numa versão futura.
+      # ─────────────────────────────────────────────────────────────────
+      qemuGhosted = pkgs.qemu_kvm.overrideAttrs (prevAttrs: {
+        pname = "qemu-ghosted";
+        postPatch = (prevAttrs.postPatch or "") + ''
+          substituteInPlace target/i386/kvm/kvm.c \
+            --replace-fail 'memcpy(signature, "KVMKVMKVM\0\0\0", 12);' \
+                           'memcpy(signature, "GenuineIntel", 12);'
+        '';
+      });
 
       # Ferramentas do sistema com caminhos absolutos do Nix Store
       systemctl = "${pkgs.systemd}/bin/systemctl";
@@ -42,6 +58,11 @@ _:
         ${echo} "=== [$(${date})] Iniciando gancho PREPARE (Single GPU Passthrough) ==="
 
         # 0. Verificações pré-voo (pre-flight checks) para não derrubar a sessão em vão
+        if [ ! -d /sys/kernel/iommu_groups ] || [ -z "$(${pkgs.coreutils}/bin/ls -A /sys/kernel/iommu_groups 2>/dev/null)" ]; then
+          ${echo} "ERRO CRÍTICO: IOMMU não está ativo no host. Abortando PREPARE para proteger a sessão gráfica." >&2
+          exit 1
+        fi
+
         if [ ! -f "${vmCanonicalDir}/win11.raw" ]; then
           ${echo} "ERRO CRÍTICO: Disco ${vmCanonicalDir}/win11.raw não encontrado. Abortando PREPARE." >&2
           exit 1
@@ -97,6 +118,12 @@ _:
 
         # 7. Carregar o driver VFIO e anexar os dispositivos da GPU via sysfs
         ${echo} "Carregando vfio-pci e isolando dispositivos via sysfs..."
+        if [ -e /sys/bus/pci/devices/0000:03:00.0/driver/unbind ]; then
+          ${echo} 0000:03:00.0 > /sys/bus/pci/devices/0000:03:00.0/driver/unbind 2>/dev/null || true
+        fi
+        if [ -e /sys/bus/pci/devices/0000:03:00.1/driver/unbind ]; then
+          ${echo} 0000:03:00.1 > /sys/bus/pci/devices/0000:03:00.1/driver/unbind 2>/dev/null || true
+        fi
         ${modprobe} vfio-pci
         ${echo} "vfio-pci" > /sys/bus/pci/devices/0000:03:00.0/driver_override
         ${echo} "vfio-pci" > /sys/bus/pci/devices/0000:03:00.1/driver_override
@@ -220,6 +247,14 @@ _:
         VIRSH="${virsh} -c qemu:///system"
 
         ${echo} "=== [win11-start] Verificando estado da VM win11 ==="
+
+        # 0. Verificação pré-voo do IOMMU no host
+        if [ ! -d /sys/kernel/iommu_groups ] || [ -z "$(${pkgs.coreutils}/bin/ls -A /sys/kernel/iommu_groups 2>/dev/null)" ]; then
+          ${echo} "ERRO CRÍTICO: Suporte a IOMMU não está ativo no host!" >&2
+          ${echo} "Certifique-se de que 'intel_iommu=on' e 'iommu=pt' estão configurados nos kernelParams e o sistema foi reiniciado." >&2
+          exit 1
+        fi
+
         STATE=$($VIRSH domstate win11 2>/dev/null || true)
 
         if [ "$STATE" = "running" ]; then
@@ -404,15 +439,14 @@ _:
       };
 
       config = {
-        # 1. Parâmetros de Kernel
+        # 1. Parâmetros de Kernel (somente os relevantes para VFIO / anti-detecção).
+        # Parâmetros genéricos de tuning do host ficam em x99-kernel.nix.
         boot.kernelParams = [
-          "nowatchdog"
-          "nmi_watchdog=0"
-          "audit=0"
-          "transparent_hugepage=always"
-          "mitigations=off"
-          "nvidia-drm.modeset=1"
-          "kvm_intel.nested=0"
+          # ─── IOMMU & Virtualização de Hardware ──────────────────────────
+          # Requisito indispensável para isolamento e passthrough PCIe via VFIO.
+          # Sem isto, o kernel não inicializa grupos DMAR e o Libvirt rejeita a VM.
+          "intel_iommu=on"
+          "iommu=pt"
 
           # ─── VETOR 1: Supressão de MSRs (KVM) ───────────────────────────
           # Sem isto, Anti-Cheat provocando leitura de MSR não implementado
@@ -426,9 +460,8 @@ _:
           # o bind de 0000:03:00.1 pode falhar silenciosamente.
           "vfio_iommu_type1.allow_unsafe_interrupts=1"
 
-          # ─── Nota: mitigations=off já está otimizado. NÃO remover ──────
-          # XanMod + mitigations=off dá ~5-15% de performance no ArcGIS.
-          # Anti-Cheats NÃO verificam presença de mitigations (é hardware-side).
+          # ─── VETOR CPUID: esconde suporte a VMX aninhado do guest. ──────
+          "kvm_intel.nested=0"
         ];
 
         # 2. Carregamento dos módulos VFIO no kernel

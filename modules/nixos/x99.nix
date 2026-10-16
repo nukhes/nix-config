@@ -1,11 +1,25 @@
-{ config, pkgs, ... }:
+{ config, ... }:
 
 let
   flakeConfig = config;
 in
 {
   nixos.modules.x99 =
-    { ... }:
+    { pkgs, ... }:
+    let
+      inputLeapConf = pkgs.writeText "input-leap.conf" ''
+        section: screens
+          x99:
+          x200:
+        end
+        section: links
+          x99:
+            up = x200
+          x200:
+            down = x99
+        end
+      '';
+    in
     {
       imports = [
         ./x99-hardware.pkg.nix
@@ -25,6 +39,26 @@ in
       networking = {
         hostName = "x99";
         networkmanager.enable = true;
+        firewall.allowedTCPPorts = [ 24800 ];
+      };
+
+      environment.systemPackages = [
+        pkgs.input-leap
+      ];
+
+      systemd.user.services.input-leap-server = {
+        description = "Input Leap Server";
+        after = [
+          "network.target"
+          "graphical-session.target"
+        ];
+        partOf = [ "graphical-session.target" ];
+        wantedBy = [ "graphical-session.target" ];
+        serviceConfig = {
+          ExecStart = "${pkgs.input-leap}/bin/input-leaps -f --no-tray --disable-crypto --name x99 --config ${inputLeapConf}";
+          Restart = "on-failure";
+          RestartSec = 2;
+        };
       };
 
       services.libinput = {
