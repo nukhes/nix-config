@@ -92,7 +92,7 @@ _:
           "browser.termsofuse.prefMigrationCheck" = true;
           "browser.theme.content-theme" = 0;
           "browser.theme.toolbar-theme" = 0;
-          "browser.toolbars.bookmarks.visibility" = "always";
+          "browser.toolbars.bookmarks.visibility" = "never";
           "browser.translations.automaticallyPopup" = false;
           "browser.translations.enable" = false;
           "browser.uitour.enabled" = false;
