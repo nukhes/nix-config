@@ -15,6 +15,7 @@ _:
         nvim-tree-lua
         vim-lastplace
         mini-nvim
+        vimwiki
       ];
 
       extraPackages = with pkgs; [
@@ -28,6 +29,12 @@ _:
         vim.opt.termguicolors = true
         vim.g.loaded_netrw = 1
         vim.g.loaded_netrwPlugin = 1
+
+        vim.g.vimwiki_list = {
+          {
+            path = "~/projects/wiki",
+          },
+        }
 
         require("mini.pairs").setup()
 
