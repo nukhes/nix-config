@@ -73,8 +73,9 @@ _:
           exit 1
         fi
 
-        # 1. Parar o gerenciador de exibição (ly / display-manager)
-        ${echo} "Parando display-manager.service..."
+        # 1. Parar o gerenciador de exibição (ly / display-manager) e ollama
+        ${echo} "Parando display-manager.service e ollama.service..."
+        ${systemctl} stop ollama.service 2>/dev/null || true
         ${systemctl} stop display-manager.service || true
         ${sleep} 2
 
@@ -186,9 +187,10 @@ _:
           ${echo} efi-framebuffer.0 > /sys/bus/platform/drivers/efi-framebuffer/bind 2>/dev/null || true
         fi
 
-        # 7. Reiniciar o gerenciador de exibição (ly)
-        ${echo} "Iniciando display-manager.service..."
+        # 7. Reiniciar o gerenciador de exibição (ly) e ollama
+        ${echo} "Iniciando display-manager.service e ollama.service..."
         ${systemctl} start display-manager.service || true
+        ${systemctl} start ollama.service 2>/dev/null || true
 
         ${echo} "=== [$(${date})] Host restaurado com sucesso ==="
       '';
