@@ -38,7 +38,13 @@ in
 
       networking = {
         hostName = "x99";
-        networkmanager.enable = true;
+        networkmanager = {
+          enable = true;
+          insertNameservers = [
+            "1.1.1.1"
+            "8.8.8.8"
+          ];
+        };
         firewall.allowedTCPPorts = [ 24800 ];
       };
 
