@@ -24,6 +24,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    scidavis-nix = {
+      url = "github:LyCecilion/scidavis-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     stylix.url = "github:nix-community/stylix";
 
     nix-darwin = {

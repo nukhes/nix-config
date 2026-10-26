@@ -480,7 +480,48 @@
         "nixos-hardware": "nixos-hardware",
         "nixpkgs": "nixpkgs_3",
         "nur": "nur",
+        "scidavis-nix": "scidavis-nix",
         "stylix": "stylix"
+      }
+    },
+    "scidavis-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "scidavis-src": "scidavis-src"
+      },
+      "locked": {
+        "lastModified": 1784441861,
+        "narHash": "sha256-pTF9cRLE2dXzzI+bD3yEnWj5+/VvhztWd4kMf95dU+o=",
+        "owner": "LyCecilion",
+        "repo": "scidavis-nix",
+        "rev": "299fc9c8407c3ae8ade30a57ecfc4ad3858ace5e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LyCecilion",
+        "repo": "scidavis-nix",
+        "type": "github"
+      }
+    },
+    "scidavis-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1650094759,
+        "narHash": "sha256-5N9ok0OGRfJ+HHwhmtjjxfq9/+DRzqMcJSxDCaLTKc8=",
+        "ref": "refs/heads/master",
+        "rev": "5bad72ba1fb90dacb6c3ce195e3ec82c9ab2a8be",
+        "revCount": 1747,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/SciDAVis/scidavis.git"
+      },
+      "original": {
+        "rev": "5bad72ba1fb90dacb6c3ce195e3ec82c9ab2a8be",
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/SciDAVis/scidavis.git"
       }
     },
     "stylix": {
