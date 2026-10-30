@@ -6,7 +6,6 @@ _:
 
     {
       home.packages = with pkgs; [
-        xarchiver
         ouch
         unrar
         sxiv

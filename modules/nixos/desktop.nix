@@ -8,7 +8,12 @@ _:
       thunar = {
         enable = true;
         plugins = with pkgs; [
-          thunar-archive-plugin
+          (thunar-archive-plugin.overrideAttrs (old: {
+            postInstall = (old.postInstall or "") + ''
+              ln -s ${pkgs.xarchiver}/libexec/thunar-archive-plugin/xarchiver.tap \
+                $out/libexec/thunar-archive-plugin/xarchiver.tap
+            '';
+          }))
           thunar-volman
         ];
       };
@@ -17,6 +22,7 @@ _:
     environment = {
       pathsToLink = [ "/share/icons" ];
       systemPackages = with pkgs; [
+        xarchiver
         usbutils
         distrobox
         gparted
