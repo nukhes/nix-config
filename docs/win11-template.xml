@@ -211,6 +211,7 @@
         <vendor id='0x258a'/>
         <product id='0x013b'/>
       </source>
+      <alias name='ua-usb-kbd'/>
     </hostdev>
 
     <!-- USB Passthrough: Mouse / Teclado Sem Fio Xenta 2.4G -->
@@ -219,6 +220,7 @@
         <vendor id='0x1d57'/>
         <product id='0xfa60'/>
       </source>
+      <alias name='ua-usb-mouse'/>
     </hostdev>
 
     <!-- USB Passthrough: Áudio Onboard da Placa-Mãe (CSCTEK / Zoran USB Audio) -->
@@ -227,8 +229,33 @@
         <vendor id='0x0573'/>
         <product id='0x1573'/>
       </source>
+      <alias name='ua-usb-audio'/>
     </hostdev>
 
     <memballoon model='none'/>
   </devices>
+
+  <!-- Previne que o Windows 11 envie USBDEVFS_RESET físico para a controladora
+      ehci-pci da X99-P3 durante Selective Suspend / re-init HID, o que derrubava
+      o MCU do teclado Sino Wealth (258a:013b) após horas de uso. -->
+  <qemu:override>
+    <qemu:device alias='ua-usb-kbd'>
+      <qemu:frontend>
+        <qemu:property name='guest-reset' type='bool' value='false'/>
+        <qemu:property name='guest-resets-all' type='bool' value='false'/>
+      </qemu:frontend>
+    </qemu:device>
+    <qemu:device alias='ua-usb-mouse'>
+      <qemu:frontend>
+        <qemu:property name='guest-reset' type='bool' value='false'/>
+        <qemu:property name='guest-resets-all' type='bool' value='false'/>
+      </qemu:frontend>
+    </qemu:device>
+    <qemu:device alias='ua-usb-audio'>
+      <qemu:frontend>
+        <qemu:property name='guest-reset' type='bool' value='false'/>
+        <qemu:property name='guest-resets-all' type='bool' value='false'/>
+      </qemu:frontend>
+    </qemu:device>
+  </qemu:override>
 </domain>

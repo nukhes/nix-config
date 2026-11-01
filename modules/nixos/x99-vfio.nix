@@ -37,6 +37,7 @@ _:
 
       # Ferramentas do sistema com caminhos absolutos do Nix Store
       systemctl = "${pkgs.systemd}/bin/systemctl";
+      systemdRun = "${pkgs.systemd}/bin/systemd-run";
       modprobe = "${pkgs.kmod}/bin/modprobe";
       fuser = "${pkgs.psmisc}/bin/fuser";
       virsh = "${pkgs.libvirt}/bin/virsh";
@@ -44,8 +45,14 @@ _:
       echo = "${pkgs.coreutils}/bin/echo";
       date = "${pkgs.coreutils}/bin/date";
       mkdir = "${pkgs.coreutils}/bin/mkdir";
+      rm = "${pkgs.coreutils}/bin/rm";
+      cat = "${pkgs.coreutils}/bin/cat";
+      cp = "${pkgs.coreutils}/bin/cp";
+      chmod = "${pkgs.coreutils}/bin/chmod";
       grep = "${pkgs.gnugrep}/bin/grep";
       pkill = "${pkgs.procps}/bin/pkill";
+      flock = "${pkgs.util-linux}/bin/flock";
+      lsusb = "${pkgs.usbutils}/bin/lsusb";
       sudo = "/run/wrappers/bin/sudo";
 
       # Script de início: Isola a GPU do host NixOS e transfere para o VFIO
@@ -272,12 +279,13 @@ _:
         fi
 
         if [ -z "$STATE" ] || [ "$STATE" = "shut off" ]; then
-          if [ -f "${vmCanonicalDir}/win11-template.xml" ]; then
+          if [ -f "${win11Template}" ]; then
+            ${echo} "Sincronizando e aplicando definição da VM 'win11' a partir do template do repositório..."
+            ${cp} -f "${win11Template}" "${vmCanonicalDir}/win11-template.xml" 2>/dev/null || true
+            $VIRSH define "${win11Template}"
+          elif [ -f "${vmCanonicalDir}/win11-template.xml" ]; then
             ${echo} "Aplicando definição da VM 'win11' a partir de ${vmCanonicalDir}/win11-template.xml..."
             $VIRSH define "${vmCanonicalDir}/win11-template.xml"
-          elif [ -f "${win11Template}" ]; then
-            ${echo} "Aplicando definição da VM 'win11' a partir do template padrão do repositório..."
-            $VIRSH define "${win11Template}"
           else
             if [ -z "$STATE" ]; then
               ${echo} "ERRO CRÍTICO: Template de definição ${vmCanonicalDir}/win11-template.xml não encontrado!" >&2
@@ -392,6 +400,107 @@ _:
         ${win11Start}/bin/win11-start
       '';
 
+      # Utilitário de Hotplug / Re-attach de periféricos USB (automático via udev ou manual via CLI)
+      win11UsbReattach = pkgs.writeShellScriptBin "win11-usb-reattach" ''
+        set -euo pipefail
+        VIRSH="${virsh} -c qemu:///system"
+        IS_UDEV=0
+
+        if [ "''${1:-}" = "--udev" ]; then
+          IS_UDEV=1
+          shift
+          LOGFILE="/var/log/libvirt/custom_hooks.log"
+          ${mkdir} -p /var/log/libvirt 2>/dev/null || true
+          exec >> "$LOGFILE" 2>&1
+        fi
+
+        STATE=$($VIRSH domstate win11 2>/dev/null || true)
+        if [ "$STATE" != "running" ]; then
+          if [ "$IS_UDEV" -eq 0 ]; then
+            ${echo} "A VM 'win11' não está em execução (estado: ''${STATE:-indefinido}). Nada a fazer."
+          fi
+          exit 0
+        fi
+
+        reattach_device() {
+          local VENDOR="$1"
+          local PRODUCT="$2"
+          local ALIAS="$3"
+          local LABEL="$4"
+          local LOCKFILE="/tmp/win11-usb-''${VENDOR}-''${PRODUCT}.lock"
+
+          (
+            ${flock} -w 10 9 || exit 0
+
+            if [ "$IS_UDEV" -eq 1 ]; then
+              ${sleep} 1
+            fi
+
+            if ! ${lsusb} -d "''${VENDOR}:''${PRODUCT}" >/dev/null 2>&1; then
+              ${echo} "[$(${date})] [USB-Hotplug] ''${LABEL} (''${VENDOR}:''${PRODUCT}) ausente no barramento USB do host."
+              exit 0
+            fi
+
+            local TMP_XML="/tmp/win11-usb-''${VENDOR}-''${PRODUCT}-$$.xml"
+            ${cat} > "$TMP_XML" <<EOF
+        <hostdev mode="subsystem" type="usb" managed="yes">
+          <source startupPolicy="optional">
+            <vendor id="0x''${VENDOR}"/>
+            <product id="0x''${PRODUCT}"/>
+          </source>
+          <alias name="''${ALIAS}"/>
+        </hostdev>
+        EOF
+
+            ${echo} "[$(${date})] [USB-Hotplug] Reconectando ''${LABEL} (0x''${VENDOR}:0x''${PRODUCT}) na VM win11..."
+            $VIRSH detach-device win11 "$TMP_XML" --live >/dev/null 2>&1 || true
+            ${sleep} 0.5
+
+            if $VIRSH attach-device win11 "$TMP_XML" --live >/dev/null 2>&1; then
+              ${echo} "[$(${date})] [USB-Hotplug] ''${LABEL} (0x''${VENDOR}:0x''${PRODUCT}) anexado com sucesso à VM win11."
+            else
+              ${sleep} 1
+              $VIRSH detach-device win11 "$TMP_XML" --live >/dev/null 2>&1 || true
+              ${sleep} 0.5
+              if $VIRSH attach-device win11 "$TMP_XML" --live; then
+                ${echo} "[$(${date})] [USB-Hotplug] ''${LABEL} (0x''${VENDOR}:0x''${PRODUCT}) anexado na 2ª tentativa."
+              else
+                ${echo} "[$(${date})] [USB-Hotplug] ERRO ao anexar ''${LABEL} (0x''${VENDOR}:0x''${PRODUCT})." >&2
+              fi
+            fi
+
+            ${rm} -f "$TMP_XML"
+          ) 9>"$LOCKFILE"
+          ${chmod} 666 "$LOCKFILE" 2>/dev/null || true
+        }
+
+        TARGET_VENDOR="''${1:-}"
+        TARGET_PRODUCT="''${2:-}"
+
+        if [ -n "$TARGET_VENDOR" ] && [ -n "$TARGET_PRODUCT" ]; then
+          case "''${TARGET_VENDOR}:''${TARGET_PRODUCT}" in
+            258a:013b)
+              reattach_device "258a" "013b" "ua-usb-kbd" "Teclado Sino Wealth"
+              ;;
+            1d57:fa60)
+              reattach_device "1d57" "fa60" "ua-usb-mouse" "Mouse/Teclado Xenta 2.4G"
+              ;;
+            0573:1573)
+              reattach_device "0573" "1573" "ua-usb-audio" "Áudio USB Onboard CSCTEK"
+              ;;
+            *)
+              reattach_device "$TARGET_VENDOR" "$TARGET_PRODUCT" "ua-usb-custom" "Dispositivo USB"
+              ;;
+          esac
+        else
+          ${echo} "=== [win11-usb-reattach] Sincronizando periféricos USB com a VM win11 ==="
+          reattach_device "258a" "013b" "ua-usb-kbd" "Teclado Sino Wealth"
+          reattach_device "1d57" "fa60" "ua-usb-mouse" "Mouse/Teclado Xenta 2.4G"
+          reattach_device "0573" "1573" "ua-usb-audio" "Áudio USB Onboard CSCTEK"
+          ${echo} "=== Periféricos USB atualizados na VM win11 ==="
+        fi
+      '';
+
       x99VfioRescue = pkgs.writeShellScriptBin "x99-vfio-rescue" ''
         set -euo pipefail
         ${echo} "=== Executando restauração de emergência da GPU / Host ==="
@@ -450,6 +559,12 @@ _:
           "intel_iommu=on"
           "iommu=pt"
 
+          # ─── Estabilidade USB Passthrough (EHCI / Rate Matching Hub) ────
+          # Desativa autosuspend global do usbcore para impedir que hubs EHCI e
+          # periféricos HID (Sino Wealth 258a:013b) caiam em suspensão quando
+          # desvinculados do usbhid pelo QEMU usb-host.
+          "usbcore.autosuspend=-1"
+
           # ─── VETOR 1: Supressão de MSRs (KVM) ───────────────────────────
           # Sem isto, Anti-Cheat provocando leitura de MSR não implementado
           # (ex: 0x4B564D00 Hyper-V TSC, 0x40000000 Hyper-V) → #GP → BSOD.
@@ -494,7 +609,15 @@ _:
           "L+ /var/lib/libvirt/hooks/qemu 0755 root root - ${qemuHookDispatcher}"
         ];
 
-        # 5. Pacotes essenciais para virtualização com GPU Passthrough e Windows 11
+        # 5. Hotplug USB Automático via udev (reconecta teclado/mouse/áudio se o
+        # dispositivo re-enumerar no barramento ou for desplugado e plugado).
+        services.udev.extraRules = ''
+          ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="258a", ATTR{idProduct}=="013b", RUN+="${systemdRun} --no-block --collect ${win11UsbReattach}/bin/win11-usb-reattach --udev 258a 013b"
+          ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="1d57", ATTR{idProduct}=="fa60", RUN+="${systemdRun} --no-block --collect ${win11UsbReattach}/bin/win11-usb-reattach --udev 1d57 fa60"
+          ACTION=="add", SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="0573", ATTR{idProduct}=="1573", RUN+="${systemdRun} --no-block --collect ${win11UsbReattach}/bin/win11-usb-reattach --udev 0573 1573"
+        '';
+
+        # 6. Pacotes essenciais para virtualização com GPU Passthrough e Windows 11
         environment.systemPackages = with pkgs; [
           virt-manager
           virtio-win
@@ -507,24 +630,27 @@ _:
           win11Stop
           win11Status
           win11Restart
+          win11UsbReattach
           x99VfioRescue
         ];
 
-        # 6. Conexão padrão do Libvirt apontando para a instância do sistema (root)
+        # 7. Conexão padrão do Libvirt apontando para a instância do sistema (root)
         environment.sessionVariables = {
           LIBVIRT_DEFAULT_URI = "qemu:///system";
         };
 
-        # 7. Aliases de terminal convenientes para gerenciar a VM no x99
+        # 8. Aliases de terminal convenientes para gerenciar a VM no x99
         environment.shellAliases = {
           win-start = "win11-start";
           win-stop = "win11-stop";
           win-status = "win11-status";
           win-restart = "win11-restart";
+          win-usb = "win11-usb-reattach";
           vm-start = "win11-start";
           vm-stop = "win11-stop";
           vm-status = "win11-status";
           vm-restart = "win11-restart";
+          vm-usb = "win11-usb-reattach";
         };
       };
     };

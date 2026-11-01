@@ -106,6 +106,7 @@ NixOS provides dedicated, idempotent CLI commands and aliases on `x99`:
 | **Force Stop** | `win11-stop -f` | `win-stop -f`, `vm-stop -f` | Immediately issues `virsh destroy win11` and triggers the host release hook. |
 | **Restart VM** | `win11-restart` | `win-restart`, `vm-restart` | Cleanly stops the VM, allows the host/VFIO transition to settle, and starts it again. |
 | **Check Status** | `win11-status` | `win-status`, `vm-status` | Displays domain state, CPU/RAM usage, attached USB devices, and virtual disks. |
+| **Reattach USB** | `win11-usb-reattach` | `win-usb`, `vm-usb` | Forces live re-attachment of USB peripherals (`258a:013b`, `1d57:fa60`, `0573:1573`) into the running VM. |
 | **Emergency Host Rescue** | `sudo x99-vfio-rescue` | — | Kills hung QEMU instances, rebinds PCI devices to `nvidia` & `snd_hda_intel`, re-enables `vtcon`, and restarts `display-manager.service`. |
 
 *(The helper shell scripts are also executable directly at `/var/lib/win11/win11-*.sh` even prior to system rebuilds).*
@@ -122,11 +123,13 @@ NixOS provides dedicated, idempotent CLI commands and aliases on `x99`:
 
 ### 2. USB Input & Audio Passthrough (Keyboard, Mouse & Onboard Sound)
 The domain template forwards physical USB devices directly to the guest:
-- **Keyboard**: Sino Wealth USB Keyboard (`vendor=0x258a`, `product=0x013b`)
-- **Mouse / Wireless Receiver**: Xenta 2.4G Wireless Device (`vendor=0x1d57`, `product=0xfa60`)
-- **Motherboard Audio (Onboard)**: CSCTEK / Zoran USB Audio and HID (`vendor=0x0573`, `product=0x1573`).
+- **Keyboard**: Sino Wealth USB Keyboard (`vendor=0x258a`, `product=0x013b`, alias `ua-usb-kbd`)
+- **Mouse / Wireless Receiver**: Xenta 2.4G Wireless Device (`vendor=0x1d57`, `product=0xfa60`, alias `ua-usb-mouse`)
+- **Motherboard Audio (Onboard)**: CSCTEK / Zoran USB Audio and HID (`vendor=0x0573`, `product=0x1573`, alias `ua-usb-audio`).
   *Note*: The X99-P3 motherboard integrates an internal USB Audio DAC controller wired to the 3.5mm rear audio jacks (headphone/mic) rather than an Azalia/HDA PCI controller. Passing this USB device through routes all physical motherboard audio directly to Windows.
 - **Safety Policy**: Defined with `startupPolicy='optional'`, ensuring the VM boots successfully even if a peripheral is temporarily unplugged.
+- **USB Reset Suppression & Autosuspend Protection**: Configured with `<qemu:override>` (`guest-reset=false`, `guest-resets-all=false`) and kernel parameter `usbcore.autosuspend=-1` to prevent Windows 11 Selective Suspend from issuing destructive `USBDEVFS_RESET` calls to the physical `ehci-pci` bus.
+- **Automatic Live Hotplug (`udev`)**: Declarative `udev` rules in `x99-vfio.nix` watch for USB re-enumeration/hotplug events (`ACTION=="add"`) and automatically invoke `win11-usb-reattach --udev` to detach stale handles and live-attach the new USB device number back into the running VM.
 
 To inspect or pass through other USB devices (e.g. gamepads, DACs, flash drives):
 ```bash
