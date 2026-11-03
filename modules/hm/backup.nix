@@ -65,10 +65,7 @@ _:
           --exclude '**/mozilla/firefox/Pending Pings' \
           "::$ARCHIVE" \
 
-          "${homeDirectory}/projects" \
-          "${homeDirectory}/archive" \
-          "${homeDirectory}/resources" \
-          "${homeDirectory}/areas" \
+          "${homeDirectory}/vault" \
           "${homeDirectory}/.config/mozilla"
 
         echo "[borg] pruning old archives"
