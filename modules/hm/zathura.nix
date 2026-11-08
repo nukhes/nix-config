@@ -8,10 +8,10 @@ _:
         selection-clipboard = "clipboard";
         statusbar-h-padding = 0;
         statusbar-v-padding = 0;
-        page-padding = 2;
-        sandbox = "none";
+        page-v-padding = 2;
+        page-h-padding = 2;
         database = "sqlite";
-        history-autosave = true;
+        continuous-hist-save = true;
       };
       mappings = {
         "<C-l>" = "feedkeys \":blist \"";

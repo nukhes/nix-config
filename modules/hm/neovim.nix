@@ -92,20 +92,22 @@ _:
         keymap("n", "<S-h>", ":bprevious<CR>", opts)
         keymap("n", "<C-b>", ":NvimTreeToggle<CR>", opts)
 
-        vim.lsp.config.lua_ls.setup({})
-        vim.lsp.config.pyright.setup({})
-        vim.lsp.config.ts_ls.setup({})
-        vim.lsp.config.nil_ls.setup({})
-        vim.lsp.config.clangd.setup({})
-        vim.lsp.config.rust_analyzer.setup({})
-        vim.lsp.config.gopls.setup({})
-        vim.lsp.config.bashls.setup({})
-        vim.lsp.config.html.setup({})
-        vim.lsp.config.cssls.setup({})
-        vim.lsp.config.jsonls.setup({})
-        vim.lsp.config.yamlls.setup({})
-        vim.lsp.config.taplo.setup({})
-        vim.lsp.config.dockerls.setup({})
+        vim.lsp.enable({
+          "lua_ls",
+          "pyright",
+          "ts_ls",
+          "nil_ls",
+          "clangd",
+          "rust_analyzer",
+          "gopls",
+          "bashls",
+          "html",
+          "cssls",
+          "jsonls",
+          "yamlls",
+          "taplo",
+          "dockerls",
+        })
 
         vim.api.nvim_create_autocmd('LspAttach', {
           callback = function(args)

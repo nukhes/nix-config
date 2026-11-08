@@ -16,10 +16,16 @@ _:
         enableBashIntegration = true;
         enableZshIntegration = true;
 
+        extraPackages = with pkgs; [
+          ouch
+          unrar
+          sxiv
+        ];
+
         settings = {
-          manager = {
+          mgr = {
             show_hidden = true;
-            sort_by = "name";
+            sort_by = "alphabetical";
             sort_sensitive = false;
             sort_reverse = false;
             sort_dir_first = true;
@@ -27,33 +33,50 @@ _:
 
           opener = {
             html = [
-              { run = "firefox \"$1\""; }
+              {
+                run = "firefox %s1";
+                orphan = true;
+                desc = "Firefox";
+              }
             ];
             image = [
               {
-                run = "sxiv -a \"$@\"";
+                run = "sxiv -a %s";
                 orphan = true;
+                desc = "sxiv";
               }
             ];
             pdf = [
               {
-                run = "zathura \"$1\"";
+                run = "zathura %s1";
                 orphan = true;
+                desc = "Zathura";
               }
             ];
             extract = [
-              { run = "ouch decompress --yes \"$@\""; }
+              {
+                run = "ouch decompress --yes %s";
+                desc = "Extract here with ouch";
+              }
             ];
             editor = [
               {
-                run = "\${EDITOR:-nvim} \"$@\"";
+                run = "\${EDITOR:-nvim} %s";
                 block = true;
+                desc = "$EDITOR";
               }
             ];
           };
 
           open = {
-            rules = [
+            prepend_rules = [
+              {
+                mime = "text/html";
+                use = [
+                  "html"
+                  "editor"
+                ];
+              }
               {
                 mime = "image/*";
                 use = "image";
@@ -63,27 +86,7 @@ _:
                 use = "pdf";
               }
               {
-                mime = "application/zip";
-                use = "extract";
-              }
-              {
-                mime = "application/x-tar";
-                use = "extract";
-              }
-              {
-                mime = "application/x-bzip2";
-                use = "extract";
-              }
-              {
-                mime = "application/x-gzip";
-                use = "extract";
-              }
-              {
-                mime = "application/x-rar";
-                use = "extract";
-              }
-              {
-                mime = "application/x-7z-compressed";
+                mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}";
                 use = "extract";
               }
               {
@@ -95,11 +98,12 @@ _:
         };
 
         keymap = {
-          manager = {
+          mgr = {
             prepend_keymap = [
               {
                 on = [ "E" ];
-                run = "open --use=extract";
+                run = "shell -- ouch decompress --yes %s";
+                desc = "Extract archive with ouch";
               }
             ];
           };
