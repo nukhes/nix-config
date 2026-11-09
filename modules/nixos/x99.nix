@@ -67,24 +67,35 @@ in
         };
       };
 
-      services.libinput = {
-        enable = true;
-        mouse.accelProfile = "flat";
-        touchpad.accelProfile = "flat";
-      };
+      services = {
+        tailscale.enable = true;
 
-      # Fix Arzopa monitor crash
-      services.xserver.displayManager.setupCommands =
-        let
-          xrandr = "${pkgs.xorg.xrandr}/bin/xrandr";
-        in
-        ''
-          if ! ${xrandr} | grep -q "1920x1080_rb"; then
-            ${xrandr} --newmode "1920x1080_rb" 138.50 1920 1968 2000 2080 1080 1083 1088 1111 +hsync -vsync
-            ${xrandr} --addmode HDMI-0 "1920x1080_rb"
-          fi
-          ${xrandr} --output HDMI-0 --mode "1920x1080_rb"
-        '';
+        libinput = {
+          enable = true;
+          mouse.accelProfile = "flat";
+          touchpad.accelProfile = "flat";
+        };
+
+        xserver.displayManager = {
+          # Fix Arzopa monitor crash
+          setupCommands =
+            let
+              xrandr = "${pkgs.xorg.xrandr}/bin/xrandr";
+            in
+            ''
+              if ! ${xrandr} | grep -q "1920x1080_rb"; then
+                ${xrandr} --newmode "1920x1080_rb" 138.50 1920 1968 2000 2080 1080 1083 1088 1111 +hsync -vsync
+                ${xrandr} --addmode HDMI-0 "1920x1080_rb"
+              fi
+              ${xrandr} --output HDMI-0 --mode "1920x1080_rb"
+            '';
+
+          sessionCommands = ''
+            ${pkgs.xset}/bin/xset s 600
+            ${pkgs.xset}/bin/xset dpms 0 0 600
+          '';
+        };
+      };
 
       powerManagement.cpuFreqGovernor = "performance";
 
