@@ -281,7 +281,7 @@ _:
               "${mod}+d" = "floating toggle";
 
               "${mod}+Shift+q" = "exec i3-lock";
-              "${mod}+Shift+x" = "exec xset dpms force off";
+              "--release ${mod}+Shift+x" = "exec --no-startup-id sleep 0.2 && xset dpms force off";
               "${mod}+Shift+r" = "restart";
               "${mod}+Shift+e" =
                 "exec \"i3-nagbar -t warning -m 'exit i3?' -B 'yes, exit i3' 'loginctl terminate-session $XDG_SESSION_ID'\"";
