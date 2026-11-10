@@ -11,6 +11,7 @@ in
     };
 
     services = {
+      pcscd.enable = true;
       openssh.enable = true;
       fstrim.enable = true;
       udisks2.enable = true;
@@ -47,6 +48,12 @@ in
         freeMemThreshold = 5;
         freeSwapThreshold = 5;
       };
+    };
+
+    security.pam.yubico.enable = true;
+    programs.gnupg.agent = {
+      enable = true;
+      enableSSHSupport = true;
     };
 
     systemd.user.services.polkit-gnome-authentication-agent-1 = {
