@@ -41,12 +41,10 @@ in
 
         settings = {
           devices = remoteDevices;
-          folders = {
-            vault = {
-              path = "/home/user/vault";
-              devices = remoteDeviceNames;
-            };
-          };
+          folders = lib.genAttrs [ "vault" "projects" "areas" ] (name: {
+            path = "/home/user/${name}";
+            devices = remoteDeviceNames;
+          });
         };
       };
 
