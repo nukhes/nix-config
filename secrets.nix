@@ -35,5 +35,7 @@ builtins.listToAttrs (
       "google/henriquealvesp052/openrouter-api"
 
       "vpn/tailscale/nukhes/key"
+
+      "bitwarden/secrets"
     ]
 )
