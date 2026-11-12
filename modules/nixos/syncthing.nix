@@ -41,11 +41,21 @@ in
 
         settings = {
           devices = remoteDevices;
-          folders = lib.genAttrs [ "vault" "projects" "areas" ] (name: {
-            path = "/home/user/${name}";
-            devices = remoteDeviceNames;
-          });
+          folders = lib.genAttrs [ "vault" "projects" "areas" ] (
+            name:
+            {
+              path = "/home/user/${name}";
+              devices = remoteDeviceNames;
+            }
+            // lib.optionalAttrs (name == "vault") {
+              maxConflicts = 0;
+              ignorePatterns = [
+                ".obsidian/workspace*"
+              ];
+            }
+          );
         };
+
       };
 
       age.secrets = {
