@@ -54,7 +54,6 @@ _:
         Service = {
           Type = "oneshot";
           RemainAfterExit = true;
-          # Agora basta chamar rbw unlock diretamente (é idempotente)
           ExecStart = "${pkgs.rbw}/bin/rbw unlock";
         };
         Install = {
@@ -64,7 +63,7 @@ _:
 
       age.secrets = {
         bitwarden = {
-          file = "${homeDirectory}/.nix-config/secrets/bitwarden/secrets.age"; # <-- Aspas fechadas aqui
+          file = "${homeDirectory}/.nix-config/secrets/bitwarden/secrets.age";
           path = "${homeDirectory}/.secrets/bitwarden/secrets.yaml";
           mode = "0600";
         };
