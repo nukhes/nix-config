@@ -61,5 +61,13 @@ _:
           WantedBy = [ "default.target" ];
         };
       };
+
+      age.secrets = {
+        bitwarden = {
+          file = "${homeDirectory}/.nix-config/secrets/bitwarden/secrets.age"; # <-- Aspas fechadas aqui
+          path = "${homeDirectory}/.secrets/bitwarden/secrets.yaml";
+          mode = "0600";
+        };
+      };
     };
 }
