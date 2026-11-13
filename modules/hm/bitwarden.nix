@@ -17,7 +17,7 @@ _:
         while read -r line; do
           case "$line" in
             GETPIN*)
-              PASS=$(${pkgs.yq-go}/bin/yq -r '.password' "${bwSecretPath}")
+              PASS=$(${pkgs.yq-go}/bin/yq -r '.bitwarden_password' "${bwSecretPath}")
               echo "D $PASS"
               echo "OK"
               ;;
