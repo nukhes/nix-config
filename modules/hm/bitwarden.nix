@@ -9,6 +9,7 @@ _:
       ...
     }:
     let
+      homeDirectory = config.home.homeDirectory;
       bwSecretPath = config.age.secrets.bitwarden.path;
 
       rbwPinentry = pkgs.writeShellScriptBin "pinentry-rbw" ''
