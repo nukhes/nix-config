@@ -2,7 +2,12 @@ _:
 
 {
   nixos.modules.x99 = { config, pkgs, ... }: {
-    services.xserver.videoDrivers = [ "nvidia" ];
+    services.xserver = {
+      videoDrivers = [ "nvidia" ];
+      deviceSection = ''
+        Option "ModeValidation" "AllowNonEdidModes"
+      '';
+    };
 
     hardware = {
       graphics = {

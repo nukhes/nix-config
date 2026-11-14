@@ -58,6 +58,34 @@ _:
         wttr = "curl -s \"wttr.in/Barao_Geraldo\"";
         library-organize = "nix-shell -p 'python3.withPackages (ps: [ ps.pyyaml ])' --run 'python3 ${homeDirectory}/library/organize_books.py books'";
       };
+
+      mountKindle = pkgs.writeShellApplication {
+        name = "mount_kindle";
+
+        runtimeInputs = [
+          pkgs.coreutils
+          pkgs.sshfs
+          pkgs.thunar
+          pkgs.util-linux
+        ];
+
+        text = ''
+          ip="''${1:-''${KINDLE_IP:-}}"
+          mount_dir="${homeDirectory}/kindle"
+
+          mkdir -p "$mount_dir"
+
+          if ! mountpoint -q "$mount_dir"; then
+            if [ -z "$ip" ]; then
+              echo "usage: mount_kindle <ip>" >&2
+              exit 1
+            fi
+            sshfs -p 2222 "root@$ip:/mnt/us/" "$mount_dir"
+          fi
+
+          nohup thunar "$mount_dir" >/dev/null 2>&1 &
+        '';
+      };
     in
     {
       home.packages =
@@ -73,6 +101,7 @@ _:
           typst
         ]
         ++ lib.optionals isLinux [
+          mountKindle
           cargo
           gcc
           rustc
