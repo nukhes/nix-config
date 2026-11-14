@@ -71,7 +71,7 @@ _:
 
         text = ''
           ip="''${1:-''${KINDLE_IP:-}}"
-          mount_dir="${homeDirectory}/kindle"
+          mount_dir="${homeDirectory}/.kindle"
 
           mkdir -p "$mount_dir"
 
