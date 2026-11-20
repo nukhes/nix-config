@@ -41,7 +41,7 @@ in
 
         settings = {
           devices = remoteDevices;
-          folders = lib.genAttrs [ "vault" "work" "bib" ] (
+          folders = lib.genAttrs [ "vault" "work" "bib" "arc" ] (
             name:
             {
               path = "/home/user/${name}";
