@@ -62,4 +62,8 @@ info "Applying NixOS configuration for $HOST..."
 cd "$HOME/.nix-config"
 sudo nixos-rebuild switch --flake ".#$HOST"
 
+# Ensure user can
+user=$(cat /etc/passwd | grep "$USER" | cut -d: -f1)
+sudo tailscale set --operator="$nome"
+
 info "Bootstrap successfully completed!"
