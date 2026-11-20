@@ -2,7 +2,12 @@ _:
 
 {
   hm.modules.common =
-    { pkgs, lib, ... }:
+    {
+      config,
+      pkgs,
+      lib,
+      ...
+    }:
 
     let
       colors = {
@@ -253,6 +258,7 @@ _:
               "${mod}+Shift+b" = "exec firefox";
               "${mod}+Shift+o" = "exec obsidian";
               "${mod}+Shift+c" = "exec code";
+              "${mod}+i" = "exec code ${config.home.homeDirectory}/.nix-config";
               "${mod}+Shift+f" = "exec alacritty -e yazi";
               "${mod}+Shift+s" = "exec --no-startup-id ${lib.getExe screenshot}";
               "${mod}+Shift+g" = "exec --no-startup-id ${lib.getExe gemini-rofi}";
