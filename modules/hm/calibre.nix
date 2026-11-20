@@ -10,15 +10,7 @@ _:
     }:
     let
       calibrePkg = pkgs.calibre;
-      # Para suporte a arquivos .cbr (RAR), substitua a linha acima por:
-      # calibrePkg = pkgs.calibre.override { unrarSupport = true; };
-      #
-      # Obs.: o unrar é um pacote unfree. Este repositório já habilita
-      # `nixpkgs.config.allowUnfree = true;` em `modules/nixos/nix-settings.nix`.
-      # Se usar este módulo em um host sem allowUnfree global, habilite:
-      #   nixpkgs.config.allowUnfree = true;
-      # ou permita apenas o pacote unrar via `nixpkgs.config.allowUnfreePredicate`.
-
+      calibrePkg = pkgs.calibre.override { unrarSupport = true; };
       calibreConfigDir = "${config.xdg.configHome}/calibre";
       calibreLibraryDir = "${config.xdg.dataHome}/calibre-library";
 
@@ -42,6 +34,7 @@ _:
                 "View",
                 "Remove Books",
                 "Preferences",
+                "AI Vision Metadata",
             ]
 
             DESIRED_CONFIGS = {
@@ -86,7 +79,6 @@ _:
                 },
             }
 
-
             def deep_merge(base, overrides):
                 merged = dict(base)
                 for key, value in overrides.items():
@@ -95,7 +87,6 @@ _:
                     else:
                         merged[key] = value
                 return merged
-
 
             def load_json_dict(path):
                 if not os.path.exists(path):
@@ -113,7 +104,6 @@ _:
                         file=sys.stderr,
                     )
                     return {}
-
 
             def write_json_atomic(path, data):
                 parent = os.path.dirname(path) or "."
@@ -135,13 +125,11 @@ _:
                         except OSError:
                             pass
 
-
             def merge_config_file(path, overrides):
                 current = load_json_dict(path)
                 updated = deep_merge(current, overrides)
                 if os.path.islink(path) or not os.path.exists(path) or updated != current:
                     write_json_atomic(path, updated)
-
 
             def ensure_library_initialized():
                 metadata_db = os.path.join(LIBRARY_DIR, "metadata.db")
@@ -156,14 +144,12 @@ _:
                     check=True,
                 )
 
-
             def main():
                 os.makedirs(CONFIG_DIR, exist_ok=True)
                 os.makedirs(LIBRARY_DIR, exist_ok=True)
                 ensure_library_initialized()
                 for filename, overrides in DESIRED_CONFIGS.items():
                     merge_config_file(os.path.join(CONFIG_DIR, filename), overrides)
-
 
             if __name__ == "__main__":
                 main()
