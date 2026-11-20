@@ -33,5 +33,13 @@
         ];
       };
     };
+
+    # Evita que o dconf/GIO durante a ativação do Home Manager no boot
+    # (antes do login, sem XDG_RUNTIME_DIR) ative o gvfsd-fuse e deixe um
+    # mount FUSE órfão em ~/.gvfs ("Connection refused" ao abrir o Thunar).
+    systemd.services.home-manager-user.environment = {
+      GIO_USE_VFS = "local";
+      GVFS_DISABLE_FUSE = "1";
+    };
   };
 }
