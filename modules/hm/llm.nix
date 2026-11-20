@@ -71,31 +71,6 @@ let
 
   geminiModels = [
     {
-      id = "gemini-3-flash-preview";
-      name = "Gemini 3 Flash (Rápido + Visão)";
-      desc = "cloud · rápido + visão (recomendado)";
-    }
-    {
-      id = "gemini-3.1-flash-lite-preview";
-      name = "Gemini 3.1 Flash Lite (Ultra-rápido)";
-      desc = "cloud · ultra-rápido";
-    }
-    {
-      id = "gemini-3.1-pro-preview";
-      name = "Gemini 3.1 Pro (Raciocínio Avançado)";
-      desc = "cloud · raciocínio avançado";
-    }
-    {
-      id = "gemini-2.5-flash-lite";
-      name = "Gemini 2.5 Flash Lite";
-      desc = "cloud · leve";
-    }
-    {
-      id = "gemini-2.5-pro";
-      name = "Gemini 2.5 Pro";
-      desc = "cloud · pro";
-    }
-    {
       id = "gemini-3.8-flash";
       name = "Gemini 3.8 Flash (Thinking)";
       desc = "cloud · thinking";
