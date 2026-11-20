@@ -1,11 +1,18 @@
 {
   hm.modules.common =
-    { lib, ... }:
+    {
+      config,
+      lib,
+      osConfig ? null,
+      ...
+    }:
 
     let
       wt = t: "window_type = '${t}'";
       cg = c: "class_g = '${c}'";
       boolAttrs = names: val: lib.genAttrs names (_: val);
+      hasNvidia =
+        osConfig != null && builtins.elem "nvidia" (osConfig.services.xserver.videoDrivers or [ ]);
     in
     {
       services.picom = {
@@ -28,7 +35,7 @@
             (wt "tooltip")
             (wt "dnd")
             (cg "Polybar")
-            "_GTK_FRAME_EXTENTS@:c"
+            "_GTK_FRAME_EXTENTS@"
           ];
 
           corner-radius = 12;
@@ -51,7 +58,7 @@
             (wt "tooltip")
             (cg "slop")
             (cg "maim")
-            "_GTK_FRAME_EXTENTS@:c"
+            "_GTK_FRAME_EXTENTS@"
           ];
         }
         // boolAttrs [
@@ -63,6 +70,8 @@
         ] true
         // {
           use-damage = false;
+          unredir-if-possible = false;
+          xrender-sync-fence = hasNvidia;
         };
 
         fade = true;
@@ -71,6 +80,14 @@
           0.03
           0.03
         ];
+      };
+
+      systemd.user.services.picom = lib.mkIf config.services.picom.enable {
+        Unit = {
+          StartLimitIntervalSec = 30;
+          StartLimitBurst = 3;
+        };
+        Service.Restart = lib.mkForce "on-failure";
       };
     };
 }
