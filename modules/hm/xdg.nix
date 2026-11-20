@@ -14,11 +14,19 @@ _:
       gen = mimes: app: lib.genAttrs mimes (_: [ "${app}.desktop" ]);
     in
     lib.mkIf pkgs.stdenv.hostPlatform.isLinux {
+      home.sessionVariables = {
+        LESSHISTFILE = "-";
+        ZDOTDIR = "${config.xdg.configHome}/zsh";
+        CARGO_HOME = "${config.xdg.dataHome}/cargo";
+        GOPATH = "${config.xdg.dataHome}/go";
+        NPM_CONFIG_USERCONFIG = "${config.xdg.configHome}/npm/npmrc";
+      };
+
       xdg.userDirs = {
         enable = true;
-        download = home;
+        download = "${home}/tmp";
         desktop = home;
-        documents = home;
+        documents = "${home}/bib";
         music = home;
         pictures = home;
         publicShare = home;

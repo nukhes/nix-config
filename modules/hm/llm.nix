@@ -704,29 +704,55 @@ in
       programs.opencode = {
         enable = true;
         enableMcpIntegration = true;
-        validateFiles.config = true;
+        validateFiles = {
+          config = true;
+          cli = true;
+        };
+        # Workaround until Stylix migrates from programs.opencode.tui to programs.opencode.cli
+        tui = lib.mkForce { };
+        cli = lib.mkIf (config.stylix.enable or false) {
+          theme = {
+            name = lib.mkDefault "stylix";
+            mode = lib.mkDefault (
+              if config.stylix.polarity == "either" then "system" else config.stylix.polarity
+            );
+          };
+        };
         settings = {
           model = "google/${defaultGeminiModel}";
-          small_model = "google/gemini-3.1-flash-lite-preview";
-          provider = {
+          agents.title.model = "google/gemini-3.1-flash-lite-preview";
+          providers = {
             google = {
-              options = {
+              settings = {
                 apiKey = "{file:${geminiKeyPath}}";
               };
-              whitelist = map (m: m.id) geminiModels;
+              models = builtins.listToAttrs (
+                map (m: {
+                  name = m.id;
+                  value = {
+                    inherit (m) name;
+                  };
+                }) geminiModels
+              );
             };
             ollama = {
-              npm = "@ai-sdk/openai-compatible";
               name = "Ollama (Local Xeon E5-2676 / GTX 960)";
-              options = {
+              settings = {
                 baseURL = "http://127.0.0.1:11434/v1";
               };
               models = builtins.listToAttrs (
                 map (m: {
                   name = m.id;
                   value = {
-                    inherit (m) name tool_call reasoning;
-                    attachment = m.vision;
+                    inherit (m) name;
+                    capabilities = {
+                      tools = m.tool_call;
+                      input = [ "text" ] ++ lib.optional m.vision "image";
+                      output = [ "text" ];
+                      reasoning = {
+                        supported = m.reasoning;
+                      };
+                    };
                     limit = {
                       context = 16384;
                       output = 8192;

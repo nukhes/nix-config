@@ -35,6 +35,15 @@ if ! ls /etc/ssh/ssh_host_* >/dev/null 2>&1; then
     read -p "Press enter to continue anyway, or Ctrl+C to abort..."
 fi
 
+# Check for missing directories in home
+for dir in Desktop Downloads Templates Public Documents Music Pictures Videos; do
+    if [ -d "$HOME/$dir" ]; then
+        rmdir "$HOME/$dir" 2>/dev/null \
+            && printf "Removed: ~/%s\n" "$dir" \
+            || printf "Ignored (not empty): ~/%s\n" "$dir"
+    fi
+done
+
 # --- 2. Git Clone ---
 if [ -d "$HOME/.nix-config" ]; then
     warn "$HOME/.nix-config already exists. Skipping clone step."

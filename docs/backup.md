@@ -5,10 +5,9 @@
 The `borg-backup` user timer runs once a day. Each run creates a compressed,
 encrypted Borg snapshot containing these paths from your home directory:
 
-- `projects`
-- `archive`
-- `resources`
-- `areas`
+- `work`
+- `bib`
+- `vault`
 - `.config/mozilla`
 
 Build output and caches are excluded, including `.git`, `node_modules`, virtual

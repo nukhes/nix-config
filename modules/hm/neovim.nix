@@ -32,7 +32,7 @@ _:
 
         vim.g.vimwiki_list = {
           {
-            path = "~/projects/wiki",
+            path = "~/work/wiki",
           },
         }
 
