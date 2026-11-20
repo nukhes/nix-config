@@ -30,18 +30,10 @@ let
     {
       id = "gemma3:4b";
       name = "Gemma 3 4B (Visão / Screenshots)";
-      desc = "local · ~3.1GB · multimodal/visão";
+      desc = "local · ~3.1GB · visão";
       tool_call = false;
       reasoning = false;
       vision = true;
-    }
-    {
-      id = "qwen2.5-coder:7b";
-      name = "Qwen 2.5 Coder 7B (Xeon 32GB)";
-      desc = "local · ~4.4GB · código (Xeon)";
-      tool_call = true;
-      reasoning = false;
-      vision = false;
     }
     {
       id = "deepseek-r1:8b";
@@ -60,9 +52,9 @@ let
       vision = false;
     }
     {
-      id = "qwen2.5:14b";
-      name = "Qwen 2.5 14B (Alta Capacidade · Xeon 32GB)";
-      desc = "local · ~9.0GB · alta capacidade (Xeon)";
+      id = "qwen3-vl:30b";
+      name = "Qwen 3.0 30B (Xeon 32GB)";
+      desc = "local · ~20.0GB · alta capacidade (Xeon)";
       tool_call = true;
       reasoning = false;
       vision = false;
