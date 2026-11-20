@@ -18,7 +18,159 @@ in
           x200:
             down = x99
         end
+        section: options
+          screenSaverSync = false
+        end
       '';
+
+      inputLeapTray = pkgs.writeShellApplication {
+        name = "input-leap-tray";
+        runtimeInputs = with pkgs; [
+          bash
+          coreutils
+          jq
+          systemd
+          tailscale
+          yad
+        ];
+        text = ''
+          SELF="$0"
+          PEER="x200"
+          SERVICE="input-leap-server.service"
+          POLL_INTERVAL=5
+
+          if [ "''${1:-}" = "toggle" ]; then
+            if systemctl --user is-active --quiet "$SERVICE"; then
+              systemctl --user stop "$SERVICE"
+            else
+              systemctl --user start "$SERVICE"
+            fi
+            if [ -n "''${2:-}" ]; then
+              kill -USR1 "$2" 2>/dev/null || true
+            fi
+            exit 0
+          fi
+
+          yad_pid=""
+          sleep_pid=""
+          last_state=""
+          woken=0
+
+          peer_online() {
+            tailscale status --json 2>/dev/null \
+              | jq -e --arg peer "$PEER" '
+                  .Self.Online == true and any(
+                    .Peer // {} | .[];
+                    (.HostName == $peer or (.DNSName | split(".")[0]) == $peer) and .Online == true
+                  )
+                ' >/dev/null 2>&1
+          }
+
+          service_active() {
+            systemctl --user is-active --quiet "$SERVICE"
+          }
+
+          stop_tray() {
+            if [ -n "$yad_pid" ]; then
+              printf 'quit\n' >&3 2>/dev/null || true
+              exec 3>&- 2>/dev/null || true
+              kill "$yad_pid" 2>/dev/null || true
+              wait "$yad_pid" 2>/dev/null || true
+              yad_pid=""
+            fi
+            last_state=""
+          }
+
+          start_tray() {
+            local fifo init_icon
+            fifo="$(mktemp -u "''${XDG_RUNTIME_DIR:-/tmp}/input-leap-tray.XXXXXX")"
+            mkfifo "$fifo"
+            exec 3<>"$fifo"
+            rm -f "$fifo"
+
+            if service_active; then
+              init_icon="barrier-connected"
+            else
+              init_icon="barrier-disconnected"
+            fi
+
+            yad --notification \
+              --listen \
+              --no-middle \
+              --image="$init_icon" \
+              --separator='|' \
+              --item-separator='!' \
+              --command="$SELF toggle $$" \
+              <&3 3>&- >/dev/null 2>&1 &
+            yad_pid=$!
+            last_state=""
+          }
+
+          sync_tray() {
+            local state icon tooltip label menu_icon
+            if service_active; then
+              state="active"
+              icon="barrier-connected"
+              tooltip="Input Leap: ativo ($PEER)"
+              label="Desligar bypass"
+              menu_icon="barrier-disconnected"
+            else
+              state="inactive"
+              icon="barrier-disconnected"
+              tooltip="Input Leap: desligado ($PEER)"
+              label="Ligar bypass"
+              menu_icon="barrier-connected"
+            fi
+
+            [ "$state" = "$last_state" ] && return 0
+
+            if ! {
+              printf 'icon:%s\n' "$icon"
+              printf 'tooltip:%s\n' "$tooltip"
+              printf 'menu:%s!%s toggle %s!%s\n' "$label" "$SELF" "$$" "$menu_icon"
+            } >&3 2>/dev/null; then
+              stop_tray
+              return 0
+            fi
+
+            last_state="$state"
+          }
+
+          cleanup() {
+            stop_tray
+            [ -n "$sleep_pid" ] && kill "$sleep_pid" 2>/dev/null || true
+          }
+
+          wake() {
+            woken=1
+            [ -n "$sleep_pid" ] && kill "$sleep_pid" 2>/dev/null || true
+          }
+
+          trap 'exit 0' INT TERM
+          trap cleanup EXIT
+          trap wake USR1
+
+          while true; do
+            woken=0
+            if peer_online; then
+              if [ -z "$yad_pid" ] || ! kill -0 "$yad_pid" 2>/dev/null; then
+                stop_tray
+                start_tray
+              fi
+              sync_tray
+            else
+              stop_tray
+            fi
+
+            if [ "$woken" -eq 0 ]; then
+              sleep "$POLL_INTERVAL" &
+              sleep_pid=$!
+              wait "$sleep_pid" 2>/dev/null || true
+              sleep_pid=""
+            fi
+          done
+        '';
+      };
 
       displayHandler = pkgs.writeShellScript "display-handler" ''
         xrandr="${pkgs.xrandr}/bin/xrandr"
@@ -242,6 +394,21 @@ in
           wantedBy = [ "graphical-session.target" ];
           serviceConfig = {
             ExecStart = "${pkgs.input-leap}/bin/input-leaps -f --no-tray --disable-crypto --name x99 --config ${inputLeapConf}";
+            Restart = "on-failure";
+            RestartSec = 2;
+          };
+        };
+
+        input-leap-tray = {
+          description = "Input Leap Tray Toggle (yad)";
+          after = [
+            "network.target"
+            "graphical-session.target"
+          ];
+          partOf = [ "graphical-session.target" ];
+          wantedBy = [ "graphical-session.target" ];
+          serviceConfig = {
+            ExecStart = "${inputLeapTray}/bin/input-leap-tray";
             Restart = "on-failure";
             RestartSec = 2;
           };
